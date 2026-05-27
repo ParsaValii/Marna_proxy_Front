@@ -6976,36 +6976,13 @@ vless://7b102311-43fd-4e8f-977e-8090623c101d@nova-panel.github.io:443?security=t
                             </div>
                         </div>
 
-                        <div class="form-group" id="enable0RTTGroup" style="display: none;">
+                        <div class="form-group" id="dualProtocolGroup" style="display: none;">
                             <div class="input-wrapper">
                                 <div class="checkbox-group">
-                                    <input type="checkbox" id="enable0RTT" title="فعال‌سازی 0-RTT (مبتدی‌ها استفاده نکنند)"
+                                    <input type="checkbox" id="dualProtocol" title="خروجی هم‌زمان VLESS و Trojan برای هر آدرس"
                                         onchange="markModified('config')">
-                                    <label for="enable0RTT" class="checkbox-label"
-                                        title="فعال‌سازی 0-RTT (مبتدی‌ها استفاده نکنند)">فعال‌سازی 0-RTT (ed=2560)</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group" id="tlsFragmentGroup" style="display: none;">
-                            <div class="input-wrapper">
-                                <div class="checkbox-group">
-                                    <input type="checkbox" id="tlsFragmentShadowrocket"
-                                        title="قابلیت تکه‌تکه کردن TLS مخصوص Shadowrocket"
-                                        onchange="handleTLSFragmentChange('Shadowrocket'); markModified('config')">
-                                    <label for="tlsFragmentShadowrocket" class="checkbox-label"
-                                        title="قابلیت تکه‌تکه کردن TLS مخصوص Shadowrocket">فعال‌سازی تکه‌تکه کردن (Shadowrocket)</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group" id="tlsFragmentHappGroup" style="display: none;">
-                            <div class="input-wrapper">
-                                <div class="checkbox-group">
-                                    <input type="checkbox" id="tlsFragmentHapp" title="قابلیت تکه‌تکه کردن TLS مخصوص Happ"
-                                        onchange="handleTLSFragmentChange('Happ'); markModified('config')">
-                                    <label for="tlsFragmentHapp" class="checkbox-label"
-                                        title="قابلیت تکه‌تکه کردن TLS مخصوص Happ">فعال‌سازی تکه‌تکه کردن (Happ)</label>
+                                    <label for="dualProtocol" class="checkbox-label"
+                                        title="خروجی هم‌زمان VLESS و Trojan برای هر آدرس">پروتکل دوگانه (VLESS + Trojan)</label>
                                 </div>
                             </div>
                         </div>
@@ -9286,6 +9263,16 @@ vless://7b102311-43fd-4e8f-977e-8090623c101d@nova-panel.github.io:443?security=t
                 enable0RTTGroup.style.setProperty('display', 'none', 'important');
             }
 
+            // بررسی وجود فیلد پروتکل دوگانه
+            const dualProtocolGroup = document.getElementById('dualProtocolGroup');
+            const dualProtocolCheckbox = document.getElementById('dualProtocol');
+            if (currentConfig['双协议'] !== undefined) {
+                dualProtocolGroup.style.setProperty('display', 'flex', 'important');
+                dualProtocolCheckbox.checked = currentConfig['双协议'] || false;
+            } else {
+                dualProtocolGroup.style.setProperty('display', 'none', 'important');
+            }
+
             // بررسی وجود فیلد TLS Fragment
             const tlsFragmentGroup = document.getElementById('tlsFragmentGroup');
             const tlsFragmentHappGroup = document.getElementById('tlsFragmentHappGroup');
@@ -10675,6 +10662,11 @@ vless://7b102311-43fd-4e8f-977e-8090623c101d@nova-panel.github.io:443?security=t
                 currentConfig['启用0RTT'] = document.getElementById('enable0RTT').checked;
             }
 
+            // ذخیره پروتکل دوگانه (اگر فیلد وجود دارد)
+            if (currentConfig['双协议'] !== undefined) {
+                currentConfig['双协议'] = document.getElementById('dualProtocol').checked;
+            }
+
             // ذخیره TLS Fragmentation (اگر فیلد وجود دارد)
             if (currentConfig['TLS分片'] !== undefined) {
                 const shadowrocket = document.getElementById('tlsFragmentShadowrocket').checked;
@@ -10944,6 +10936,11 @@ vless://7b102311-43fd-4e8f-977e-8090623c101d@nova-panel.github.io:443?security=t
                 // بازنشانی فعال‌سازی 0RTT (اگر فیلد وجود دارد)
                 if (currentConfig['启用0RTT'] !== undefined) {
                     document.getElementById('enable0RTT').checked = currentConfig['启用0RTT'] || false;
+                }
+
+                // بازنشانی پروتکل دوگانه (اگر فیلد وجود دارد)
+                if (currentConfig['双协议'] !== undefined) {
+                    document.getElementById('dualProtocol').checked = currentConfig['双协议'] || false;
                 }
 
                 // بازنشانی TLS Fragmentation (اگر فیلد وجود دارد)
