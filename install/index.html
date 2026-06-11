@@ -71,10 +71,11 @@ td{padding:8px;border-bottom:1px solid var(--bd);color:var(--tx2);vertical-align
 </div>
 
 <div class="card">
-<div class="ch"><div class="t"><span class="num">2</span><span id="sd1-t">D1 Database</span></div><div class="st" id="sd1-st" style="color:var(--ac)"><span class="dot" style="background:var(--ac)"></span><span id="sd1-l">v3.1</span></div></div>
+<div class="ch"><div class="t"><span class="num">2</span><span id="sd1-t">D1 Database</span></div><div class="st" id="sd1-st"><span class="dot"></span><span id="sd1-l">…</span></div></div>
 <p class="desc" id="sd1-desc"></p>
 <ol id="sd1-steps"></ol>
-<p class="desc" id="sd1-note" style="margin-top:6px;margin-bottom:0;font-size:12.5px"></p>
+<p class="desc" id="sd1-note" style="margin-top:6px;margin-bottom:8px;font-size:12.5px"></p>
+<button class="btn" id="sd1-test"></button>
 </div>
 
 <div class="card">
@@ -112,12 +113,13 @@ var L={
  fa:{dir:'rtl',intro:'به نصب Nova Proxy خوش آمدید. در نصب یک‌کلیکی، دیتابیس‌های KV و D1 به‌صورت خودکار ساخته و وصل می‌شوند؛ کافی است یک رمز مدیریت بسازید و وارد پنل شوید.',
   s1t:'دیتابیس KV',s2t:'رمز مدیریت',test:'بررسی دوباره',chk:'در حال بررسی…',ok:'متصل',bad:'متصل نیست',already:'تنظیم شده',
   s1desc:'در نصب یک‌کلیکی این مورد خودکار وصل می‌شود. اگر «متصل نیست» بود، طبق راهنمای زیر یک KV بسازید و با نام متغیر «KV» به ورکر وصل کنید.',
-  s1:['در داشبورد Cloudflare به <b>Workers &amp; Pages → KV</b> بروید.','روی <b>Create Namespace</b> بزنید و نامی مثل <span class="mono">NOVA_KV</span> بگذارید.','به Worker خود بروید: <b>Settings → Bindings → KV Namespace</b>.','یک Binding با نام متغیر <span class="mono">KV</span> به آن Namespace اضافه و ذخیره کنید.'],
+  s1:['در داشبورد Cloudflare به <b>Workers &amp; Pages → Storage &amp; databases → Workers KV</b> بروید.','روی <b>Create Namespace</b> بزنید و نامی مثل <span class="mono">NOVA_KV</span> بگذارید.','به Worker خود بروید: <b>Settings → Bindings → KV Namespace</b>.','یک Binding با نام متغیر <span class="mono">KV</span> به آن Namespace اضافه و ذخیره کنید.'],
   s2desc:'یک رمز برای ورود به پنل مدیریت انتخاب کنید. همین‌جا ذخیره می‌شود (نیازی به داشبورد Cloudflare نیست).',
   sd1t:'دیتابیس D1 (نسخه ۳.۱، پیشنهادی)',
   sd1desc:'نسخه ۳.۱ آمار مصرف و لاگ‌ها را در D1 ذخیره می‌کند که حدود ۱۰۰ برابرِ ظرفیتِ نوشتنِ روزانه‌ی KV را دارد، پس ورکر شما روی پلن رایگان خیلی بیشتر دوام می‌آورد. در نصب یک‌کلیکی این مورد خودکار ساخته و وصل می‌شود. برای افزودن دستی:',
-  sd1:['در داشبورد Cloudflare به <b>Storage &amp; Databases → D1</b> بروید و <b>Create database</b> را بزنید (هر نامی).','به Worker خود بروید: <b>Settings → Bindings → Add → D1 database</b>.','نام متغیر را <span class="mono">DB</span> بگذارید و همان دیتابیس را انتخاب کنید، سپس <b>Save and Deploy</b>.'],
+  sd1:['در داشبورد Cloudflare به <b>Workers &amp; Pages → Storage &amp; databases → D1 SQLite Database</b> بروید و <b>Create</b> را بزنید (هر نامی).','به Worker خود بروید: <b>Settings → Bindings → Add → D1 database</b>.','نام متغیر را <span class="mono">DB</span> بگذارید و همان دیتابیس را انتخاب کنید، سپس <b>Save and Deploy</b>.'],
   sd1note:'اختیاری: بدون D1 هم ورکر کار می‌کند، فقط از KV استفاده می‌کند و زودتر به محدودیتِ نوشتنِ رایگانِ روزانه می‌رسد.',
+  d1off:'پیشنهادی (اختیاری)',
   pwlbl:'رمز جدید',pw2lbl:'تکرار رمز',pwbtn:'ساخت رمز و فعال‌سازی',
   pwshort:'رمز باید حداقل ۶ کاراکتر باشد.',pwmismatch:'دو رمز یکسان نیستند.',pwsaved:'✅ رمز ساخته شد.',pwexists:'رمز قبلاً تنظیم شده است.',pwnokv:'ابتدا باید KV وصل باشد.',pwerr:'خطا در ذخیره رمز.',pwwait:'در حال ذخیره…',
   varst:'متغیرهای Worker (اختیاری)',vname:'متغیر',vneed:'الزامی',vdesc:'کاربرد',
@@ -127,12 +129,13 @@ var L={
  en:{dir:'ltr',intro:'Welcome to Nova Proxy setup. On a one-click deploy the KV and D1 databases are created and bound automatically — just create an admin password and open the panel.',
   s1t:'KV Database',s2t:'Admin password',test:'Re-check',chk:'Checking…',ok:'Connected',bad:'Not connected',already:'Already set',
   s1desc:'On a one-click deploy this connects automatically. If it shows "Not connected", create a KV namespace and bind it as "KV" using the steps below.',
-  s1:['In the Cloudflare dashboard go to <b>Workers &amp; Pages → KV</b>.','Click <b>Create Namespace</b> and name it e.g. <span class="mono">NOVA_KV</span>.','Open your Worker: <b>Settings → Bindings → KV Namespace</b>.','Add a binding with variable name <span class="mono">KV</span> pointing to that namespace, and save.'],
+  s1:['In the Cloudflare dashboard go to <b>Workers &amp; Pages → Storage &amp; databases → Workers KV</b>.','Click <b>Create Namespace</b> and name it e.g. <span class="mono">NOVA_KV</span>.','Open your Worker: <b>Settings → Bindings → KV Namespace</b>.','Add a binding with variable name <span class="mono">KV</span> pointing to that namespace, and save.'],
   s2desc:'Choose a password for the admin panel. It is stored right here — no Cloudflare dashboard needed.',
   sd1t:'D1 Database (v3.1, recommended)',
   sd1desc:'Version 3.1 stores usage stats and logs in D1, which gives about 100x more daily write capacity than KV, so your worker lasts far longer on the free plan. On a one-click deploy this is created and bound automatically. To add it manually:',
-  sd1:['In the Cloudflare dashboard go to <b>Storage &amp; Databases → D1</b> and click <b>Create database</b> (any name).','Open your Worker: <b>Settings → Bindings → Add → D1 database</b>.','Set the variable name to <span class="mono">DB</span>, pick that database, then <b>Save and Deploy</b>.'],
+  sd1:['In the Cloudflare dashboard go to <b>Workers &amp; Pages → Storage &amp; databases → D1 SQLite Database</b> and click <b>Create</b> (any name).','Open your Worker: <b>Settings → Bindings → Add → D1 database</b>.','Set the variable name to <span class="mono">DB</span>, pick that database, then <b>Save and Deploy</b>.'],
   sd1note:'Optional: without D1 the worker still works, it just uses KV and reaches the free daily write limit sooner.',
+  d1off:'Recommended (optional)',
   pwlbl:'New password',pw2lbl:'Repeat password',pwbtn:'Create password & activate',
   pwshort:'Password must be at least 6 characters.',pwmismatch:'Passwords do not match.',pwsaved:'✅ Password created.',pwexists:'A password is already set.',pwnokv:'KV must be connected first.',pwerr:'Could not save the password.',pwwait:'Saving…',
   varst:'Worker variables (optional)',vname:'Variable',vneed:'Required',vdesc:'What it does',
@@ -147,22 +150,23 @@ function render(){var t=L[lang];document.documentElement.dir=t.dir;document.docu
  $('intro').textContent=t.intro;$('s1-t').textContent=t.s1t;$('s2-t').textContent=t.s2t;
  $('s1-test').textContent=t.test;$('s1-desc').innerHTML=t.s1desc;$('s2-desc').textContent=t.s2desc;
  $('s1-steps').innerHTML=t.s1.map(function(x){return '<li>'+x+'</li>'}).join('');
- $('sd1-t').textContent=t.sd1t;$('sd1-desc').innerHTML=t.sd1desc;$('sd1-steps').innerHTML=t.sd1.map(function(x){return '<li>'+x+'</li>'}).join('');$('sd1-note').innerHTML=t.sd1note;
+ $('sd1-t').textContent=t.sd1t;$('sd1-desc').innerHTML=t.sd1desc;$('sd1-steps').innerHTML=t.sd1.map(function(x){return '<li>'+x+'</li>'}).join('');$('sd1-note').innerHTML=t.sd1note;$('sd1-test').textContent=t.test;
  $('pw-lbl').textContent=t.pwlbl;$('pw2-lbl').textContent=t.pw2lbl;$('pw-btn').textContent=t.pwbtn;
  $('vars-t').textContent=t.varst;$('v-name').textContent=t.vname;$('v-need').textContent=t.vneed;$('v-desc').textContent=t.vdesc;
  $('vars-body').innerHTML=t.vars.map(function(r){return '<tr><td><span class="mono">'+r[0]+'</span></td><td><span class="'+(r[1]==='req'?'req':'opt')+'">'+(r[1]==='req'?t.req:t.opt)+'</span></td><td>'+r[2]+'</td></tr>'}).join('');
  [].forEach.call(document.querySelectorAll('#lg button'),function(b){b.classList.toggle('on',b.dataset.l===lang)});
  paint();}
-var last={kv:false,admin:false,configured:false,_done:false};
+var last={kv:false,d1:false,admin:false,configured:false,_done:false};
 function paint(){var t=L[lang];
  setSt('s1-st',last.kv?'ok':(last._done?'bad':''),last.kv?t.ok:(last._done?t.bad:t.chk));
+ setSt('sd1-st',last.d1?'ok':'',last.d1?t.ok:(last._done?t.d1off:t.chk));$('sd1-steps').className=last.d1?'hidden':'';
  setSt('s2-st',last.admin?'ok':(last._done?'bad':''),last.admin?t.already:(last._done?t.bad:t.chk));
  // KV steps only matter when KV is missing.
  $('s1-steps').className=last.kv?'hidden':'';
  // Hide the password form once a password already exists.
  $('s2-form').className=last.admin?'hidden':'';
  $('finish').disabled=!last.configured;$('finish').textContent=last.configured?t.finish:t.finishw;}
-async function check(){try{var r=await fetch('/install/status?_t='+Date.now());var j=await r.json();last={kv:!!j.kv,admin:!!j.admin,configured:!!j.configured,_done:true};}catch(e){last={kv:false,admin:false,configured:false,_done:true};}paint();}
+async function check(){try{var r=await fetch('/install/status?_t='+Date.now());var j=await r.json();last={kv:!!j.kv,d1:!!j.d1,admin:!!j.admin,configured:!!j.configured,_done:true};}catch(e){last={kv:false,d1:false,admin:false,configured:false,_done:true};}paint();}
 async function setPw(){var t=L[lang],m=$('pw-msg');m.className='msg';
  var p=$('pw').value||'',p2=$('pw2').value||'';
  if(p.length<6){m.className='msg bad';m.textContent=t.pwshort;return;}
@@ -176,6 +180,7 @@ async function setPw(){var t=L[lang],m=$('pw-msg');m.className='msg';
  }catch(e){m.className='msg bad';m.textContent=t.pwerr;}
  $('pw-btn').disabled=false;}
 $('s1-test').onclick=check;
+$('sd1-test').onclick=check;
 $('pw-btn').onclick=setPw;
 $('pw2').addEventListener('keydown',function(e){if(e.key==='Enter')setPw();});
 $('finish').onclick=function(){if(!$('finish').disabled)location.href='/login';};
