@@ -485,6 +485,7 @@ html[data-theme=dark] .qr-ph{border-color:#fff}
 
     <!-- Content -->
     <main class="content">
+      <div id="update-bar" style="display:none;align-items:center;gap:12px;margin:0 0 16px;padding:11px 16px;border:1px solid var(--ac);background:color-mix(in srgb,var(--ac) 10%,transparent);border-radius:12px;font-size:13px"><span style="font-size:16px">🔔</span><span style="flex:1" id="update-txt"></span><a id="update-link" class="btn primary sm" href="#" target="_blank" rel="noopener">Get update</a><button id="update-x" aria-label="dismiss" style="background:none;border:none;color:var(--mu);cursor:pointer;font-size:18px;line-height:1">×</button></div>
 
       <div id="kill-banner" style="display:none;align-items:center;gap:8px;background:var(--dg);color:#fff;padding:11px 16px;border-radius:12px;margin-bottom:14px;font-size:13px;font-weight:600">🚨 <span data-i18n="kill_banner">Service is paused. All proxy traffic and subscription fetches are stopped. Turn the kill switch off in Settings to resume.</span></div>
 
@@ -2063,6 +2064,21 @@ const DEMO_USERS=[
 const DEMO_USAGE={ u1:31*1073741824, u2:8*1073741824, u3:10*1073741824 };
 
 /* ---- boot ---- */
+let _updVer='';
+async function checkUpdate(){ try{
+ const vr=await fetch('/version.json?_t='+Date.now()).then(function(r){return r.json()}).catch(function(){return null});
+ if(!vr||!vr.version) return;
+ let cur=0; try{ const sys=await API.get('system.json'); cur=parseFloat(String(sys.version||'').replace(/[^0-9.]/g,''))||0; }catch(e){}
+ const latest=parseFloat(String(vr.version).replace(/[^0-9.]/g,''))||0; if(latest<=cur) return;
+ let dm=''; try{ dm=localStorage.getItem('nova-upd-dismiss')||''; }catch(e){} if(dm===String(vr.version)) return;
+ _updVer=String(vr.version);
+ const bar=document.getElementById('update-bar'); if(!bar) return;
+ document.getElementById('update-txt').textContent=(lang==='fa')?('نسخهٔ جدید V'+vr.version+' در دسترس است'+(vr.notes?('. '+vr.notes):'')):('Update available: V'+vr.version+(vr.notes?('. '+vr.notes):''));
+ const lk=document.getElementById('update-link'); lk.textContent=(lang==='fa')?'دریافت بروزرسانی':'Get update'; if(vr.worker_url) lk.href=vr.worker_url;
+ const x=document.getElementById('update-x'); if(x) x.onclick=function(){ bar.style.display='none'; try{ localStorage.setItem('nova-upd-dismiss',_updVer); }catch(e){} };
+ bar.style.display='flex';
+}catch(e){} }
+setTimeout(checkUpdate, 1800);
 (async function init(){
   applyTheme(localStorage.getItem('nova-theme') || 'light');
   await loadLive();   // pull real /admin data when served by the Worker; falls back to MOCK otherwise
