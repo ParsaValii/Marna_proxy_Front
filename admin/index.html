@@ -93,6 +93,25 @@ html[dir=rtl] .nav-item.active::before{border-radius:3px 0 0 3px}
 .side-foot{margin-top:auto;padding-top:12px;border-top:1px solid var(--bd);display:flex;flex-direction:column;gap:8px}
 .side-foot .ver{display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--mu);padding:2px 10px}
 .side-foot .ver b{color:var(--tx2);font-weight:600}
+/* Sidebar collapse (desktop icon rail) */
+.nav-collapse{display:flex;align-items:center;gap:11px;width:100%;padding:9px 12px;border:1px solid var(--bd);background:var(--card2);color:var(--tx2);border-radius:10px;cursor:pointer;font:inherit;font-size:12.5px;font-weight:600;margin-bottom:4px}
+.nav-collapse:hover{color:var(--ac);border-color:var(--bd2)}
+.nav-collapse svg{width:18px;height:18px;flex:0 0 18px;transition:transform .2s}
+.logout svg{width:18px;height:18px;flex:0 0 18px}
+.app.nav-collapsed{--sidebar:76px}
+.app.nav-collapsed .sidebar{padding-inline:12px}
+.app.nav-collapsed .brand{justify-content:center}
+.app.nav-collapsed .brand>div:not(.mark){display:none}
+.app.nav-collapsed .nav-label{display:none}
+.app.nav-collapsed .nav-item{justify-content:center;padding-inline:0}
+.app.nav-collapsed .nav-item span:not(.count){display:none}
+.app.nav-collapsed .nav-item .count{display:none}
+.app.nav-collapsed .side-foot .social{display:none}
+.app.nav-collapsed .side-foot .ver{display:none}
+.app.nav-collapsed .logout{justify-content:center;font-size:0}
+.app.nav-collapsed .nav-collapse{justify-content:center}
+.app.nav-collapsed .nav-collapse span{display:none}
+.app.nav-collapsed .nav-collapse svg{transform:rotate(180deg)}
 .social{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
 .social a{display:flex;align-items:center;justify-content:center;height:36px;border:1px solid var(--bd);background:var(--card);border-radius:9px;color:var(--tx2);transition:.12s;cursor:pointer}
 .social a:hover{color:var(--ac);border-color:var(--bd2)}
@@ -146,6 +165,8 @@ html[data-theme=light] .segmented button.on{color:#fff}
 .content{flex:1;padding:24px 22px;max-width:1240px;width:100%}
 .view{display:none;animation:fade .22s ease}
 .view.active{display:block}
+/* Consistent vertical rhythm between every card/grid in a view */
+.view.active>*+*{margin-top:14px}
 @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1}}
 
 .view-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:18px;flex-wrap:wrap}
@@ -202,6 +223,7 @@ html[dir=rtl] .kpi-sub{text-align:start}
 
 /* ---- Two-column dashboard layout ---- */
 .dash-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:14px;margin-top:14px;align-items:stretch}
+#view-network .kpi-grid{margin-top:14px}
 #policy-card{display:flex;flex-direction:column}
 #policy-card #policy-rows{flex:1}
 .dash-side{display:flex;flex-direction:column;gap:14px;min-width:0}
@@ -215,6 +237,8 @@ html[dir=rtl] .kpi-sub{text-align:start}
 .policy-row .meta .ds{font-size:11.5px;color:var(--mu);margin-top:1px}
 .policy-row .st{font-size:10.5px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.4px;width:60px;text-align:end}
 .policy-row.on .st{color:var(--ok)}
+.policy-row .ds.pwarn{color:var(--dg);font-weight:600;margin-top:2px}
+.policy-row.warn{background:color-mix(in srgb,var(--dg) 4%,transparent)}
 
 /* ---- Toggle switch ---- */
 .sw{width:40px;height:23px;flex:0 0 auto;border-radius:999px;background:var(--bd2);position:relative;transition:.16s;box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--bd) 70%,transparent)}
@@ -374,6 +398,8 @@ html[data-theme=dark] .qr-ph{border-color:#fff}
   html[dir=rtl] .sidebar{transform:translateX(100%)}
   html[dir=rtl] .sidebar.open{transform:translateX(0)}
   .menu-btn{display:flex}
+  .nav-collapse{display:none}
+  .app.nav-collapsed{--sidebar:264px}
 }
 @media(max-width:680px){
   .content{padding:16px 14px}
@@ -382,6 +408,18 @@ html[data-theme=dark] .qr-ph{border-color:#fff}
   .uchip.env-chip,.uchip.loc{display:none}      /* keep the bar uncluttered on phones */
   .page-id .s{display:none}
   .top-actions{gap:6px}
+}
+/* Enterprise mobile polish (additive, mobile-only): >=44px tap targets + stop iOS zoom-on-focus */
+@media (max-width:560px){
+  .inp,input,select,textarea{font-size:16px}
+  .inp{height:44px;padding:11px 12px}
+  .btn{height:44px}
+  .iconbtn{width:44px;height:44px;flex:0 0 44px}
+  .menu-btn{width:44px;height:44px;flex:0 0 44px}
+  .uchip{height:40px}
+  .nav-item{padding-top:12px;padding-bottom:12px}
+  .appcard-acts .btn{height:42px}
+  .tbl-wrap{-webkit-overflow-scrolling:touch}
 }
 </style>
 </head>
@@ -411,14 +449,6 @@ html[data-theme=dark] .qr-ph{border-color:#fff}
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>
           <span data-i18n="nav_distribution">Subscriptions</span>
         </a>
-        <a class="nav-item" data-view="network">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-          <span data-i18n="nav_network">Network &amp; IPs</span>
-        </a>
-        <a class="nav-item" data-view="cleanips">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-          <span data-i18n="nav_cleanips">Clean IPs</span>
-        </a>
         <a class="nav-item" data-view="users">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
           <span data-i18n="nav_users">Users</span><span class="count" id="nav-users-count">3</span>
@@ -427,15 +457,29 @@ html[data-theme=dark] .qr-ph{border-color:#fff}
     </div>
 
     <div class="nav-group">
-      <div class="nav-label" data-i18n="grp_admin">Administration</div>
-      <nav class="nav" id="nav-admin">
+      <div class="nav-label" data-i18n="grp_network">Network</div>
+      <nav class="nav" id="nav-network">
+        <a class="nav-item" data-view="network">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          <span data-i18n="nav_network">Network &amp; IPs</span>
+        </a>
+        <a class="nav-item" data-view="cleanips">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          <span data-i18n="nav_cleanips">Clean IPs</span>
+        </a>
+        <a class="nav-item" data-view="wireguard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l7 4v6c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6z"/><circle cx="12" cy="11" r="2"/><path d="M12 13v3"/></svg>
+          <span data-i18n="nav_wireguard">WireGuard</span>
+        </a>
+      </nav>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label" data-i18n="grp_config">Configuration</div>
+      <nav class="nav" id="nav-config">
         <a class="nav-item" data-view="settings">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
           <span data-i18n="nav_settings">Settings</span>
-        </a>
-        <a class="nav-item" data-view="activity">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-          <span data-i18n="nav_activity">Activity</span>
         </a>
         <a class="nav-item" data-view="notifications">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
@@ -444,7 +488,21 @@ html[data-theme=dark] .qr-ph{border-color:#fff}
       </nav>
     </div>
 
+    <div class="nav-group">
+      <div class="nav-label" data-i18n="grp_system">System</div>
+      <nav class="nav" id="nav-system">
+        <a class="nav-item" data-view="activity">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          <span data-i18n="nav_activity">Activity</span>
+        </a>
+        <a class="nav-item" data-view="about">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+          <span data-i18n="nav_about">About</span>
+        </a>
+      </nav>
+    </div>
     <div class="side-foot">
+      <button class="nav-collapse" id="nav-collapse" type="button" aria-label="Collapse menu" title="Collapse menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg><span data-i18n="nav_collapse">Collapse</span></button>
       <div class="social">
         <a href="https://novaproxy.online" target="_blank" rel="noopener" title="novaproxy.online" aria-label="Website"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></a>
         <a href="https://t.me/irnova_proxy" target="_blank" rel="noopener" title="Telegram" aria-label="Telegram"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.94 4.6 18.9 19.2c-.23 1.01-.83 1.26-1.68.78l-4.64-3.42-2.24 2.16c-.25.25-.46.46-.94.46l.33-4.73 8.6-7.77c.37-.33-.08-.52-.58-.19l-10.63 6.7-4.58-1.43c-1-.31-1.01-1 .21-1.48l17.9-6.9c.83-.31 1.56.19 1.29 1.45z"/></svg></a>
@@ -453,8 +511,8 @@ html[data-theme=dark] .qr-ph{border-color:#fff}
         <a data-view="guide" title="Guide" aria-label="Guide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></a>
       </div>
       <a class="logout" href="/logout"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg><span data-i18n="logout">Logout</span></a>
-      <div class="ver"><span data-i18n="ver_panel">Panel</span><b>V3</b></div>
-      <div class="ver"><span data-i18n="ver_worker">Worker</span><b>V3 b16.5</b></div>
+      <div class="ver"><span data-i18n="ver_panel">Panel</span><b>V3.1</b></div>
+      <div class="ver"><span data-i18n="ver_worker">Worker</span><b>V3.1</b></div>
     </div>
   </aside>
 
@@ -483,6 +541,7 @@ html[data-theme=dark] .qr-ph{border-color:#fff}
 
     <!-- Content -->
     <main class="content">
+      <div id="update-bar" style="display:none;align-items:center;gap:12px;margin:0 0 16px;padding:11px 16px;border:1px solid var(--ac);background:color-mix(in srgb,var(--ac) 10%,transparent);border-radius:12px;font-size:13px"><span style="font-size:16px">🔔</span><span style="flex:1" id="update-txt"></span><a id="update-link" class="btn primary sm" href="#" target="_blank" rel="noopener">Get update</a><button id="update-x" aria-label="dismiss" style="background:none;border:none;color:var(--mu);cursor:pointer;font-size:18px;line-height:1">×</button></div>
 
       <div id="kill-banner" style="display:none;align-items:center;gap:8px;background:var(--dg);color:#fff;padding:11px 16px;border-radius:12px;margin-bottom:14px;font-size:13px;font-weight:600">🚨 <span data-i18n="kill_banner">Service is paused. All proxy traffic and subscription fetches are stopped. Turn the kill switch off in Settings to resume.</span></div>
 
@@ -495,8 +554,8 @@ html[data-theme=dark] .qr-ph{border-color:#fff}
           <div class="card" id="policy-card">
             <div class="card-h">
               <div>
-                <h3 data-i18n="policy_title">Resilience policy</h3>
-                <div class="sub" data-i18n="policy_profile">Profile: Iran / high-censorship</div>
+                <h3 data-i18n="policy_title">Resistance Policy</h3>
+                <div class="sub" data-i18n="policy_profile">Profile: Iran / High Censorship</div>
               </div>
               <div class="right">
                 <span class="chip ok" id="policy-badge"><span class="dot"></span><span id="policy-badge-txt" data-i18n="policy_active">Active</span></span>
@@ -572,6 +631,13 @@ html[data-theme=dark] .qr-ph{border-color:#fff}
 
       <!-- ============ NETWORK & IPs ============ -->
       <section class="view" id="view-network">
+        <div class="card" id="ct-card">
+          <div class="card-h"><h3 data-i18n="ct_h">🧪 Connectivity test</h3><button class="btn primary sm" id="ct-run" data-i18n="ct_run" style="margin-inline-start:auto">Run tests</button></div>
+          <div class="card-pad">
+            <p style="font-size:12.5px;color:var(--mu);margin-bottom:12px" data-i18n="ct_s">Check which key sites are reachable through your current connection.</p>
+            <div id="ct-results" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px"></div>
+          </div>
+        </div>
         <div class="kpi-grid" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr))">
           <div class="kpi"><div class="kpi-top"><div class="kpi-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6m11-7h-6M7 12H1"/></svg></div><div class="lbl" data-i18n="net_pool">Clean IP pool</div><span class="chip ok"><span class="dot"></span>Smart</span></div><div class="kpi-val">128</div><div class="kpi-sub" data-i18n="net_pool_sub">active across 3 ISPs</div></div>
           <div class="kpi"><div class="kpi-top"><div class="kpi-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12a7 7 0 0 1 14 0"/><path d="M2 12a10 10 0 0 1 20 0"/><circle cx="12" cy="12" r="2"/></svg></div><div class="lbl">WARP</div><span class="chip ok"><span class="dot"></span><span data-i18n="status_on">On</span></span></div><div class="kpi-val">Registered</div><div class="kpi-sub">mode: chain</div></div>
@@ -659,21 +725,31 @@ html[data-theme=dark] .qr-ph{border-color:#fff}
             <div class="set-grid" style="margin-top:13px"><div class="fg"><label data-i18n="dns_localip">Local DNS IP</label><input class="inp" id="d2-localip" placeholder="8.8.8.8"></div><div class="fg"><label data-i18n="dns_localport">Local DNS port</label><input class="inp" id="d2-localport" placeholder="53"></div></div>
             <div class="field-row"><div class="l" data-i18n="dns_fake">Fake DNS<small data-i18n="dns_fake_h">faster connections, lower latency</small></div><div class="sw" id="t2-fakedns"><span class="k"></span></div></div>
             <div class="set-grid" style="margin-top:13px"><div class="fg"><label data-i18n="dns_fakeip">Fake DNS range</label><input class="inp" id="d2-fakeip" placeholder="198.51.100.1"></div><div class="fg"><label data-i18n="dns_log">Log level</label><select class="inp" id="d2-loglevel"><option value="error">error</option><option value="warn">warn</option><option value="info">info</option><option value="debug">debug</option></select></div></div>
+            <div style="display:flex;justify-content:flex-end;margin-top:16px"><button class="btn primary" id="save-network2" data-i18n="btn_save">Save</button></div>
           </div>
         </div>
-
-        <div style="display:flex;justify-content:flex-end;margin-top:16px"><button class="btn primary" id="save-network2" data-i18n="btn_save">Save</button></div>
       </section>
 
       <!-- ============ CLEAN IPs ============ -->
       <section class="view" id="view-cleanips">
+        <div class="card" id="dc-card" style="border-color:var(--ac-line)">
+          <div class="card-h"><h3 data-i18n="dc_h">📍 Your datacenter</h3><button class="btn ghost sm" id="dc-refresh" data-i18n="dc_refresh" style="margin-inline-start:auto">Refresh</button></div>
+          <div class="card-pad">
+            <p style="font-size:12.5px;color:var(--mu);margin-bottom:14px" data-i18n="dc_s">Where your connection currently exits Cloudflare's network.</p>
+            <div style="display:flex;align-items:center;gap:14px">
+              <div id="dc-flag" style="font-size:40px;line-height:1">🌐</div>
+              <div style="min-width:0"><div id="dc-place" style="font-size:19px;font-weight:700">…</div>
+              <div id="dc-sub" style="font-size:12px;color:var(--mu);margin-top:3px"></div></div>
+            </div>
+          </div>
+        </div>
         <div class="card" style="border-color:var(--ac-line)">
           <div class="card-h"><h3 data-i18n="ci_speed_h">🚀 Speed test</h3></div>
           <div class="card-pad">
             <p style="font-size:12.5px;color:var(--mu);margin-bottom:12px" data-i18n="ci_speed_s">Find the fastest clean IPs for your current network and apply them automatically.</p>
             <div id="ci-isp" style="font-size:12px;color:var(--mu);margin-bottom:11px"></div>
             <div class="set-grid">
-              <div class="fg"><label data-i18n="ci_src">Source</label><select class="inp" id="ci-src"><option value="random">Random Cloudflare</option><option value="official">Cloudflare official ranges</option><option value="as13335">AS13335 (Cloudflare)</option><option value="cm">CF-CIDR (community)</option><option value="proxyip">ProxyIP pool</option><option value="dominos">Nova domains (DNS)</option></select></div>
+              <div class="fg"><label data-i18n="ci_src">Source</label><select class="inp" id="ci-src" onchange="var w=document.getElementById('ci-country-wrap');if(w)w.style.display=this.value==='country'?'':'none'"><option value="country">🌍 By location (country)</option><option value="random">Random Cloudflare</option><option value="official">Cloudflare official ranges</option><option value="as13335">AS13335 (Cloudflare)</option><option value="cm">CF-CIDR (community)</option><option value="proxyip">ProxyIP pool</option><option value="dominos">Nova domains (DNS)</option></select></div><div class="fg" id="ci-country-wrap"><label data-i18n="ci_country">Location / country</label><select class="inp" id="ci-country"><option value="DE">🇩🇪 Germany</option><option value="NL">🇳🇱 Netherlands</option><option value="US">🇺🇸 United States</option><option value="GB">🇬🇧 United Kingdom</option><option value="FR">🇫🇷 France</option><option value="FI">🇫🇮 Finland</option><option value="SE">🇸🇪 Sweden</option><option value="AT">🇦🇹 Austria</option><option value="CH">🇨🇭 Switzerland</option><option value="PL">🇵🇱 Poland</option><option value="CZ">🇨🇿 Czechia</option><option value="JP">🇯🇵 Japan</option><option value="SG">🇸🇬 Singapore</option><option value="CA">🇨🇦 Canada</option><option value="AE">🇦🇪 UAE</option><option value="TR">🇹🇷 Turkey</option><option value="CN">🇨🇳 China</option><option value="HK">🇭🇰 Hong Kong</option><option value="IN">🇮🇳 India</option><option value="AU">🇦🇺 Australia</option><option value="ES">🇪🇸 Spain</option><option value="IT">🇮🇹 Italy</option></select></div>
               <div class="fg"><label data-i18n="ci_port">Port</label><select class="inp" id="ci-port"><option>443</option><option>2053</option><option>2083</option><option>2087</option><option>2096</option><option>8443</option></select></div>
               <div class="fg"><label data-i18n="ci_keep">Keep best</label><input class="inp" id="ci-keep" type="number" min="1" max="50" value="10"></div>
               <div class="fg"><label data-i18n="ci_total">IPs to test</label><input class="inp" id="ci-total" type="number" min="10" max="400" value="120"></div>
@@ -764,11 +840,13 @@ html[data-theme=dark] .qr-ph{border-color:#fff}
           <div class="card-h"><h3 data-i18n="sub_naming">Subscription</h3></div>
           <div class="card-pad">
             <div class="set-grid"><div class="fg"><label data-i18n="sub_name">Subscription name</label><input class="inp" id="f2-subname"></div><div class="fg"><label data-i18n="sub_int">Update interval (hours)</label><input class="inp" id="f2-subint" type="number" min="1" max="168"></div></div>
-            <div class="fg"><label data-i18n="sub_api">Subscription converter API</label><input class="inp" id="f2-subapi"></div>
-            <div class="fg" style="margin-bottom:0"><label data-i18n="subcfg">Routing rule set (.ini URL)</label><input class="inp" id="f2-subcfg" placeholder="ACL4SSR .ini URL"></div>
+            <div class="fg"><label data-i18n="sub_api">Subscription converter API</label><input class="inp" id="f2-subapi" placeholder="https://sub.novaproxy.online"></div>
+            <div class="fg"><label data-i18n="subcfg_preset">Rule set preset</label><select class="inp" id="f2-subcfg-preset" onchange="var i=document.getElementById('f2-subcfg'); if(i&&this.value) i.value=this.value;"><option value="" data-i18n="subcfg_custom">— Custom (use field below) —</option><option value="https://raw.githubusercontent.com/cmliu/ACL4SSR/refs/heads/main/Clash/config/ACL4SSR_Online_Mini_MultiMode_CF.ini">ACL4SSR · Mini MultiMode</option><option value="https://raw.githubusercontent.com/cmliu/ACL4SSR/refs/heads/main/Clash/config/ACL4SSR_Online_Mini.ini">ACL4SSR · Mini</option><option value="https://raw.githubusercontent.com/cmliu/ACL4SSR/refs/heads/main/Clash/config/ACL4SSR_Online.ini">ACL4SSR · Online</option><option value="https://raw.githubusercontent.com/cmliu/ACL4SSR/refs/heads/main/Clash/config/ACL4SSR_Online_Full.ini">ACL4SSR · Full</option><option value="https://raw.githubusercontent.com/cmliu/ACL4SSR/refs/heads/main/Clash/config/ACL4SSR_Online_NoReject.ini">ACL4SSR · No-Reject</option></select></div>
+            <div class="fg"><label data-i18n="subcfg">Routing rule set (.ini URL)</label><input class="inp" id="f2-subcfg" placeholder="ACL4SSR .ini URL"></div>
+            <div class="field-row" style="margin-bottom:0"><div class="l" data-i18n="subemoji">Emoji flags<small data-i18n="subemoji_h">add country emoji flags to node names</small></div><div class="sw" id="t2-subemoji"><span class="k"></span></div></div>
+            <div style="display:flex;justify-content:flex-end;margin-top:16px"><button class="btn primary" id="save-settings2" data-i18n="btn_save">Save</button></div>
           </div>
         </div>
-        <div style="display:flex;justify-content:flex-end;margin-top:14px"><button class="btn primary" id="save-settings2" data-i18n="btn_save">Save</button></div>
         <div class="section-label" data-i18n="set_access">Access &amp; identity</div>
         <div class="set-grid">
           <div class="card">
@@ -886,6 +964,68 @@ html[data-theme=dark] .qr-ph{border-color:#fff}
           <div class="card-h"><h3 id="guide-tips-h">Tips</h3></div>
           <div class="card-pad" id="guide-tips"></div>
         </div>
+        <div class="card" id="ech-guide" style="margin-top:16px">
+          <div class="card-h"><h3 data-i18n="ech_h">🔒 About ECH</h3></div>
+          <div class="card-pad" style="display:flex;flex-direction:column;gap:9px">
+            <details style="border:1px solid var(--bd);border-radius:9px;padding:10px 13px"><summary style="cursor:pointer;font-weight:600;font-size:13px;list-style:none" data-i18n="ech_q1">What is ECH?</summary><p style="font-size:12.5px;color:var(--mu);line-height:1.7;margin-top:9px" data-i18n="ech_a1"></p></details>
+            <details style="border:1px solid var(--bd);border-radius:9px;padding:10px 13px"><summary style="cursor:pointer;font-weight:600;font-size:13px;list-style:none" data-i18n="ech_q2">Is ECH blocked in Iran?</summary><p style="font-size:12.5px;color:var(--mu);line-height:1.7;margin-top:9px" data-i18n="ech_a2"></p></details>
+            <details style="border:1px solid var(--bd);border-radius:9px;padding:10px 13px"><summary style="cursor:pointer;font-weight:600;font-size:13px;list-style:none" data-i18n="ech_q3">How should I use ECH?</summary><p style="font-size:12.5px;color:var(--mu);line-height:1.7;margin-top:9px" data-i18n="ech_a3"></p></details>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ WIREGUARD ============ -->
+      <section class="view" id="view-wireguard">
+        <div class="card" style="border-color:var(--ac-line)">
+          <div class="card-h"><h3 data-i18n="wg_h">🔐 WireGuard config</h3><button class="btn ghost sm" id="wg-warp" data-i18n="wg_loadwarp">Load from WARP</button></div>
+          <div class="card-pad">
+            <p style="font-size:12.5px;color:var(--mu);margin-bottom:12px" data-i18n="wg_s">Build a WireGuard .conf to import into the WireGuard app. Defaults target Cloudflare WARP — edit any field as needed.</p>
+            <div class="set-grid">
+              <div class="fg"><label data-i18n="wg_name">Name</label><input class="inp" id="wg-name" value="Nova-WARP"></div>
+              <div class="fg"><label data-i18n="wg_addr">Address</label><input class="inp" id="wg-addr" value="172.16.0.2/32, 2606:4700:110:8a36:df92:102a:9602:fa18/128"></div>
+              <div class="fg"><label data-i18n="wg_dns">DNS</label><input class="inp" id="wg-dns" value="1.1.1.1, 2606:4700:4700::1111"></div>
+              <div class="fg"><label data-i18n="wg_mtu">MTU</label><input class="inp" id="wg-mtu" value="1280"></div>
+            </div>
+            <div class="fg" style="margin-top:11px"><label data-i18n="wg_priv">Private key</label><input class="inp" id="wg-priv" placeholder="base64 private key"></div>
+            <div class="set-grid" style="margin-top:11px">
+              <div class="fg"><label data-i18n="wg_pub">Peer public key</label><input class="inp" id="wg-pub" value="bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo="></div>
+              <div class="fg"><label data-i18n="wg_ep">Endpoint</label><input class="inp" id="wg-ep" value="engage.cloudflareclient.com"></div>
+              <div class="fg"><label data-i18n="wg_port">Port</label><input class="inp" id="wg-port" value="2408"></div>
+              <div class="fg"><label data-i18n="wg_ka">Keepalive</label><input class="inp" id="wg-ka" value="25"></div>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
+              <button class="btn primary" id="wg-build" data-i18n="wg_build">Build config</button>
+              <button class="btn" id="wg-copy" data-i18n="wg_copy">Copy</button>
+              <button class="btn" id="wg-dl" data-i18n="wg_dl">Download .conf</button>
+              <button class="btn" id="wg-qr" data-i18n="wg_qrbtn">QR</button>
+            </div>
+            <div class="fg" style="margin-top:14px"><textarea class="inp" id="wg-out" spellcheck="false" style="min-height:200px;font-family:ui-monospace,monospace;font-size:12px" readonly></textarea></div>
+            <div id="wg-qrbox" style="display:none;text-align:center;margin-top:8px"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ ABOUT ============ -->
+      <section class="view" id="view-about">
+        <div class="card">
+          <div class="card-pad">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px">
+              <img src="/logo.svg" alt="Nova" style="width:42px;height:42px"/>
+              <div><div style="font-size:18px;font-weight:800">Nova Proxy</div>
+                <div style="font-size:12.5px;color:var(--mu)"><span data-i18n="ab_panel">Panel</span> <b id="ab-panel">V3.1</b> · <span data-i18n="ab_worker">Worker</span> <b id="ab-worker">…</b></div></div>
+            </div>
+            <p style="font-size:13px;color:var(--tx2);line-height:1.9;margin-top:8px" data-i18n="ab_desc">Nova Proxy control panel — manage subscriptions, clean IPs, routing, WARP and DNS for your Cloudflare Worker.</p>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+              <a class="btn sm" href="https://novaproxy.online" target="_blank" rel="noopener">novaproxy.online</a>
+              <a class="btn sm" href="https://t.me/irnova_proxy" target="_blank" rel="noopener">Telegram</a>
+              <a class="btn sm" href="https://github.com/Nova-Panel/nova-panel.github.io" target="_blank" rel="noopener">GitHub</a>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:14px">
+          <div class="card-h"><h3 data-i18n="ab_changelog">Changelog</h3></div>
+          <div class="card-pad" id="ab-changelog" style="font-size:13px;color:var(--tx2);line-height:1.8">…</div>
+        </div>
       </section>
 
     </main>
@@ -927,7 +1067,10 @@ html[data-theme=dark] .qr-ph{border-color:#fff}
    ========================================================================== */
 const I18N = {
   en:{
-    env_prod:'Production', grp_ops:'Operations', grp_admin:'Administration',
+    env_prod:'Production', grp_ops:'Operations', grp_network:'Network', grp_config:'Configuration', grp_system:'System', grp_admin:'Administration', grp_tools:'Tools', nav_collapse:'Collapse',
+    nav_wireguard:'WireGuard', nav_about:'About', sub_wireguard:'Build a WireGuard config for WARP or a custom peer.', sub_about:'Panel version, changelog and links.',
+    wg_h:'🔐 WireGuard config', wg_s:'Build a WireGuard .conf to import into the WireGuard app. Defaults target Cloudflare WARP — edit any field as needed.', wg_loadwarp:'Load from WARP', wg_name:'Name', wg_addr:'Address', wg_dns:'DNS', wg_mtu:'MTU', wg_priv:'Private key', wg_pub:'Peer public key', wg_ep:'Endpoint', wg_port:'Port', wg_ka:'Keepalive', wg_build:'Build config', wg_copy:'Copy', wg_dl:'Download .conf', wg_qrbtn:'QR', wg_loaded:'Loaded from WARP', wg_nowarp:'No WARP config available — register WARP in Network & IPs first.',
+    ab_panel:'Panel', ab_worker:'Worker', ab_desc:'Nova Proxy control panel — manage subscriptions, clean IPs, routing, WARP and DNS for your Cloudflare Worker.', ab_changelog:'Changelog', ab_links:'Links',
     nav_dashboard:'Dashboard', nav_distribution:'Subscriptions', nav_network:'Network & IPs',
     nav_activity:'Activity', nav_settings:'Settings', nav_notifications:'Notifications', nav_users:'Users',
     sub_dashboard:'Live status of your proxy fleet.', sub_distribution:'Subscription links and client onboarding.',
@@ -946,8 +1089,9 @@ const I18N = {
     kpi_network_sub:'AS13335 · Cloudflare', kpi_storage_sub:'KV namespace', kpi_worker_sub:'requests today', kpi_traffic_sub:'across 312 sessions',
     healthy:'Healthy', online:'Online', live:'Live',
     /* policy */
-    policy_title:'Resilience policy', policy_profile:'Profile: Iran / high-censorship', policy_active:'Active',
-    policy_apply:'Apply policy', policy_last:'Last applied', policy_summary:'{n} of {t} controls active',
+    policy_title:'Resistance Policy', policy_profile:'Profile: Iran / High Censorship', policy_active:'Active',
+    policy_apply:'Apply policy', policy_last:'Last applied', policy_summary:'{n} of {t} optimal for Iran',
+    policy_iran_warn:'Not working in Iran right now. Turning it on will break your connection (no ping).',
     p_protocols:'All protocols', p_protocols_d:'VLESS, Trojan, and Shadowsocks',
     p_ports:'Port spread', p_ports_d:'Fan each node across all TLS ports',
     p_fragment:'TLS fragment', p_fragment_d:'Split the TLS hello to evade DPI',
@@ -994,18 +1138,21 @@ const I18N = {
     warp_h:'WARP (Cloudflare WireGuard)', warp_en:'Enable WARP', warp_en_h:'add a WireGuard outbound to every config', warp_mode:'Mode', warp_ep:'Endpoint (if the default is blocked)', warp_ep_h:'If the default WARP endpoint is filtered, pick an alternative from the list (the same key works on every endpoint), then Save.', warp_amnezia:'AmneziaWG obfuscation', warp_amnezia_h:"junk packets so DPI can't fingerprint WARP", warp_acc:'WARP account', warp_register:'Register', warp_central:'From central pool', warp_lic:'WARP+ license (optional)', warp_apply:'Apply', warp_dl_lbl:'Download WARP configs (50 endpoints)', wn_mode:'Noise mode', wn_count:'Noise count', wn_size:'Noise size', wn_delay:'Noise delay',
     mirror_h:'GitHub mirror (blocked-domain failover)', mirror_intro:'Publishes your sub to a GitHub repo so users keep a permanent raw.githubusercontent.com link even if your domain gets filtered.', mirror_en:'Enable mirror', mirror_en_h:'also auto-publishes hourly', mirror_repo:'Repo (owner/name)', mirror_branch:'Branch', mirror_path:'Path (optional)', mirror_token:'GitHub token', mirror_publish:'Publish now',
     nav_cleanips:'Clean IPs', sub_cleanips:'Pick clean Cloudflare IPs, or speed-test for the fastest.',
-    ci_speed_h:'🚀 Speed test', ci_speed_s:'Find the fastest clean IPs for your current network and apply them automatically.', ci_src:'Source', ci_port:'Port', ci_keep:'Keep best', ci_total:'IPs to test', ci_speed_btn:'Speed test & apply best', ci_lat:'Latency', ci_jit:'Jitter', ci_loss:'Loss',
+    ci_speed_h:'🚀 Speed test', ci_speed_s:'Find the fastest clean IPs for your current network and apply them automatically.', ci_src:'Source', ci_country:'Country', dc_h:'📍 Your datacenter', dc_s:"Where your connection currently exits Cloudflare's network.", dc_refresh:'Refresh', dc_unknown:'Unknown location', ct_h:'🧪 Connectivity test', ct_s:'Check which key sites are reachable through your current connection.', ct_run:'Run tests', ct_blocked:'blocked', ech_h:'🔒 About ECH', ech_q1:'What is ECH?', ech_a1:'ECH (Encrypted Client Hello) hides the website name (SNI) inside the TLS handshake, so a censor watching your traffic cannot see which site you are connecting to. It is a privacy upgrade over plain TLS.', ech_q2:'Is ECH blocked in Iran?', ech_a2:'Right now, yes. Iran filtering throttles or blocks ECH handshakes, so turning it on usually breaks the connection (no ping). Keep it OFF unless you have tested that your network passes it.', ech_q3:'How should I use ECH?', ech_a3:'Leave ECH off by default (it is off in the Resistance Policy). If filtering eases or you are on a network that allows it, you can enable it for extra privacy. Test your connection right after turning it on, and turn it back off if your ping disappears.', ci_port:'Port', ci_keep:'Keep best', ci_total:'IPs to test', ci_speed_btn:'Speed test & apply best', ci_lat:'Latency', ci_jit:'Jitter', ci_loss:'Loss',
     ci_mode_h:'IP selection mode', ci_m_smart:'Smart (per-ISP)', ci_m_custom:'Custom list', ci_m_random:'Random', ci_poolapi:'Smart IP API (per-ISP database)', ci_poolapi_h:'Serves each user IPs tuned to their ISP.', ci_custom_ips:'Custom clean IPs (ip:port#name)', ci_rcount:'Random count', ci_rport:'Port (-1 = mixed)',
     dns_h:'Secure DNS', dns_doh:'DNS-over-HTTPS', dns_doh_h:'encrypt DNS lookups', dns_dohprov:'DoH provider', dns_antisanc:'Anti-sanction DNS', dns_antisanc_h:'reach Google, GitHub, npm and other geo-blocked services', dns_antiprov:'Anti-sanction provider', dns_custom:'Custom DNS (if Custom)', dns_local:'Local DNS', dns_local_h:'resolve some names on the device', dns_localip:'Local DNS IP', dns_localport:'Local DNS port', dns_fake:'Fake DNS', dns_fake_h:'faster connections, lower latency', dns_fakeip:'Fake DNS range', dns_log:'Log level',
     lbl_path:'Transport path', lbl_grpcmode:'gRPC mode', lbl_frag:'TLS fragment (DPI evasion)', frag_off:'Off', frag_custom:'Custom', frag_len:'Fragment length', frag_int:'Fragment interval', frag_pkt:'Fragment packets', lbl_proxyip:'PROXYIP (reverse proxy, optional)', lbl_chain:'Chain proxy / fix IP (optional)', chain_test:'Test', lbl_uuid:'UUID (used in your configs)',
     set_adv:'Domains, ECH & subscription', hosts_h:'Domains (HOST)', hosts_help:'One domain per line. The first is the main host. Connect each to your Worker first.', hosts_check:'Check health', adv_h2:'ECH & Central', ech_sni:'ECH SNI', ech_dns:'ECH DoH', central_api:'Central API (optional)',
-    sub_naming:'Subscription', sub_name:'Subscription name', sub_int:'Update interval (hours)', sub_api:'Subscription converter API', subcfg:'Routing rule set (.ini URL)',
+    sub_naming:'Subscription', sub_name:'Subscription name', sub_int:'Update interval (hours)', sub_api:'Subscription converter API', subcfg:'Routing rule set (.ini URL)', subcfg_preset:'Rule set preset', subcfg_custom:'— Custom (use field below) —', subemoji:'Emoji flags', subemoji_h:'add country emoji flags to node names',
     rules_h:'Custom routing rules', rules_help:'One rule per line: TYPE,value,OUTBOUND (DIRECT / REJECT / PROXY). Needs routing enabled.', rules_add:'+ Add',
     preset_h:'Preset rules', bp_cn:'Bypass China', bp_cn_h:'route China sites/IPs direct', bp_ru:'Bypass Russia', bp_ru_h:'route Russia sites/IPs direct', bk_malware:'Block malware', bk_phishing:'Block phishing', bk_crypto:'Block cryptominers', bk_geo_h:'needs client geodata',
     copied:'Copied to clipboard'
   },
   fa:{
-    env_prod:'محیط عملیاتی', grp_ops:'عملیات', grp_admin:'مدیریت',
+    env_prod:'محیط عملیاتی', grp_ops:'عملیات', grp_network:'شبکه', grp_config:'پیکربندی', grp_system:'سیستم', grp_admin:'مدیریت', grp_tools:'ابزارها', nav_collapse:'جمع کردن',
+    nav_wireguard:'وایرگارد', nav_about:'درباره', sub_wireguard:'ساخت کانفیگ وایرگارد برای WARP یا پیر دلخواه.', sub_about:'نسخهٔ پنل، تغییرات و پیوندها.',
+    wg_h:'🔐 کانفیگ وایرگارد', wg_s:'یک فایل .conf وایرگارد بسازید تا در برنامهٔ WireGuard وارد کنید. مقادیر پیش‌فرض برای WARP کلودفلر تنظیم شده‌اند — در صورت نیاز ویرایش کنید.', wg_loadwarp:'دریافت از WARP', wg_name:'نام', wg_addr:'آدرس', wg_dns:'DNS', wg_mtu:'MTU', wg_priv:'کلید خصوصی', wg_pub:'کلید عمومی پیر', wg_ep:'اندپوینت', wg_port:'پورت', wg_ka:'Keepalive', wg_build:'ساخت کانفیگ', wg_copy:'کپی', wg_dl:'دانلود .conf', wg_qrbtn:'QR', wg_loaded:'از WARP بارگذاری شد', wg_nowarp:'کانفیگ WARP موجود نیست — ابتدا در شبکه و آی‌پی WARP را ثبت کنید.',
+    ab_panel:'پنل', ab_worker:'ورکر', ab_desc:'پنل مدیریت Nova Proxy — مدیریت اشتراک‌ها، آی‌پی‌های تمیز، مسیریابی، WARP و DNS برای ورکر کلودفلر شما.', ab_changelog:'تغییرات', ab_links:'پیوندها',
     nav_dashboard:'داشبورد', nav_distribution:'اشتراک‌ها', nav_network:'شبکه و آی‌پی‌ها',
     nav_activity:'فعالیت', nav_settings:'تنظیمات', nav_notifications:'اعلان‌ها', nav_users:'کاربران',
     sub_dashboard:'وضعیت زندهٔ ناوگان پروکسی شما.', sub_distribution:'لینک‌های اشتراک و راه‌اندازی کلاینت.',
@@ -1023,7 +1170,8 @@ const I18N = {
     kpi_network_sub:'AS13335 · کلودفلر', kpi_storage_sub:'فضای KV', kpi_worker_sub:'درخواست امروز', kpi_traffic_sub:'در ۳۱۲ نشست',
     healthy:'سالم', online:'آنلاین', live:'زنده',
     policy_title:'سیاست مقاومت', policy_profile:'پروفایل: ایران / سانسور بالا', policy_active:'فعال',
-    policy_apply:'اعمال سیاست', policy_last:'آخرین اعمال', policy_summary:'{n} از {t} کنترل فعال',
+    policy_apply:'اعمال سیاست', policy_last:'آخرین اعمال', policy_summary:'{n} از {t} برای ایران بهینه',
+    policy_iran_warn:'الان در ایران کار نمی‌کند. اگر روشنش کنید، اتصال و پینگ شما قطع می‌شود.',
     p_protocols:'همهٔ پروتکل‌ها', p_protocols_d:'VLESS، Trojan و Shadowsocks',
     p_ports:'پخش پورت', p_ports_d:'پخش هر نود روی همهٔ پورت‌های TLS',
     p_fragment:'تکه‌تکه‌سازی TLS', p_fragment_d:'شکستن TLS hello برای عبور از DPI',
@@ -1064,12 +1212,12 @@ const I18N = {
     warp_h:'WARP (وایرگارد کلودفلر)', warp_en:'فعال‌سازی WARP', warp_en_h:'افزودن یک خروجی WireGuard به هر کانفیگ', warp_mode:'حالت', warp_ep:'اندپوینت (اگر پیش‌فرض مسدود بود)', warp_ep_h:'اگر اندپوینت پیش‌فرض WARP فیلتر شد، یکی از موارد فهرست را انتخاب کنید (همان کلید روی همهٔ اندپوینت‌ها کار می‌کند) و ذخیره کنید.', warp_amnezia:'مبهم‌سازی AmneziaWG', warp_amnezia_h:'بسته‌های اضافی تا DPI نتواند WARP را شناسایی کند', warp_acc:'حساب WARP', warp_register:'ثبت', warp_central:'از استخر مرکزی', warp_lic:'لایسنس WARP+ (اختیاری)', warp_apply:'اعمال', warp_dl_lbl:'دانلود کانفیگ‌های WARP (۵۰ اندپوینت)', wn_mode:'حالت نویز', wn_count:'تعداد نویز', wn_size:'اندازه نویز', wn_delay:'تأخیر نویز',
     mirror_h:'آینه گیت‌هاب (پشتیبان دامنه مسدودشده)', mirror_intro:'ساب شما را در یک ریپو گیت‌هاب منتشر می‌کند تا کاربران یک لینک دائمی raw.githubusercontent.com داشته باشند حتی اگر دامنه‌تان فیلتر شود.', mirror_en:'فعال‌سازی آینه', mirror_en_h:'هر ساعت هم خودکار منتشر می‌شود', mirror_repo:'ریپو (owner/name)', mirror_branch:'شاخه', mirror_path:'مسیر (اختیاری)', mirror_token:'توکن گیت‌هاب', mirror_publish:'انتشار فوری',
     nav_cleanips:'آی‌پی‌های تمیز', sub_cleanips:'آی‌پی‌های تمیز کلودفلر را انتخاب کنید یا سریع‌ترین را تست کنید.',
-    ci_speed_h:'🚀 تست سرعت', ci_speed_s:'سریع‌ترین آی‌پی‌های تمیز را برای شبکهٔ فعلی‌تان پیدا و خودکار اعمال کنید.', ci_src:'منبع', ci_port:'پورت', ci_keep:'نگه‌داشتن بهترین', ci_total:'تعداد تست', ci_speed_btn:'تست سرعت و اعمال بهترین', ci_lat:'تأخیر', ci_jit:'جیتر', ci_loss:'افت',
+    ci_speed_h:'🚀 تست سرعت', ci_speed_s:'سریع‌ترین آی‌پی‌های تمیز را برای شبکهٔ فعلی‌تان پیدا و خودکار اعمال کنید.', ci_src:'منبع', ci_country:'کشور', dc_h:'📍 دیتاسنتر شما', dc_s:'محل خروج فعلی اتصال شما از شبکه کلودفلر.', dc_refresh:'بروزرسانی', dc_unknown:'موقعیت نامشخص', ct_h:'🧪 تست اتصال', ct_s:'بررسی کنید کدام سایت‌های مهم از طریق اتصال فعلی شما در دسترس هستند.', ct_run:'اجرای تست', ct_blocked:'مسدود', ech_h:'🔒 درباره ECH', ech_q1:'ECH چیست؟', ech_a1:'ECH یا Encrypted Client Hello نام سایت (SNI) را داخل دست‌دادن TLS پنهان می‌کند تا سانسورچی نتواند ببیند به کدام سایت وصل می‌شوید. این یک ارتقای حریم خصوصی نسبت به TLS معمولی است.', ech_q2:'آیا ECH در ایران مسدود است؟', ech_a2:'در حال حاضر بله. فیلترینگ ایران دست‌دادن ECH را کند یا مسدود می‌کند، بنابراین روشن کردن آن معمولاً اتصال را قطع می‌کند (بدون پینگ). تا وقتی مطمئن نشده‌اید شبکه شما آن را عبور می‌دهد، خاموش نگه دارید.', ech_q3:'چطور از ECH استفاده کنم؟', ech_a3:'به‌طور پیش‌فرض ECH را خاموش بگذارید (در سیاست مقاومت خاموش است). اگر فیلترینگ کمتر شد یا روی شبکه‌ای هستید که آن را اجازه می‌دهد، می‌توانید برای حریم خصوصی بیشتر روشنش کنید. درست بعد از روشن کردن، اتصال را تست کنید و اگر پینگ‌تان از بین رفت دوباره خاموشش کنید.', ci_port:'پورت', ci_keep:'نگه‌داشتن بهترین', ci_total:'تعداد تست', ci_speed_btn:'تست سرعت و اعمال بهترین', ci_lat:'تأخیر', ci_jit:'جیتر', ci_loss:'افت',
     ci_mode_h:'حالت انتخاب آی‌پی', ci_m_smart:'هوشمند (هر اپراتور)', ci_m_custom:'لیست سفارشی', ci_m_random:'تصادفی', ci_poolapi:'API آی‌پی هوشمند (دیتابیس هر اپراتور)', ci_poolapi_h:'به هر کاربر آی‌پی متناسب با اپراتورش می‌دهد.', ci_custom_ips:'آی‌پی‌های تمیز سفارشی (ip:port#name)', ci_rcount:'تعداد تصادفی', ci_rport:'پورت (۱- = ترکیبی)',
     dns_h:'DNS امن', dns_doh:'DNS-over-HTTPS', dns_doh_h:'رمزگذاری جست‌وجوهای DNS', dns_dohprov:'ارائه‌دهندهٔ DoH', dns_antisanc:'DNS ضدتحریم', dns_antisanc_h:'دسترسی به گوگل، گیت‌هاب، npm و سرویس‌های جغرافیایی مسدود', dns_antiprov:'ارائه‌دهندهٔ ضدتحریم', dns_custom:'DNS سفارشی (اگر سفارشی)', dns_local:'DNS محلی', dns_local_h:'حل برخی نام‌ها روی دستگاه', dns_localip:'آی‌پی DNS محلی', dns_localport:'پورت DNS محلی', dns_fake:'Fake DNS', dns_fake_h:'اتصال سریع‌تر، تأخیر کمتر', dns_fakeip:'بازهٔ Fake DNS', dns_log:'سطح لاگ',
     lbl_path:'مسیر حمل‌ونقل', lbl_grpcmode:'حالت gRPC', lbl_frag:'تکه‌تکه‌سازی TLS (عبور از DPI)', frag_off:'خاموش', frag_custom:'سفارشی', frag_len:'طول فرگمنت', frag_int:'فاصله فرگمنت', frag_pkt:'بسته‌های فرگمنت', lbl_proxyip:'PROXYIP (پروکسی معکوس، اختیاری)', lbl_chain:'پراکسی زنجیره‌ای / آی‌پی ثابت (اختیاری)', chain_test:'تست', lbl_uuid:'UUID (در کانفیگ‌های شما)',
     set_adv:'دامنه‌ها، ECH و اشتراک', hosts_h:'دامنه‌ها (HOST)', hosts_help:'هر دامنه در یک خط. خط اول دامنهٔ اصلی است. ابتدا هرکدام را به Worker وصل کنید.', hosts_check:'بررسی سلامت', adv_h2:'ECH و مرکزی', ech_sni:'ECH SNI', ech_dns:'ECH DoH', central_api:'API مرکزی (اختیاری)',
-    sub_naming:'اشتراک', sub_name:'نام اشتراک', sub_int:'فاصله به‌روزرسانی (ساعت)', sub_api:'API تبدیل اشتراک', subcfg:'مجموعه قوانین مسیریابی (آدرس .ini)',
+    sub_naming:'اشتراک', sub_name:'نام اشتراک', sub_int:'فاصله به‌روزرسانی (ساعت)', sub_api:'API تبدیل اشتراک', subcfg:'مجموعه قوانین مسیریابی (آدرس .ini)', subcfg_preset:'قالب آماده', subcfg_custom:'— سفارشی (از فیلد زیر) —', subemoji:'پرچم اموجی', subemoji_h:'افزودن پرچم اموجی کشور به نام نودها',
     rules_h:'قوانین مسیریابی سفارشی', rules_help:'هر قانون در یک خط: TYPE,value,OUTBOUND (DIRECT / REJECT / PROXY). نیازمند روشن‌بودن مسیریابی.', rules_add:'+ افزودن',
     preset_h:'قوانین آماده', bp_cn:'عبور چین', bp_cn_h:'سایت‌ها/آی‌پی‌های چین مستقیم', bp_ru:'عبور روسیه', bp_ru_h:'سایت‌ها/آی‌پی‌های روسیه مستقیم', bk_malware:'مسدودسازی بدافزار', bk_phishing:'مسدودسازی فیشینگ', bk_crypto:'مسدودسازی ماینر', bk_geo_h:'نیازمند geodata در کلاینت',
     copied:'در کلیپ‌بورد کپی شد'
@@ -1091,8 +1239,8 @@ const MOCK = {
     { id:'traffic', icon:'pulse',   label:'kpi_traffic', traffic:{down:'4.2 GB',up:'0.9 GB'}, sub:'kpi_traffic_sub', chip:'live', chipKind:'info' },
   ],
   policy: [
-    { key:'p_ports', on:true },{ key:'p_fragment', on:true },
-    { key:'p_ech', on:true },{ key:'p_ipv6', on:true },{ key:'p_quic', on:true },
+    { key:'p_ports', on:true },{ key:'p_fragment', on:false },
+    { key:'p_ech', on:false },{ key:'p_ipv6', on:true },{ key:'p_quic', on:false },
     { key:'p_domestic', on:true },{ key:'p_adblock', on:true },{ key:'p_routing', on:false },
   ],
   clients: [
@@ -1168,15 +1316,19 @@ function renderKPIs(){
       ${val}<div class="kpi-sub">${t(k.sub)}</div>${meter}</div>`;
   }).join('');
 }
+const POLICY_WARN = ['p_fragment','p_ech','p_quic'];
 function policyToggleRow(p){
-  return `<div class="policy-row ${p.on?'on':''}" data-policy="${p.key}">
-    <div class="meta"><div class="nm">${t(p.key)}</div><div class="ds">${t(p.key+'_d')}</div></div>
-    <span class="st">${p.on?t('status_on'):t('status_off')}</span>
+  const warn = POLICY_WARN.includes(p.key);
+  const st = (warn && p.on) ? `<span class="st" style="color:var(--dg)">${t('status_on')}</span>` : `<span class="st">${p.on?t('status_on'):t('status_off')}</span>`;
+  const wln = warn ? `<div class="ds pwarn">⚠ ${t('policy_iran_warn')}</div>` : '';
+  return `<div class="policy-row ${p.on?'on':''} ${warn?'warn':''}" data-policy="${p.key}">
+    <div class="meta"><div class="nm">${t(p.key)}</div><div class="ds">${t(p.key+'_d')}</div>${wln}</div>
+    ${st}
     <div class="sw ${p.on?'on':''}"><span class="k"></span></div></div>`;
 }
 function renderPolicy(){
   $('#policy-rows').innerHTML = MOCK.policy.map(policyToggleRow).join('');
-  const on = MOCK.policy.filter(p=>p.on).length, total = MOCK.policy.length;
+  const on = MOCK.policy.filter(p=>POLICY_WARN.includes(p.key)?!p.on:p.on).length, total = MOCK.policy.length;
   $('#policy-summary').textContent = t('policy_summary').replace('{n}',on).replace('{t}',total);
   const allOn = on===total;
   const badge = $('#policy-badge'); badge.className = 'chip '+(allOn?'ok':'warn');
@@ -1618,13 +1770,15 @@ function applyLang(l){
    Navigation (section switching + mobile drawer)
    ========================================================================== */
 const SUBS = { dashboard:'sub_dashboard', distribution:'sub_distribution', network:'sub_network', cleanips:'sub_cleanips',
-  activity:'sub_activity', settings:'sub_settings', notifications:'sub_notifications', users:'sub_users', guide:'sub_guide' };
+  activity:'sub_activity', settings:'sub_settings', notifications:'sub_notifications', users:'sub_users', guide:'sub_guide',
+  wireguard:'sub_wireguard', about:'sub_about' };
 let currentView = 'dashboard';
 function syncPageHeader(){
   $('#page-title').textContent = t('nav_'+(currentView==='distribution'?'distribution':currentView==='network'?'network':currentView));
   // map view id back to its nav key for the title
   const navKey = { dashboard:'nav_dashboard', distribution:'nav_distribution', network:'nav_network', cleanips:'nav_cleanips',
-    activity:'nav_activity', settings:'nav_settings', notifications:'nav_notifications', users:'nav_users', guide:'nav_guide' }[currentView];
+    activity:'nav_activity', settings:'nav_settings', notifications:'nav_notifications', users:'nav_users', guide:'nav_guide',
+    wireguard:'nav_wireguard', about:'nav_about' }[currentView];
   $('#page-title').textContent = t(navKey);
   $('#page-sub').textContent = t(SUBS[currentView]);
 }
@@ -1634,7 +1788,53 @@ function showView(v){
   $$('.nav-item').forEach(n=>n.classList.toggle('active', n.dataset.view===v));
   syncPageHeader();
   closeDrawer();
+  if(v==='wireguard') wgInit();
+  if(v==='about') aboutInit();
   window.scrollTo({top:0,behavior:'instant'});
+}
+
+/* ============================================================================
+   WireGuard config builder (client-side; no key generation, assembles .conf)
+   ========================================================================== */
+function wgVal(id){ var el=document.getElementById(id); return el? (el.value||'').trim() : ''; }
+function wgBuild(){
+  var cfg='[Interface]\n'
+    +'PrivateKey = '+(wgVal('wg-priv')||'<your-private-key>')+'\n'
+    +'Address = '+wgVal('wg-addr')+'\n'
+    +(wgVal('wg-dns')?('DNS = '+wgVal('wg-dns')+'\n'):'')
+    +(wgVal('wg-mtu')?('MTU = '+wgVal('wg-mtu')+'\n'):'')
+    +'\n[Peer]\n'
+    +'PublicKey = '+wgVal('wg-pub')+'\n'
+    +'AllowedIPs = 0.0.0.0/0, ::/0\n'
+    +'Endpoint = '+wgVal('wg-ep')+':'+wgVal('wg-port')+'\n'
+    +(wgVal('wg-ka')?('PersistentKeepalive = '+wgVal('wg-ka')+'\n'):'');
+  var out=document.getElementById('wg-out'); if(out) out.value=cfg;
+  return cfg;
+}
+function wgParseInto(conf){
+  var map={PrivateKey:'wg-priv',Address:'wg-addr',DNS:'wg-dns',MTU:'wg-mtu',PublicKey:'wg-pub'};
+  String(conf).split('\n').forEach(function(line){
+    var i=line.indexOf('='); if(i<0) return;
+    var k=line.slice(0,i).trim(), val=line.slice(i+1).trim();
+    if(map[k]&&document.getElementById(map[k])) document.getElementById(map[k]).value=val;
+    if(k==='Endpoint'){ var ep=val.split(':'); if(document.getElementById('wg-ep')) document.getElementById('wg-ep').value=ep[0]; if(ep[1]&&document.getElementById('wg-port')) document.getElementById('wg-port').value=ep[1]; }
+    if(k==='PersistentKeepalive'&&document.getElementById('wg-ka')) document.getElementById('wg-ka').value=val;
+  });
+  wgBuild();
+}
+function wgInit(){
+  var b=document.getElementById('wg-build'); if(!b||b._wired) return; b._wired=1;
+  b.onclick=function(){ wgBuild(); };
+  var copy=document.getElementById('wg-copy'); if(copy) copy.onclick=function(){ var v=document.getElementById('wg-out').value||wgBuild(); navigator.clipboard.writeText(v).then(function(){toast(t('copied'));}).catch(function(){}); };
+  var dl=document.getElementById('wg-dl'); if(dl) dl.onclick=function(){ var v=document.getElementById('wg-out').value||wgBuild(); var name=(wgVal('wg-name')||'nova-wg').replace(/[^a-zA-Z0-9_-]/g,'_'); var bl=new Blob([v],{type:'text/plain'}); var u=URL.createObjectURL(bl); var a=document.createElement('a'); a.href=u; a.download=name+'.conf'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(u); };
+  var qr=document.getElementById('wg-qr'); if(qr) qr.onclick=function(){ var v=document.getElementById('wg-out').value||wgBuild(); var box=document.getElementById('wg-qrbox'); if(!box) return; box.style.display='block'; box.innerHTML=''; try{ new QRCode(box,{text:v,width:220,height:220,correctLevel:QRCode.CorrectLevel.L}); }catch(e){ box.textContent='QR error'; } };
+  var w=document.getElementById('wg-warp'); if(w) w.onclick=async function(){ try{ var r=await fetch('/admin/warp.json?_t='+Date.now()); var j=await r.json(); var conf=j&&(j.conf||j.config||(j.w&&j.w.conf)); if(conf){ wgParseInto(conf); toast(t('wg_loaded')); } else { toast(t('wg_nowarp')); } }catch(e){ toast(t('wg_nowarp')); } };
+}
+
+/* ---- About: fill worker version + changelog from version.json / system.json ---- */
+async function aboutInit(){
+  try{ var j=await fetch('/version.json?_t='+Date.now()).then(function(x){return x.json();}); if(j){ var cl=document.getElementById('ab-changelog'); if(cl) cl.innerHTML='<b>v'+(j.version||'')+'</b> · '+(j.released||'')+'<br>'+String(j.notes||'').replace(/[<>&]/g,function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[c];}); var w=document.getElementById('ab-worker'); if(w) w.textContent='V'+(j.version||'?'); } }catch(e){}
+  try{ var s=await fetch('/admin/system.json?_t='+Date.now()).then(function(x){return x.json();}); if(s&&s.version){ var w2=document.getElementById('ab-worker'); if(w2) w2.textContent=(String(s.version).charAt(0)==='V'?'':'V')+s.version; } }catch(e){}
 }
 function openDrawer(){ $('#sidebar').classList.add('open'); $('#scrim').classList.add('show'); }
 function closeDrawer(){ $('#sidebar').classList.remove('open'); $('#scrim').classList.remove('show'); }
@@ -1716,7 +1916,7 @@ function mapKPIs(sys){
   const pct = (u.success && u.max) ? Math.min(100, Math.round(u.total/u.max*100)) : 0;
   MOCK.kpis = [
     { id:'network', icon:'globe', label:'kpi_network', value:(flagOf(sys.country)? flagOf(sys.country)+' ':'')+loc, sub:(sys.asOrganization||'Cloudflare')+(sys.colo? ' · '+sys.colo : ''), chip:sys.kvConnected?'healthy':'offline', chipKind:sys.kvConnected?'ok':'err' },
-    { id:'storage', icon:'db', label:'kpi_storage', value:sys.kvConnected?'Connected':'Offline', sub:'KV namespace', chip:sys.kvConnected?'online':'down', chipKind:sys.kvConnected?'ok':'err' },
+    { id:'storage', icon:'db', label:'kpi_storage', value:(sys.d1SizeBytes!=null? fmtBytes(sys.d1SizeBytes) : (sys.kvConnected?'Connected':'Offline')), sub:(sys.d1SizeBytes!=null? 'D1 database' : (sys.kvConnected?'KV namespace':'No store')), chip:sys.kvConnected?'online':'down', chipKind:sys.kvConnected?'ok':'err' },
     { id:'worker', icon:'cpu', label:'kpi_worker', value:(u.success && u.total!=null)? (nf(u.total)+' / '+nf(u.max||100000)) : '—', sub:'kpi_worker_sub', meter:pct, chip:(u.success&&u.max)? pct+'%' : '—', chipKind:'info' },
     { id:'traffic', icon:'pulse', label:'kpi_traffic', traffic:{ down:fmtBytes(tu.down), up:fmtBytes(tu.up) }, sub:'kpi_traffic_sub', chip:'live', chipKind:'info' },
   ];
@@ -1782,7 +1982,7 @@ function syncFormValues(){
   const ec=c.ECHConfig||{}; set('f2-ech-sni', ec.SNI||''); set('f2-ech-dns', ec.DNS||''); set('f2-central', c.centralApi||'');
   set('f2-hosts', (Array.isArray(c.HOSTS)?c.HOSTS:[]).join('\n')); set('f2-uuid', c.UUID||'');
   const og=c.optimizedSubGeneration||{}; set('f2-subname', og.SUBNAME||''); set('f2-subint', og.SUBUpdateTime||3);
-  const scc=c.subConverterConfig||{}; set('f2-subapi', scc.SUBAPI||''); set('f2-subcfg', scc.SUBCONFIG||'');
+  const scc=c.subConverterConfig||{}; set('f2-subapi', (!scc.SUBAPI||/cmliussss/i.test(scc.SUBAPI))?'https://sub.novaproxy.online':scc.SUBAPI); set('f2-subcfg', scc.SUBCONFIG||''); on('t2-subemoji', !!scc.SUBEMOJI);
   // Custom + preset routing rules (network)
   set('n2-customrules', n.customRules||'');
   const bc=n.bypassCountries||[]; on('t2-bp-cn', bc.includes('cn')); on('t2-bp-ru', bc.includes('ru'));
@@ -1827,7 +2027,7 @@ async function saveSettings(){
   c.centralApi=(g('f2-central')||'').trim();
   const hosts=(g('f2-hosts')||'').split('\n').map(s=>s.trim().toLowerCase().replace(/^https?:\/\//,'').split('/')[0].split(':')[0]).filter(Boolean); if(hosts.length) c.HOSTS=hosts;
   c.optimizedSubGeneration=c.optimizedSubGeneration||{}; c.optimizedSubGeneration.SUBNAME=g('f2-subname')||''; c.optimizedSubGeneration.SUBUpdateTime=Number(g('f2-subint'))||3;
-  c.subConverterConfig=c.subConverterConfig||{}; c.subConverterConfig.SUBAPI=(g('f2-subapi')||'').trim(); c.subConverterConfig.SUBCONFIG=(g('f2-subcfg')||'').trim();
+  c.subConverterConfig=c.subConverterConfig||{}; c.subConverterConfig.SUBAPI=(g('f2-subapi')||'').trim(); c.subConverterConfig.SUBCONFIG=(g('f2-subcfg')||'').trim(); c.subConverterConfig.SUBEMOJI=isOn('t2-subemoji');
   toast(savedMsg(await API.post('config.json', c)));
 }
 async function saveNetwork(){
@@ -1926,26 +2126,74 @@ async function saveCleanIps(silent){
   else { c.POOL_API=''; p.randomIP=true; p.randomCount=Number(v('ci-rcount'))||16; p.specifiedPorts=Number(v('ci-rport')); }
   const ok=await API.post('config.json', c); if(!silent) toast(savedMsg(ok)); return ok;
 }
+const COLO_DB={"TIA":[41.41,19.72,"AL","تیرانا","اروپا"],"ALG":[36.69,3.22,"DZ","الجزیره","آفریقا"],"AAE":[36.86,7.79,"DZ","عنابه","آفریقا"],"CZL":[36.34,6.6,"DZ","Constantine","آفریقا"],"ORN":[35.69,-0.64,"DZ","اوران","آفریقا"],"LAD":[-8.86,13.23,"AO","لواندا","آفریقا"],"EZE":[-34.82,-58.54,"AR","بوئنوس آیرس","آمریکای جنوبی"],"COR":[-31.31,-64.21,"AR","کوردوبا","آمریکای جنوبی"],"NQN":[-38.95,-68.16,"AR","نئوکوئن","آمریکای جنوبی"],"EVN":[40.15,44.4,"AM","ایروان","خاورمیانه"],"ADL":[-34.94,138.53,"AU","آدلاید","اقیانوسیه"],"BNE":[-27.38,153.12,"AU","بریزبن","اقیانوسیه"],"CBR":[-35.31,149.2,"AU","کانبرا","اقیانوسیه"],"HBA":[-42.88,147.33,"AU","هوبارت","اقیانوسیه"],"MEL":[-37.67,144.84,"AU","ملبورن","اقیانوسیه"],"PER":[-31.94,115.97,"AU","پرت","اقیانوسیه"],"SYD":[-33.95,151.18,"AU","سیدنی","اقیانوسیه"],"VIE":[48.11,16.57,"AT","وین","اروپا"],"LLK":[38.75,48.82,"AZ","آستارا","خاورمیانه"],"GYD":[40.47,50.05,"AZ","باکو","خاورمیانه"],"BAH":[26.27,50.63,"BH","منامه","خاورمیانه"],"CGP":[22.25,91.81,"BD","چتاگونگ","آسیا و اقیانوسیه"],"DAC":[23.84,90.4,"BD","داکا","آسیا و اقیانوسیه"],"BGI":[13.1,-59.6,"BB","بریج تاون","آمریکای شمالی"],"MSQ":[53.9,27.6,"BY","مینسک","اروپا"],"BRU":[50.9,4.48,"BE","بروکسل","اروپا"],"PBH":[27.47,89.63,"BT","تیمفو","آسیا و اقیانوسیه"],"LPB":[-16.49,-68.12,"BO","لاپاز","آمریکای جنوبی"],"GBE":[-24.63,25.92,"BW","گابورون","آفریقا"],"QWJ":[-22.74,-47.33,"BR","آمریکانا","آمریکای جنوبی"],"ARU":[-21.14,-50.42,"BR","آراکاتوبا","آمریکای جنوبی"],"BEL":[-1.46,-48.5,"BR","بلن","آمریکای جنوبی"],"CNF":[-19.62,-43.97,"BR","بلو هوریزونه","آمریکای جنوبی"],"BNU":[-26.89,-49.08,"BR","بلومناو","آمریکای جنوبی"],"BSB":[-15.8,-47.91,"BR","برازیلیا","آمریکای جنوبی"],"CFC":[-26.78,-51.01,"BR","کاکادور","آمریکای جنوبی"],"VCP":[-22.91,-47.09,"BR","کمپیناس","آمریکای جنوبی"],"CAW":[-21.7,-41.3,"BR","کامپوس دوس گویتاکازس","آمریکای جنوبی"],"XAP":[-27.13,-52.66,"BR","شاپکو","آمریکای جنوبی"],"CGB":[-15.6,-56.1,"BR","کویابا","آمریکای جنوبی"],"CWB":[-25.53,-49.18,"BR","کوریتیبا","آمریکای جنوبی"],"FLN":[-27.67,-48.55,"BR","فلوریانوپولیس","آمریکای جنوبی"],"FOR":[-3.78,-38.53,"BR","فورتالزا","آمریکای جنوبی"],"GYN":[-16.7,-49.27,"BR","گویانیا","آمریکای جنوبی"],"ITJ":[-27.61,-48.67,"BR","ایتاخای","آمریکای جنوبی"],"JOI":[-26.3,-48.85,"BR","ژوینیل","آمریکای جنوبی"],"JDO":[-7.22,-39.31,"BR","جوازیرو دو نورته","آمریکای جنوبی"],"MAO":[-3.11,-60.02,"BR","مانائوس","آمریکای جنوبی"],"PMW":[-10.29,-48.36,"BR","پالماس","آمریکای جنوبی"],"POA":[-29.99,-51.17,"BR","برازیلیا","آمریکای جنوبی"],"REC":[-8.13,-34.92,"BR","ریسیف","آمریکای جنوبی"],"RAO":[-21.14,-47.78,"BR","ریبرائو پرتو","آمریکای جنوبی"],"GIG":[-22.81,-43.25,"BR","ریو دو ژانیرو","آمریکای جنوبی"],"SSA":[-12.91,-38.32,"BR","سالوادور","آمریکای جنوبی"],"SJP":[-20.81,-49.38,"BR","سائو خوزه دو ریو پرتو","آمریکای جنوبی"],"SJK":[-23.18,-45.89,"BR","سائو خوزه دوس کامپوس","آمریکای جنوبی"],"GRU":[-23.44,-46.47,"BR","سائو پائولو","آمریکای جنوبی"],"SOD":[-23.54,-46.63,"BR","سورابا","آمریکای جنوبی"],"NVT":[-26.83,-49.27,"BR","تیمبو","آمریکای جنوبی"],"UDI":[-18.88,-48.23,"BR","اوبرلاندیا","آمریکای جنوبی"],"VIX":[-20.65,-41.91,"BR","ویتوریا","آمریکای جنوبی"],"BWN":[4.9,114.94,"BN","بندر سری بگاوان","آسیا و اقیانوسیه"],"SOF":[42.7,23.41,"BG","صوفیه","اروپا"],"OUA":[12.35,-1.51,"BF","اوآگادوگو","آفریقا"],"PNH":[11.55,104.84,"KH","پنوم پن","آسیا و اقیانوسیه"],"YYC":[51.11,-114.02,"CA","کلگری","آمریکای شمالی"],"YVR":[49.19,-123.18,"CA","ونکوور","آمریکای شمالی"],"YWG":[49.91,-97.24,"CA","وینیپگ","آمریکای شمالی"],"YHZ":[44.65,-63.67,"CA","هلیفکس","آمریکای شمالی"],"YOW":[45.32,-75.67,"CA","اتاوا","آمریکای شمالی"],"YYZ":[43.68,-79.63,"CA","تورنتو","آمریکای شمالی"],"YUL":[45.47,-73.74,"CA","مونترال","آمریکای شمالی"],"YXE":[52.17,-106.7,"CA","ساسکاتون","آمریکای شمالی"],"ARI":[-18.35,-70.34,"CL","آریکا","آمریکای جنوبی"],"CCP":[-36.82,-73.04,"CL","Concepción","آمریکای جنوبی"],"SCL":[-33.39,-70.79,"CL","سانتیاگو","آمریکای جنوبی"],"BAQ":[10.89,-74.78,"CO","بارانکییا","آمریکای جنوبی"],"BOG":[4.7,-74.15,"CO","بوگوتا","آمریکای جنوبی"],"CLO":[3.54,-76.38,"CO","Cali","آمریکای جنوبی"],"MDE":[6.16,-75.42,"CO","مدلین","آمریکای جنوبی"],"FIH":[-4.39,15.44,"CD","کینشاسا","آفریقا"],"SJO":[9.99,-84.21,"CR","سن خوزه","آمریکای جنوبی"],"ABJ":[5.29,-4.0,"CI","آبیجان","آفریقا"],"ASK":[6.84,-5.26,"CI","یاموسوکرو","آفریقا"],"ZAG":[45.74,16.07,"HR","زاگرب","اروپا"],"LCA":[34.88,33.62,"CY","نیکوزیا","اروپا"],"PRG":[50.1,14.26,"CZ","پراگ","اروپا"],"CPH":[55.62,12.66,"DK","کپنهاگ","اروپا"],"JIB":[11.55,43.16,"DJ","جیبوتی","آفریقا"],"STI":[19.41,-70.6,"DO","سانتیاگو د کابالروس","آمریکای شمالی"],"SDQ":[18.43,-69.67,"DO","سانتو دومینگو","آمریکای شمالی"],"GYE":[-2.19,-79.89,"EC","گوایاکیل","آمریکای جنوبی"],"UIO":[-0.13,-78.36,"EC","کیتو","آمریکای جنوبی"],"CAI":[30.12,31.41,"EG","قاهره","آفریقا"],"TLL":[59.41,24.83,"EE","تالین","اروپا"],"ADD":[9.0,38.78,"ET","Addis Ababa","آفریقا"],"SUV":[-18.11,178.44,"FJ","سوا","اقیانوسیه"],"HEL":[60.32,24.96,"FI","هلسینکی","اروپا"],"BOD":[44.83,-0.58,"FR","بوردو","اروپا"],"LYS":[45.73,5.09,"FR","لیون","اروپا"],"MRS":[43.44,5.22,"FR","مارسی","اروپا"],"CDG":[49.01,2.55,"FR","پاریس","اروپا"],"PPT":[-17.55,-149.61,"PF","تاهیتی","اقیانوسیه"],"TBS":[41.67,44.95,"GE","تفلیس","اروپا"],"TXL":[52.56,13.29,"DE","برلین","اروپا"],"DUS":[51.29,6.77,"DE","دوسلدورف","اروپا"],"FRA":[50.03,8.54,"DE","فرانکفورت","اروپا"],"HAM":[53.63,9.99,"DE","هامبورگ","اروپا"],"MUC":[48.35,11.79,"DE","مونیخ","اروپا"],"STR":[48.78,9.18,"DE","اشتوتگارت","اروپا"],"ACC":[5.61,-0.21,"GH","اکرا","آفریقا"],"ATH":[37.94,23.94,"GR","آتن","اروپا"],"SKG":[40.52,22.97,"GR","سالونیکی","اروپا"],"GND":[12.01,-61.79,"GD","سنت جرج","آمریکای جنوبی"],"GUM":[13.48,144.8,"GU","آگانیا","آسیا و اقیانوسیه"],"GUA":[14.58,-90.53,"GT","گواتمالاسیتی","آمریکای شمالی"],"GEO":[6.83,-58.16,"GY","جورج تاون","آمریکای جنوبی"],"SAP":[15.45,-87.92,"HN","San Pedro Sula","آمریکای جنوبی"],"TGU":[14.06,-87.22,"HN","تگوسیگالپا","آمریکای جنوبی"],"HKG":[22.31,113.92,"HK","هنگ کنگ","آسیا و اقیانوسیه"],"BUD":[47.44,19.26,"HU","بوداپست","اروپا"],"KEF":[63.99,-22.61,"IS","ریکیاویک","اروپا"],"AMD":[23.02,72.57,"IN","احمدآباد","آسیا و اقیانوسیه"],"BLR":[13.78,76.62,"IN","بنگلور","آسیا و اقیانوسیه"],"IXC":[30.67,76.79,"IN","چندیگر","آسیا و اقیانوسیه"],"MAA":[12.99,80.17,"IN","چنای","آسیا و اقیانوسیه"],"HYD":[17.23,78.43,"IN","حیدرآباد","آسیا و اقیانوسیه"],"CNN":[11.92,75.55,"IN","کانور","آسیا و اقیانوسیه"],"KNU":[26.45,80.33,"IN","کانپور","آسیا و اقیانوسیه"],"COK":[9.93,76.27,"IN","کوچی","آسیا و اقیانوسیه"],"CCU":[22.65,88.43,"IN","کلکته","آسیا و اقیانوسیه"],"BOM":[19.09,72.87,"IN","بمبئی","آسیا و اقیانوسیه"],"NAG":[21.16,79.0,"IN","ناگپور","آسیا و اقیانوسیه"],"DEL":[28.57,77.1,"IN","دهلی نو","آسیا و اقیانوسیه"],"PAT":[25.59,85.09,"IN","پتنا","آسیا و اقیانوسیه"],"DPS":[-8.75,115.17,"ID","دنپاسار","آسیا و اقیانوسیه"],"CGK":[-6.13,106.65,"ID","جاکارتا","آسیا و اقیانوسیه"],"JOG":[-7.79,110.43,"ID","یوگیاکارتا","آسیا و اقیانوسیه"],"BGW":[33.26,44.23,"IQ","بغداد","خاورمیانه"],"BSR":[30.55,47.66,"IQ","بصره","خاورمیانه"],"EBL":[36.19,43.99,"IQ","اربیل","خاورمیانه"],"NJF":[31.99,44.4,"IQ","نجف","خاورمیانه"],"XNH":[30.94,46.09,"IQ","ناصریه","خاورمیانه"],"ISU":[35.57,45.42,"IQ","سلیمانیه","خاورمیانه"],"DUB":[53.42,-6.27,"IE","دوبلین","اروپا"],"HFA":[32.78,34.96,"IL","حیفا","خاورمیانه"],"TLV":[32.01,34.89,"IL","تل آویو","خاورمیانه"],"MXP":[45.63,8.73,"IT","میلان","اروپا"],"PMO":[38.16,13.32,"IT","پالرمو","اروپا"],"FCO":[41.8,12.25,"IT","رم","اروپا"],"KIN":[18.0,-76.78,"JM","کینگستون","آمریکای شمالی"],"FUK":[33.59,130.4,"JP","فوکوئوکا","آسیا و اقیانوسیه"],"OKA":[26.2,127.65,"JP","ناها","آسیا و اقیانوسیه"],"KIX":[34.43,135.24,"JP","اوساکا","آسیا و اقیانوسیه"],"NRT":[35.76,140.39,"JP","توکیو","آسیا و اقیانوسیه"],"AMM":[31.72,35.99,"JO","عمّان","خاورمیانه"],"AKX":[50.29,57.22,"KZ","Aktobe","آسیا و اقیانوسیه"],"ALA":[43.35,77.04,"KZ","آلماتی","آسیا و اقیانوسیه"],"NQZ":[51.17,71.42,"KZ","Astana","آسیا و اقیانوسیه"],"MBA":[-4.03,39.59,"KE","مومباسا","آفریقا"],"NBO":[-1.32,36.93,"KE","نایروبی","آفریقا"],"ICN":[37.47,126.45,"KR","سئول","آسیا و اقیانوسیه"],"KWI":[29.23,47.97,"KW","کویت","خاورمیانه"],"FRU":[42.88,74.6,"KG","Bishkek","آسیا و اقیانوسیه"],"VTE":[17.98,102.57,"LA","وینتیان","آسیا و اقیانوسیه"],"RIX":[56.92,23.97,"LV","ریگا","اروپا"],"BEY":[33.82,35.49,"LB","بیروت","خاورمیانه"],"VNO":[54.63,25.29,"LT","ویلنیوس","اروپا"],"LUX":[49.63,6.21,"LU","لوکزامبورگ","اروپا"],"MFM":[22.15,113.59,"MO","ماکائو","آسیا و اقیانوسیه"],"TNR":[-18.91,47.54,"MG","آنتاناناریو","آفریقا"],"LLW":[-13.98,33.76,"MW","Lilongwe","آفریقا"],"JHB":[1.64,103.67,"MY","جوهور بارو","آسیا و اقیانوسیه"],"KUL":[2.75,101.71,"MY","کوالالامپور","آسیا و اقیانوسیه"],"KCH":[1.71,110.35,"MY","Kuching","آسیا و اقیانوسیه"],"MLE":[4.17,73.51,"MV","ماله","آسیا و اقیانوسیه"],"MRU":[-20.43,57.68,"MU","پورت لویی","آفریقا"],"GDL":[20.52,-103.31,"MX","گوادالاخارا","آمریکای شمالی"],"MEX":[19.44,-99.07,"MX","مکزیکوسیتی","آمریکای شمالی"],"QRO":[20.62,-100.19,"MX","کرتارو","آمریکای شمالی"],"KIV":[46.93,28.93,"MD","کیشیناو","اروپا"],"ULN":[47.84,106.77,"MN","اولان باتور","آسیا و اقیانوسیه"],"MPM":[-25.92,32.57,"MZ","ماپوتو","آفریقا"],"WDH":[-22.57,17.09,"NA","ویندهوک","آفریقا"],"KTM":[27.7,85.36,"NP","کاتماندو","آسیا و اقیانوسیه"],"AMS":[52.31,4.76,"NL","آمستردام","اروپا"],"NOU":[-22.01,166.21,"NC","نومئا","اقیانوسیه"],"AKL":[-37.01,174.79,"NZ","آوکلند","اقیانوسیه"],"CHC":[-43.49,172.53,"NZ","کرایستچرچ","اقیانوسیه"],"LOS":[6.58,3.32,"NG","لاگوس","آفریقا"],"SKP":[41.96,21.62,"MK","اسکوپیه","اروپا"],"OSL":[60.19,11.1,"NO","اسلو","اروپا"],"MCT":[23.59,58.28,"OM","مسقط","خاورمیانه"],"ISB":[33.62,73.1,"PK","اسلام‌آباد","آسیا و اقیانوسیه"],"KHI":[24.91,67.16,"PK","کراچی","آسیا و اقیانوسیه"],"ZDM":[32.27,35.02,"PS","رام‌الله","خاورمیانه"],"PTY":[9.07,-79.38,"PA","پاناماسیتی","آمریکای جنوبی"],"ASU":[-25.24,-57.52,"PY","آسونسیون","آمریکای جنوبی"],"LIM":[-12.02,-77.11,"PE","لیما","آمریکای جنوبی"],"CGY":[8.42,124.61,"PH","کاگایان دو اورو","آسیا و اقیانوسیه"],"CEB":[10.31,123.98,"PH","سیبو","آسیا و اقیانوسیه"],"MNL":[14.51,121.02,"PH","مانیل","آسیا و اقیانوسیه"],"CRK":[15.19,120.56,"PH","تارلاک","آسیا و اقیانوسیه"],"WAW":[52.17,20.97,"PL","ورشو","اروپا"],"LIS":[38.78,-9.14,"PT","لیسبون","اروپا"],"SJU":[18.41,-66.1,"PR","سن خوان","آمریکای شمالی"],"DOH":[25.26,51.61,"QA","دوحه","خاورمیانه"],"RUN":[-20.89,55.51,"RE","سن دنی","آفریقا"],"OTP":[44.57,26.1,"RO","بخارست","اروپا"],"KJA":[56.02,92.89,"RU","کراسنویارسک","آسیا و اقیانوسیه"],"DME":[55.41,37.91,"RU","مسکو","اروپا"],"LED":[59.8,30.26,"RU","سن پترزبورگ","اروپا"],"KGL":[-1.97,30.14,"RW","کیگالی","آفریقا"],"DMM":[26.47,49.8,"SA","دمام","خاورمیانه"],"JED":[21.68,39.16,"SA","جده","خاورمیانه"],"RUH":[24.96,46.7,"SA","ریاض","خاورمیانه"],"DKR":[14.74,-17.49,"SN","داکار","آفریقا"],"BEG":[44.82,20.31,"RS","بلگراد","اروپا"],"SIN":[1.35,103.99,"SG","سنگاپور","آسیا و اقیانوسیه"],"BTS":[48.15,17.11,"SK","براتیسلاوا","اروپا"],"CPT":[-33.96,18.6,"ZA","کیپ‌تاون","آفریقا"],"DUR":[-29.61,31.12,"ZA","دوربان","آفریقا"],"JNB":[-26.13,28.25,"ZA","ژوهانسبورگ","آفریقا"],"BCN":[41.3,2.08,"ES","بارسلونا","اروپا"],"MAD":[40.49,-3.57,"ES","مادرید","اروپا"],"CMB":[7.18,79.88,"LK","کلمبو","آسیا و اقیانوسیه"],"PBM":[5.45,-55.19,"SR","پاراماریبو","آمریکای جنوبی"],"GOT":[57.66,12.28,"SE","گوتنبورگ","اروپا"],"ARN":[59.65,17.92,"SE","استکهلم","اروپا"],"GVA":[46.24,6.11,"CH","ژنو","اروپا"],"ZRH":[47.46,8.55,"CH","زوریخ","اروپا"],"KHH":[22.58,120.35,"TW","کاوه‌سیونگ","آسیا و اقیانوسیه"],"TPE":[25.08,121.23,"TW","تایپه","آسیا و اقیانوسیه"],"DAR":[-6.88,39.2,"TZ","دارالسلام","آفریقا"],"BKK":[13.68,100.75,"TH","بانکوک","آسیا و اقیانوسیه"],"CNX":[18.77,98.96,"TH","چیانگ‌مای","آسیا و اقیانوسیه"],"URT":[9.13,99.14,"TH","سورات‌تانی","آسیا و اقیانوسیه"],"POS":[10.6,-61.34,"TT","پورت آو اسپین","آمریکای جنوبی"],"TUN":[36.85,10.23,"TN","تونس","آفریقا"],"IST":[40.98,28.81,"TR","استانبول","اروپا"],"ADB":[38.32,27.14,"TR","ازمیر","اروپا"],"EBB":[0.32,32.58,"UG","Kampala","آفریقا"],"KBP":[50.35,30.89,"UA","کی‌یف","اروپا"],"DXB":[25.25,55.36,"AE","دبی","خاورمیانه"],"LHR":[51.47,-0.46,"GB","لندن","اروپا"],"MAN":[53.35,-2.27,"GB","منچستر","اروپا"],"ANC":[61.16,-149.89,"US","انکریج","آمریکای شمالی"],"PHX":[33.43,-112.01,"US","فینیکس","آمریکای شمالی"],"LAX":[33.94,-118.41,"US","لس‌آنجلس","آمریکای شمالی"],"SMF":[38.7,-121.59,"US","ساکرامنتو","آمریکای شمالی"],"SAN":[32.73,-117.19,"US","سانتیاگو","آمریکای شمالی"],"SFO":[37.62,-122.38,"US","سانفرانسیسکو","آمریکای شمالی"],"SJC":[37.36,-121.93,"US","سن خوزه","آمریکای شمالی"],"DEN":[39.86,-104.67,"US","دنور","آمریکای شمالی"],"JAX":[30.49,-81.69,"US","جکسونویل","آمریکای شمالی"],"MIA":[25.79,-80.29,"US","میامی","آمریکای شمالی"],"TLH":[30.4,-84.35,"US","تالاهاسی","آمریکای شمالی"],"TPA":[27.98,-82.53,"US","تامپا","آمریکای شمالی"],"ATL":[33.64,-84.43,"US","آتلانتا","آمریکای شمالی"],"HNL":[21.32,-157.92,"US","هونولولو","آمریکای شمالی"],"ORD":[41.98,-87.9,"US","شیکاگو","آمریکای شمالی"],"IND":[39.72,-86.29,"US","ایندیانپلیس","آمریکای شمالی"],"BGR":[44.81,-68.8,"US","بنگور","آمریکای شمالی"],"BOS":[42.36,-71.01,"US","بوستون","آمریکای شمالی"],"DTW":[42.21,-83.35,"US","دیترویت","آمریکای شمالی"],"MSP":[44.88,-93.22,"US","مینیاپولیس","آمریکای شمالی"],"MCI":[39.3,-94.71,"US","کانزاس سیتی","آمریکای شمالی"],"STL":[38.75,-90.37,"US","سن لوییس","آمریکای شمالی"],"OMA":[41.3,-95.89,"US","اوماها","آمریکای شمالی"],"LAS":[36.08,-115.15,"US","لاس وگاس","آمریکای شمالی"],"EWR":[40.69,-74.17,"US","نیوآرک","آمریکای شمالی"],"ABQ":[35.08,-106.65,"US","آلبوکرکی","آمریکای شمالی"],"BUF":[42.94,-78.73,"US","بوفالو","آمریکای شمالی"],"CLT":[35.21,-80.94,"US","شارلوت","آمریکای شمالی"],"RDU":[35.94,-78.88,"US","دورهام","آمریکای شمالی"],"CLE":[41.5,-81.68,"US","کلیولند","آمریکای شمالی"],"CMH":[40.0,-82.89,"US","کلمبوس","آمریکای شمالی"],"OKC":[35.47,-97.65,"US","اکلاهما سیتی","آمریکای شمالی"],"PDX":[45.59,-122.6,"US","پورتلند","آمریکای شمالی"],"PHL":[39.87,-75.24,"US","فیلادلفیا","آمریکای شمالی"],"PIT":[40.49,-80.23,"US","پیتسبورگ","آمریکای شمالی"],"FSD":[43.54,-96.66,"US","سیوکس فالز","آمریکای شمالی"],"MEM":[35.04,-89.98,"US","ممفیس","آمریکای شمالی"],"BNA":[36.12,-86.68,"US","نشویل","آمریکای شمالی"],"AUS":[30.2,-97.67,"US","آستین","آمریکای شمالی"],"DFW":[32.9,-97.04,"US","دالاس","آمریکای شمالی"],"IAH":[29.98,-95.34,"US","هیوستون","آمریکای شمالی"],"SAT":[29.43,-98.49,"US","سن آنتونیو","آمریکای شمالی"],"SLC":[40.79,-111.98,"US","سالت لیک سیتی","آمریکای شمالی"],"IAD":[38.94,-77.46,"US","اشبورن","آمریکای شمالی"],"ORF":[36.89,-76.2,"US","نورفک","آمریکای شمالی"],"RIC":[37.51,-77.32,"US","ریچموند","آمریکای شمالی"],"SEA":[47.45,-122.31,"US","سیاتل","آمریکای شمالی"],"DAD":[16.03,108.21,"VN","دانانگ","آسیا و اقیانوسیه"],"HAN":[21.22,105.81,"VN","هانوی","آسیا و اقیانوسیه"],"SGN":[10.82,106.65,"VN","شهر هوشی مین","آسیا و اقیانوسیه"],"LUN":[-15.37,28.32,"ZM","Lusaka","آفریقا"],"HRE":[-17.93,31.09,"ZW","هرار","آفریقا"]};
+const COLO_REGION_EN={"اروپا":"Europe","آفریقا":"Africa","آمریکای شمالی":"North America","آمریکای جنوبی":"South America","آسیا و اقیانوسیه":"Asia & Oceania","اقیانوسیه":"Oceania","خاورمیانه":"Middle East"};
+const CCA2_EN={US:"United States",CA:"Canada",GB:"United Kingdom",DE:"Germany",NL:"Netherlands",FR:"France",FI:"Finland",SE:"Sweden",AT:"Austria",CH:"Switzerland",PL:"Poland",CZ:"Czechia",JP:"Japan",SG:"Singapore",AE:"United Arab Emirates",TR:"Turkey",CN:"China",HK:"Hong Kong",IN:"India",AU:"Australia",ES:"Spain",IT:"Italy",IR:"Iran",RU:"Russia",BR:"Brazil",ZA:"South Africa",KR:"South Korea",TW:"Taiwan",ID:"Indonesia",TH:"Thailand",VN:"Vietnam",MY:"Malaysia",PH:"Philippines",IL:"Israel",SA:"Saudi Arabia",QA:"Qatar",EG:"Egypt",NG:"Nigeria",KE:"Kenya",UA:"Ukraine",RO:"Romania",BG:"Bulgaria",GR:"Greece",PT:"Portugal",IE:"Ireland",DK:"Denmark",NO:"Norway",BE:"Belgium",HU:"Hungary",MX:"Mexico",AR:"Argentina",CL:"Chile",CO:"Colombia",PE:"Peru",NZ:"New Zealand",KZ:"Kazakhstan",AZ:"Azerbaijan",GE:"Georgia",AM:"Armenia",PK:"Pakistan",BD:"Bangladesh",LK:"Sri Lanka",CR:"Costa Rica",PA:"Panama",EC:"Ecuador",UY:"Uruguay",JO:"Jordan",KW:"Kuwait",BH:"Bahrain",OM:"Oman",MA:"Morocco",DZ:"Algeria",TN:"Tunisia",LV:"Latvia",LT:"Lithuania",EE:"Estonia",SK:"Slovakia",SI:"Slovenia",HR:"Croatia",RS:"Serbia",MD:"Moldova",CY:"Cyprus",MT:"Malta",LU:"Luxembourg",IS:"Iceland",MM:"Myanmar",KH:"Cambodia",NP:"Nepal",MN:"Mongolia",UZ:"Uzbekistan"};
+function ccaFlag(c){ if(!c||c.length!==2) return "🌐"; try{ return String.fromCodePoint.apply(null,[].map.call(c.toUpperCase(),function(x){return 0x1F1E6+x.charCodeAt(0)-65;})); }catch(e){ return "🌐"; } }
+function coloMapSvg(lat,lon,iata){
+  var dots=""; for(var y=8;y<180;y+=7){ for(var x=8;x<360;x+=7){ dots+='<circle cx="'+x+'" cy="'+y+'" r="0.85" fill="var(--mu)" opacity="0.16"/>'; } }
+  var mx=(lon+180), my=(90-lat); if(mx<6)mx=6; if(mx>354)mx=354; if(my<6)my=6; if(my>174)my=174;
+  var lbx=mx>300?(mx-4):(mx+8); var anc=mx>300?"end":"start";
+  var marker='<circle cx="'+mx+'" cy="'+my+'" r="6" fill="none" stroke="var(--ac)" stroke-width="1.4" opacity="0.6"><animate attributeName="r" values="5;14;5" dur="2.2s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.7;0;0.7" dur="2.2s" repeatCount="indefinite"/></circle>'
+    +'<circle cx="'+mx+'" cy="'+my+'" r="3.6" fill="var(--ac)"/>'
+    +(iata?('<text x="'+lbx+'" y="'+(my-7)+'" text-anchor="'+anc+'" font-size="9" font-weight="700" fill="var(--tx)">'+iata+'</text>'):"");
+  return '<svg viewBox="0 0 360 180" preserveAspectRatio="xMidYMid meet" style="width:100%;height:auto;display:block">'
+    +'<line x1="0" y1="90" x2="360" y2="90" stroke="var(--bd)" stroke-width="0.5" opacity="0.7"/>'
+    +'<line x1="180" y1="0" x2="180" y2="180" stroke="var(--bd)" stroke-width="0.5" opacity="0.7"/>'
+    +dots+marker+'</svg>';
+}
+async function renderDatacenter(){
+  try{
+    var place=document.getElementById("dc-place"); if(!place) return;
+    var flag=document.getElementById("dc-flag"), sub=document.getElementById("dc-sub"), mw=document.getElementById("dc-map-wrap");
+    var txt=""; try{ txt=await fetch("/cdn-cgi/trace?_t="+Date.now()).then(function(r){return r.text();}); }catch(e){}
+    var o={}; txt.split("\n").forEach(function(l){ var i=l.indexOf("="); if(i>0) o[l.slice(0,i)]=l.slice(i+1); });
+    var colo=(o.colo||"").toUpperCase(); var rec=COLO_DB[colo];
+    if(rec){
+      var lat=rec[0],lon=rec[1],cca2=rec[2],cityFa=rec[3],regionFa=rec[4];
+      var cn=CCA2_EN[cca2]||cca2; var rn=(lang==="fa")?regionFa:(COLO_REGION_EN[regionFa]||regionFa);
+      if(flag) flag.textContent=ccaFlag(cca2);
+      place.textContent=(lang==="fa")?cityFa:cn;
+      if(sub) sub.textContent=(lang==="fa")?(rn+" · "+colo+" · "+cn):(cityFa+" · "+rn+" · "+colo);
+      if(mw) mw.innerHTML=coloMapSvg(lat,lon,colo);
+    } else {
+      var lc=(o.loc||"").toUpperCase();
+      if(flag) flag.textContent=lc?ccaFlag(lc):"🌐";
+      place.textContent=colo?(CCA2_EN[lc]||lc||t("dc_unknown")):t("dc_unknown");
+      if(sub) sub.textContent=colo?("· "+colo):"";
+      if(mw) mw.innerHTML="";
+    }
+  }catch(e){}
+}
+var CT_TARGETS=[{n:"Google",u:"https://www.google.com/favicon.ico"},{n:"Cloudflare",u:"https://www.cloudflare.com/favicon.ico"},{n:"X (Twitter)",u:"https://x.com/favicon.ico"},{n:"YouTube",u:"https://www.youtube.com/favicon.ico"},{n:"Instagram",u:"https://www.instagram.com/favicon.ico"},{n:"Telegram",u:"https://telegram.org/favicon.ico"},{n:"GitHub",u:"https://github.com/favicon.ico"},{n:"ChatGPT",u:"https://chat.openai.com/favicon.ico"}];
+function ctProbe(url,timeout){ return new Promise(function(res){ var done=false,t0=Date.now(),img=new Image(); var tm=setTimeout(function(){ if(done)return; done=true; img.src=""; res({ok:false,ms:0}); },timeout); img.onload=function(){ if(done)return; done=true; clearTimeout(tm); res({ok:true,ms:Date.now()-t0}); }; img.onerror=function(){ if(done)return; done=true; clearTimeout(tm); res({ok:false,ms:0}); }; img.src=url+(url.indexOf("?")<0?"?":"&")+"_t="+Date.now(); }); }
+async function runConnTest(){
+  var box=document.getElementById("ct-results"), btn=document.getElementById("ct-run"); if(!box) return;
+  if(btn) btn.disabled=true;
+  box.innerHTML=CT_TARGETS.map(function(x,i){ return '<div class="ct-item" id="ct-'+i+'" style="display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--bd);border-radius:9px;font-size:12.5px"><span class="ct-dot" style="width:8px;height:8px;border-radius:50%;background:var(--mu);flex:none"></span><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+x.n+'</span><span class="ct-ms" style="color:var(--mu);font-size:11px;flex:none">…</span></div>'; }).join("");
+  await Promise.all(CT_TARGETS.map(function(x,i){ return ctProbe(x.u,6000).then(function(r){ var el=document.getElementById("ct-"+i); if(!el) return; var dot=el.querySelector(".ct-dot"), ms=el.querySelector(".ct-ms"); if(r.ok){ dot.style.background="var(--ok)"; ms.textContent=r.ms+" ms"; ms.style.color="var(--ok)"; } else { dot.style.background="var(--dg)"; ms.textContent=t("ct_blocked"); ms.style.color="var(--dg)"; } }); }));
+  if(btn) btn.disabled=false;
+}
 async function runSpeedTest(){
   if(!LIVE) return previewToast();
   const $g=(id)=>document.getElementById(id);
   const btn=$g('ci-speedtest'), msg=$g('ci-stmsg'), pbar=$g('ci-pbar'), pfill=pbar.querySelector('i');
   const port=Number($g('ci-port').value)||443, keep=Math.max(1,Number($g('ci-keep').value)||10), total=Math.min(400,Math.max(10,Number($g('ci-total').value)||120)), timeout=2000;
-  const src=$g('ci-src').value||'random';
+  const src=$g('ci-src').value||'random'; const loadSrc=(src==='country')?('country:'+((document.getElementById('ci-country')||{}).value||'DE')):src;
   btn.disabled=true; pbar.style.display='block'; pbar.classList.add('indet'); pfill.style.width='0%';
   msg.textContent=lang==='fa'?'در حال آماده‌سازی…':'Preparing…';
   let ips=[]; const seen=new Set();
   if(src==='random'){ while(ips.length<total){ const ip=randCfIp(); if(!seen.has(ip)){ seen.add(ip); ips.push(ip); } } }
   else {
     msg.textContent=lang==='fa'?'در حال دریافت آی‌پی‌ها…':'Fetching candidate IPs…';
-    try{ const r=await fetch('/admin/bestip?loadIPs='+encodeURIComponent(src)+'&port='+port+'&_t='+Date.now()); const d=await r.json();
-      for(const x of ((d&&d.ips)||[])){ const ip=String(x).split('#')[0].split(':')[0].trim(); if(/^\d+\.\d+\.\d+\.\d+$/.test(ip)&&!seen.has(ip)){ seen.add(ip); ips.push(ip); } } }catch(e){}
+    try{ const r=await fetch('/admin/bestip?loadIPs='+encodeURIComponent(loadSrc)+'&port='+port+'&_t='+Date.now()); const d=await r.json();
+      for(const x of ((d&&d.ips)||[])){ const ip=String(x).split('#')[0].split(':')[0].trim(); if(/^\d+\.\d+\.\d+\.\d+$/.test(ip)&&!seen.has(ip)){ seen.add(ip); ips.push(String(x).split('#')[0].trim()); } } }catch(e){}
     ips.sort(()=>Math.random()-0.5); if(ips.length>total) ips=ips.slice(0,total);
     if(!ips.length){ msg.textContent=lang==='fa'?'آی‌پی پیدا نشد':'no candidate IPs'; btn.disabled=false; pbar.style.display='none'; return; }
   }
   const totalN=ips.length; let tested=0, alive=[]; const conc=12, probes=3; pbar.classList.remove('indet');
-  async function worker(){ while(ips.length){ const ip=ips.pop(); const samples=[]; for(let i=0;i<probes;i++){ const ms=await pingIp(ip,port,timeout); if(ms!=null) samples.push(ms); } tested++;
-    if(samples.length){ const avg=Math.round(samples.reduce((a,b)=>a+b,0)/samples.length); const jitter=Math.round(Math.max(...samples)-Math.min(...samples)); const loss=Math.round((1-samples.length/probes)*100); alive.push({ip,port,ms:avg,jitter,loss,score:avg+jitter*0.5+loss*20}); }
+  async function worker(){ while(ips.length){ const cand=ips.pop(); const _ci=String(cand).split(':'); const ip=_ci[0]; const usePort=(_ci[1]&&/^\d+$/.test(_ci[1]))?Number(_ci[1]):port; const samples=[]; for(let i=0;i<probes;i++){ const ms=await pingIp(ip,usePort,timeout); if(ms!=null) samples.push(ms); } tested++;
+    if(samples.length){ const avg=Math.round(samples.reduce((a,b)=>a+b,0)/samples.length); const jitter=Math.round(Math.max(...samples)-Math.min(...samples)); const loss=Math.round((1-samples.length/probes)*100); alive.push({ip,port:usePort,ms:avg,jitter,loss,score:avg+jitter*0.5+loss*20}); }
     pfill.style.width=Math.max(3,Math.round(tested/totalN*100))+'%';
     msg.textContent=(lang==='fa'?('در حال تست… '+tested+'/'+totalN+' ('+alive.length+' سالم)'):('Testing… '+tested+'/'+totalN+' ('+alive.length+' alive)')); } }
   await Promise.all(Array.from({length:conc},worker));
@@ -2041,7 +2289,15 @@ document.addEventListener('click', (e)=>{
 });
 { const bf=document.getElementById('backup-file2'); if(bf) bf.onchange=(e)=>{ const f=e.target.files&&e.target.files[0]; if(f) backupImport(f); e.target.value=''; }; }
 { const ff=document.getElementById('f2-frag'); if(ff) ff.addEventListener('change',function(){ const b=document.getElementById('f2-frag-custom'); if(b) b.style.display=this.value==='custom'?'block':'none'; }); }
-$('#menu-btn').addEventListener('click', openDrawer);
+$('#menu-btn').addEventListener('click', openDrawer)
+/* Sidebar collapse / expand (desktop) */
+;(function(){
+  var app=document.querySelector('.app'); if(!app) return;
+  document.querySelectorAll('.nav-item').forEach(function(a){ var s=a.querySelector('span:not(.count)'); if(s&&!a.title) a.title=s.textContent.trim(); });
+  try{ if(localStorage.getItem('nova-nav-collapsed')==='1') app.classList.add('nav-collapsed'); }catch(e){}
+  var btn=document.getElementById('nav-collapse');
+  if(btn) btn.addEventListener('click', function(){ var c=app.classList.toggle('nav-collapsed'); try{ localStorage.setItem('nova-nav-collapsed', c?'1':'0'); }catch(e){} });
+})();;
 $('#scrim').addEventListener('click', closeDrawer);
 $('#theme-btn').addEventListener('click', ()=>applyTheme(document.documentElement.getAttribute('data-theme')==='light'?'dark':'light'));
 $('#lang-seg').addEventListener('click', (e)=>{ const b=e.target.closest('button'); if(b) applyLang(b.dataset.lang); });
@@ -2055,6 +2311,22 @@ const DEMO_USERS=[
 const DEMO_USAGE={ u1:31*1073741824, u2:8*1073741824, u3:10*1073741824 };
 
 /* ---- boot ---- */
+let _updVer='';
+async function checkUpdate(){ try{
+ const vr=await fetch('/version.json?_t='+Date.now()).then(function(r){return r.json()}).catch(function(){return null});
+ if(!vr||!vr.version) return;
+ let cur=0; try{ const sys=await API.get('system.json'); cur=parseFloat(String(sys.version||'').replace(/[^0-9.]/g,''))||0; }catch(e){}
+ const latest=parseFloat(String(vr.version).replace(/[^0-9.]/g,''))||0; if(latest<=cur) return;
+ let dm=''; try{ dm=localStorage.getItem('nova-upd-dismiss')||''; }catch(e){} if(dm===String(vr.version)) return;
+ _updVer=String(vr.version);
+ const bar=document.getElementById('update-bar'); if(!bar) return;
+ document.getElementById('update-txt').textContent=(lang==='fa')?('نسخهٔ جدید V'+vr.version+' در دسترس است'+(vr.notes?('. '+vr.notes):'')):('Update available: V'+vr.version+(vr.notes?('. '+vr.notes):''));
+ const lk=document.getElementById('update-link'); lk.textContent=(lang==='fa')?'دریافت بروزرسانی':'Get update'; if(vr.worker_url) lk.href=vr.worker_url;
+ const x=document.getElementById('update-x'); if(x) x.onclick=function(){ bar.style.display='none'; try{ localStorage.setItem('nova-upd-dismiss',_updVer); }catch(e){} };
+ bar.style.display='flex';
+}catch(e){} }
+setTimeout(checkUpdate, 1800);
+setTimeout(function(){ try{ renderDatacenter(); var b=document.getElementById("dc-refresh"); if(b) b.onclick=renderDatacenter; var c=document.getElementById("ct-run"); if(c) c.onclick=runConnTest; }catch(e){} }, 700);
 (async function init(){
   applyTheme(localStorage.getItem('nova-theme') || 'light');
   await loadLive();   // pull real /admin data when served by the Worker; falls back to MOCK otherwise
