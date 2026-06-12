@@ -77,9 +77,8 @@ button{font-family:inherit;cursor:pointer}
 
 .nav-group{margin-top:10px}
 .nav-label{font-size:10px;font-weight:700;letter-spacing:1.4px;color:var(--mu);text-transform:uppercase;padding:8px 12px 6px}
-.nav-toggle{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;border:none;background:transparent;cursor:pointer;color:var(--mu);font:inherit;font-size:10px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;padding:8px 12px 6px}
-.nav-toggle:hover{color:var(--tx2)}
-.nav-toggle .chev{width:14px;height:14px;flex:0 0 14px;opacity:.7;transition:transform .2s}
+.nav-toggle{width:100%;border:none;background:transparent;cursor:pointer;font-family:inherit;text-align:start}
+.nav-toggle .chev{width:14px;height:14px;flex:0 0 14px;opacity:.6;margin-inline-start:auto;transition:transform .2s}
 .nav-group.collapsible:not(.open) .nav{display:none}
 .nav-group.collapsible.open .nav-toggle .chev{transform:rotate(180deg)}
 .app.nav-collapsed .nav-toggle span{display:none}
@@ -365,8 +364,17 @@ html[data-theme=light] .modeseg button.on{color:#fff}
 .urow2:last-child{border-bottom:none}
 .urow2 .uf{display:flex;flex-direction:column;gap:5px}
 .urow2 .uf.grow{flex:1 1 150px;min-width:140px}
+.urow2 .uf-qty{width:96px}
+.urow2 .uf-exp{width:164px}
+.urow2 .uf-actions{margin-inline-start:auto}
 .urow2 .uf>label{font-size:10px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:var(--mu)}
 .urow2 .uf .inp{height:36px;padding:8px 10px}
+.urow2 .uf input[type=date]{text-align:start}
+/* iOS Safari/WebKit renders the date value inside these pseudo-elements, which default to
+   centered and ignore text-align on the input itself — align them explicitly. */
+.urow2 .uf input[type=date]::-webkit-date-and-time-value{text-align:start;margin:0}
+.urow2 .uf input[type=date]::-webkit-datetime-edit{text-align:start;padding:0}
+.urow2-acts{display:flex;gap:6px;flex-wrap:wrap}
 .urow2 .used{flex-basis:100%;font-size:11px;color:var(--mu);direction:ltr;text-align:start}
 .fg label{display:block;font-size:12px;color:var(--tx2);margin-bottom:7px;font-weight:500}
 select.inp{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--mu) 50%),linear-gradient(135deg,var(--mu) 50%,transparent 50%);background-position:calc(100% - 16px) 17px,calc(100% - 11px) 17px;background-size:5px 5px;background-repeat:no-repeat}
@@ -379,8 +387,11 @@ html[dir=rtl] select.inp{background-position:16px 17px,21px 17px}
 html[data-theme=dark] .qr-ph{border-color:#fff}
 
 /* ---- Toast ---- */
-.toast{position:fixed;bottom:22px;inset-inline-end:22px;z-index:100;background:var(--ok);color:#04110b;font-weight:700;font-size:13px;padding:11px 18px;border-radius:10px;box-shadow:var(--shadow);opacity:0;transform:translateY(8px);transition:.2s;pointer-events:none}
-.toast.show{opacity:1;transform:none}
+.toast{position:fixed;top:72px;left:50%;transform:translate(-50%,-14px);z-index:200;background:var(--ok);color:#04110b;font-weight:700;font-size:13.5px;padding:12px 20px;border-radius:11px;box-shadow:var(--shadow);opacity:0;transition:opacity .22s,transform .22s;pointer-events:none;max-width:min(92vw,560px);text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast.err{background:var(--dg);color:#fff}
+.btn.flash-ok{background:var(--ok);border-color:var(--ok);color:#04110b}
+.btn.flash-bad{background:var(--dg);border-color:var(--dg);color:#fff}
 
 /* ---- Drawer scrim (mobile) ---- */
 .scrim{position:fixed;inset:0;background:rgba(2,6,12,.55);z-index:55;opacity:0;pointer-events:none;transition:.2s}
@@ -428,6 +439,26 @@ html[data-theme=dark] .qr-ph{border-color:#fff}
   .nav-item{padding-top:12px;padding-bottom:12px}
   .appcard-acts .btn{height:42px}
   .tbl-wrap{-webkit-overflow-scrolling:touch}
+  /* Users header: stack title over controls instead of cramming one row */
+  #view-users .card-h{flex-wrap:wrap}
+  #view-users .card-h h3{flex:1 0 auto}
+  #view-users .card-h .right{width:100%;margin-inline-start:0;flex-wrap:wrap;justify-content:flex-start;gap:10px}
+  #view-users .card-h .right>span{white-space:nowrap}
+  /* Users rows: one field per line, full width, with the action buttons spanning the row */
+  #view-users .urow2{gap:12px;padding:16px 0}
+  #view-users .urow2 .uf,
+  #view-users .urow2 .uf.grow,
+  #view-users .urow2 .uf-qty,
+  #view-users .urow2 .uf-exp{width:100%;flex:1 1 100%;min-width:0}
+  #view-users .urow2 .uf-status{flex-direction:row;align-items:center;justify-content:space-between;padding-top:2px}
+  #view-users .urow2 .uf-actions{margin-inline-start:0;width:100%}
+  #view-users .urow2 .uf-actions>label{display:none}
+  #view-users .urow2-acts{width:100%}
+  #view-users .urow2-acts .btn{flex:1 1 0;min-width:64px}
+  /* Save / status confirmations as a top-center banner — clear of the thumb (Save button)
+     and the browser's bottom toolbar, both of which hid the old bottom toast on phones. */
+  .toast{top:calc(62px + env(safe-area-inset-top) + 10px);left:50%;right:auto;transform:translate(-50%,-14px);max-width:92vw;font-size:14px;padding:13px 18px}
+  .toast.show{transform:translate(-50%,0)}
 }
 </style>
 </head>
@@ -460,7 +491,7 @@ html[data-theme=dark] .qr-ph{border-color:#fff}
     </div>
 
     <div class="nav-group collapsible" id="grp-netset">
-      <button class="nav-label nav-toggle" id="netset-toggle" type="button"><span data-i18n="grp_netset">Network Settings</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
+      <button class="nav-item nav-toggle" id="netset-toggle" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="16" y="16" width="6" height="6" rx="1"/><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3M12 12V8"/></svg><span data-i18n="grp_netset">Network Settings</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
       <nav class="nav" id="nav-netset">
         <a class="nav-item" data-view="network">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
@@ -516,8 +547,8 @@ html[data-theme=dark] .qr-ph{border-color:#fff}
         <a data-view="guide" title="Guide" aria-label="Guide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></a>
       </div>
       <a class="logout" href="/logout"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg><span data-i18n="logout">Logout</span></a>
-      <div class="ver"><span data-i18n="ver_panel">Panel</span><b>V3.1</b></div>
-      <div class="ver"><span data-i18n="ver_worker">Worker</span><b>V3.1</b></div>
+      <div class="ver"><span data-i18n="ver_panel">Panel</span><b id="ft-panel-ver">V3.1.6</b></div>
+      <div class="ver"><span data-i18n="ver_worker">Worker</span><b id="ft-worker-ver">V3.1.6</b></div>
     </div>
   </aside>
 
@@ -845,7 +876,7 @@ html[data-theme=dark] .qr-ph{border-color:#fff}
           <div class="card-h"><h3 data-i18n="sub_naming">Subscription</h3></div>
           <div class="card-pad">
             <div class="set-grid"><div class="fg"><label data-i18n="sub_name">Subscription name</label><input class="inp" id="f2-subname"></div><div class="fg"><label data-i18n="sub_int">Update interval (hours)</label><input class="inp" id="f2-subint" type="number" min="1" max="168"></div></div>
-            <div class="fg"><label data-i18n="sub_api">Subscription converter API</label><input class="inp" id="f2-subapi" placeholder="https://sub.novaproxy.online"></div>
+            <div class="fg"><label data-i18n="sub_api">Subscription converter API</label><input class="inp" id="f2-subapi" placeholder="https://SUBAPI.cmliussss.net"></div>
             <div class="fg"><label data-i18n="subcfg_preset">Rule set preset</label><select class="inp" id="f2-subcfg-preset" onchange="var i=document.getElementById('f2-subcfg'); if(i&&this.value) i.value=this.value;"><option value="" data-i18n="subcfg_custom">— Custom (use field below) —</option><option value="https://raw.githubusercontent.com/cmliu/ACL4SSR/refs/heads/main/Clash/config/ACL4SSR_Online_Mini_MultiMode_CF.ini">ACL4SSR · Mini MultiMode</option><option value="https://raw.githubusercontent.com/cmliu/ACL4SSR/refs/heads/main/Clash/config/ACL4SSR_Online_Mini.ini">ACL4SSR · Mini</option><option value="https://raw.githubusercontent.com/cmliu/ACL4SSR/refs/heads/main/Clash/config/ACL4SSR_Online.ini">ACL4SSR · Online</option><option value="https://raw.githubusercontent.com/cmliu/ACL4SSR/refs/heads/main/Clash/config/ACL4SSR_Online_Full.ini">ACL4SSR · Full</option><option value="https://raw.githubusercontent.com/cmliu/ACL4SSR/refs/heads/main/Clash/config/ACL4SSR_Online_NoReject.ini">ACL4SSR · No-Reject</option></select></div>
             <div class="fg"><label data-i18n="subcfg">Routing rule set (.ini URL)</label><input class="inp" id="f2-subcfg" placeholder="ACL4SSR .ini URL"></div>
             <div class="field-row" style="margin-bottom:0"><div class="l" data-i18n="subemoji">Emoji flags<small data-i18n="subemoji_h">add country emoji flags to node names</small></div><div class="sw" id="t2-subemoji"><span class="k"></span></div></div>
@@ -997,6 +1028,7 @@ html[data-theme=dark] .qr-ph{border-color:#fff}
               <div class="fg"><label data-i18n="wg_ep">Endpoint</label><input class="inp" id="wg-ep" value="engage.cloudflareclient.com"></div>
               <div class="fg"><label data-i18n="wg_port">Port</label><input class="inp" id="wg-port" value="2408"></div>
               <div class="fg"><label data-i18n="wg_ka">Keepalive</label><input class="inp" id="wg-ka" value="25"></div>
+              <div class="fg"><label data-i18n="wg_reserved">Reserved (WARP)</label><input class="inp" id="wg-reserved" placeholder="e.g. 12,34,56"></div>
             </div>
             <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
               <button class="btn primary" id="wg-build" data-i18n="wg_build">Build config</button>
@@ -1005,6 +1037,7 @@ html[data-theme=dark] .qr-ph{border-color:#fff}
               <button class="btn" id="wg-qr" data-i18n="wg_qrbtn">QR</button>
             </div>
             <div class="fg" style="margin-top:14px"><textarea class="inp" id="wg-out" spellcheck="false" style="min-height:200px;font-family:ui-monospace,monospace;font-size:12px" readonly></textarea></div>
+            <p style="font-size:11.5px;color:var(--mu);line-height:1.7;margin-top:4px" data-i18n="wg_warpnote"></p>
             <div id="wg-qrbox" style="display:none;text-align:center;margin-top:8px"></div>
           </div>
         </div>
@@ -1034,7 +1067,7 @@ html[data-theme=dark] .qr-ph{border-color:#fff}
         <div class="card">
           <div class="card-h"><h3 data-i18n="px_more_h">Find proxies</h3><button class="btn ghost sm" id="px-more-load" data-i18n="px_more_load">Load list</button></div>
           <div class="card-pad">
-            <p style="font-size:12.5px;color:var(--mu);margin-bottom:12px" data-i18n="px_more_s">Fetch public lists (IRNova/Tools), pick by country, then Use. The PROXYIP list is large (~10MB) — give it a moment. SOCKS5/HTTP/HTTPS lists load once their files exist in the repo.</p>
+            <p style="font-size:12.5px;color:var(--mu);margin-bottom:12px" data-i18n="px_more_s">Fetch public lists (IRNova/Tools), pick by country, then Use. PROXYIP and SOCKS5/HTTP lists are available — PROXYIP is large (~10MB), give it a moment. HTTPS, TURN and SSTP have no public list, so enter those manually.</p>
             <div class="set-grid">
               <div class="fg"><label data-i18n="px_country">Country</label><select class="inp" id="px-country"><option value="">—</option></select></div>
               <div class="fg"><label data-i18n="px_pick">Proxy</label><select class="inp" id="px-pick"><option value="">—</option></select></div>
@@ -1098,8 +1131,8 @@ const I18N = {
     env_prod:'Production', grp_ops:'Operations', grp_network:'Network', grp_netset:'Network Settings', grp_config:'Configuration', grp_system:'System', grp_admin:'Administration', grp_tools:'Tools', nav_collapse:'Collapse',
     nav_wireguard:'WireGuard', nav_about:'About', nav_proxy:'Proxy / CDN', nav_corenode:'Core Node', sub_wireguard:'Build a WireGuard config for WARP or a custom peer.', sub_about:'Panel version, changelog and links.', sub_proxy:'How the Worker reaches Cloudflare — PROXYIP / SOCKS5 / HTTP / HTTPS / TURN / SSTP.', sub_corenode:'Your node on every Cloudflare TLS port, on the domain itself.',
     cn_h:'🧩 Core Node', cn_s:'Your node on every Cloudflare TLS port, using the Worker domain directly — separate from the subscription. Copy or scan any port.', cn_copy:'Copy',
-    px_h:'🛡️ Cloudflare CDN access', px_s:"How the Worker reaches Cloudflare's network. Choose a mode, enter the proxy, hit Verify to probe it, then Save. This is the single source of truth — configs pull from here.", px_mode:'Mode', px_proxyip:'PROXYIP address', px_addr:'Proxy address', px_verify:'Verify', px_more_h:'Find proxies', px_more_load:'Load list', px_country:'Country', px_pick:'Proxy', px_use:'Use selected', px_more_s:'Fetch public lists (IRNova/Tools), pick by country, then Use. The PROXYIP list is large (~10MB) — give it a moment. SOCKS5/HTTP/HTTPS load once their files exist in the repo.',
-    wg_h:'🔐 WireGuard config', wg_s:'Build a WireGuard .conf to import into the WireGuard app. Defaults target Cloudflare WARP — edit any field as needed.', wg_loadwarp:'Load from WARP', wg_name:'Name', wg_addr:'Address', wg_dns:'DNS', wg_mtu:'MTU', wg_priv:'Private key', wg_pub:'Peer public key', wg_ep:'Endpoint', wg_port:'Port', wg_ka:'Keepalive', wg_build:'Build config', wg_copy:'Copy', wg_dl:'Download .conf', wg_qrbtn:'QR', wg_loaded:'Loaded from WARP', wg_nowarp:'No WARP config available — register WARP in Network & IPs first.',
+    px_h:'🛡️ Cloudflare CDN access', px_s:"How the Worker reaches Cloudflare's network. Choose a mode, enter the proxy, hit Verify to probe it, then Save. This is the single source of truth — configs pull from here.", px_mode:'Mode', px_proxyip:'PROXYIP address', px_addr:'Proxy address', px_verify:'Verify', px_more_h:'Find proxies', px_more_load:'Load list', px_country:'Country', px_pick:'Proxy', px_use:'Use selected', px_more_s:'Fetch public lists (IRNova/Tools), pick by country, then Use. PROXYIP and SOCKS5/HTTP lists are available — PROXYIP is large (~10MB), give it a moment. HTTPS, TURN and SSTP have no public list, so enter those manually.',
+    wg_h:'🔐 WireGuard config', wg_s:'Build a WireGuard .conf to import into the WireGuard app. Defaults target Cloudflare WARP — edit any field as needed.', wg_loadwarp:'Load from WARP', wg_name:'Name', wg_addr:'Address', wg_dns:'DNS', wg_mtu:'MTU', wg_priv:'Private key', wg_pub:'Peer public key', wg_ep:'Endpoint', wg_port:'Port', wg_ka:'Keepalive', wg_build:'Build config', wg_copy:'Copy', wg_dl:'Download .conf', wg_qrbtn:'QR', wg_loaded:'Loaded from WARP', wg_nowarp:'No WARP config available — register WARP in Network & IPs first.', wg_reserved:'Reserved (WARP)', wg_warpnote:'WARP tip: the official WireGuard app cannot send the Reserved bytes WARP requires — if the handshake connects but no traffic passes, import the WARP node into Hiddify, v2rayN, or AmneziaWG. If it never connects at all, the endpoint is likely blocked — set an alternative endpoint under Network & IPs → WARP and Save.',
     ab_panel:'Panel', ab_worker:'Worker', ab_desc:'Nova Proxy control panel — manage subscriptions, clean IPs, routing, WARP and DNS for your Cloudflare Worker.', ab_changelog:'Changelog', ab_links:'Links',
     nav_dashboard:'Dashboard', nav_distribution:'Subscriptions', nav_network:'Network & IPs',
     nav_activity:'Activity', nav_settings:'Settings', nav_notifications:'Notifications', nav_users:'Users',
@@ -1182,8 +1215,8 @@ const I18N = {
     env_prod:'محیط عملیاتی', grp_ops:'عملیات', grp_network:'شبکه', grp_netset:'تنظیمات شبکه', grp_config:'پیکربندی', grp_system:'سیستم', grp_admin:'مدیریت', grp_tools:'ابزارها', nav_collapse:'جمع کردن',
     nav_wireguard:'وایرگارد', nav_about:'درباره', nav_proxy:'پروکسی / CDN', nav_corenode:'نود اصلی', sub_wireguard:'ساخت کانفیگ وایرگارد برای WARP یا پیر دلخواه.', sub_about:'نسخهٔ پنل، تغییرات و پیوندها.', sub_proxy:'نحوه‌ی دسترسی ورکر به کلودفلر — PROXYIP / SOCKS5 / HTTP / HTTPS / TURN / SSTP.', sub_corenode:'نود شما روی همه‌ی پورت‌های TLS کلودفلر، روی خود دامنه.',
     cn_h:'🧩 نود اصلی', cn_s:'نود شما روی همه‌ی پورت‌های TLS کلودفلر، با استفاده‌ی مستقیم از دامنه‌ی ورکر — جدا از اشتراک. هر پورت را کپی یا اسکن کنید.', cn_copy:'کپی',
-    px_h:'🛡️ دسترسی CDN کلودفلر', px_s:'نحوه‌ی دسترسی ورکر به شبکه‌ی کلودفلر. یک حالت را انتخاب کنید، پروکسی را وارد کنید، با Verify بررسی کنید و سپس ذخیره کنید. این تنها منبع معتبر است — کانفیگ‌ها از همین‌جا می‌خوانند.', px_mode:'حالت', px_proxyip:'آدرس PROXYIP', px_addr:'آدرس پروکسی', px_verify:'بررسی', px_more_h:'یافتن پروکسی', px_more_load:'دریافت فهرست', px_country:'کشور', px_pick:'پروکسی', px_use:'استفاده از انتخاب', px_more_s:'فهرست‌های عمومی (IRNova/Tools) را دریافت کنید، بر اساس کشور انتخاب و سپس استفاده کنید. فهرست PROXYIP بزرگ است (~۱۰مگابایت) — کمی صبر کنید. SOCKS5/HTTP/HTTPS وقتی فایل‌هایشان در مخزن باشند بارگذاری می‌شوند.',
-    wg_h:'🔐 کانفیگ وایرگارد', wg_s:'یک فایل .conf وایرگارد بسازید تا در برنامهٔ WireGuard وارد کنید. مقادیر پیش‌فرض برای WARP کلودفلر تنظیم شده‌اند — در صورت نیاز ویرایش کنید.', wg_loadwarp:'دریافت از WARP', wg_name:'نام', wg_addr:'آدرس', wg_dns:'DNS', wg_mtu:'MTU', wg_priv:'کلید خصوصی', wg_pub:'کلید عمومی پیر', wg_ep:'اندپوینت', wg_port:'پورت', wg_ka:'Keepalive', wg_build:'ساخت کانفیگ', wg_copy:'کپی', wg_dl:'دانلود .conf', wg_qrbtn:'QR', wg_loaded:'از WARP بارگذاری شد', wg_nowarp:'کانفیگ WARP موجود نیست — ابتدا در شبکه و آی‌پی WARP را ثبت کنید.',
+    px_h:'🛡️ دسترسی CDN کلودفلر', px_s:'نحوه‌ی دسترسی ورکر به شبکه‌ی کلودفلر. یک حالت را انتخاب کنید، پروکسی را وارد کنید، با Verify بررسی کنید و سپس ذخیره کنید. این تنها منبع معتبر است — کانفیگ‌ها از همین‌جا می‌خوانند.', px_mode:'حالت', px_proxyip:'آدرس PROXYIP', px_addr:'آدرس پروکسی', px_verify:'بررسی', px_more_h:'یافتن پروکسی', px_more_load:'دریافت فهرست', px_country:'کشور', px_pick:'پروکسی', px_use:'استفاده از انتخاب', px_more_s:'فهرست‌های عمومی (IRNova/Tools) را دریافت کنید، بر اساس کشور انتخاب و سپس استفاده کنید. فهرست‌های PROXYIP و SOCKS5/HTTP در دسترس‌اند — فهرست PROXYIP بزرگ است (~۱۰مگابایت)، کمی صبر کنید. برای HTTPS، TURN و SSTP فهرست عمومی وجود ندارد؛ آن‌ها را دستی وارد کنید.',
+    wg_h:'🔐 کانفیگ وایرگارد', wg_s:'یک فایل .conf وایرگارد بسازید تا در برنامهٔ WireGuard وارد کنید. مقادیر پیش‌فرض برای WARP کلودفلر تنظیم شده‌اند — در صورت نیاز ویرایش کنید.', wg_loadwarp:'دریافت از WARP', wg_name:'نام', wg_addr:'آدرس', wg_dns:'DNS', wg_mtu:'MTU', wg_priv:'کلید خصوصی', wg_pub:'کلید عمومی پیر', wg_ep:'اندپوینت', wg_port:'پورت', wg_ka:'Keepalive', wg_build:'ساخت کانفیگ', wg_copy:'کپی', wg_dl:'دانلود .conf', wg_qrbtn:'QR', wg_loaded:'از WARP بارگذاری شد', wg_nowarp:'کانفیگ WARP موجود نیست — ابتدا در شبکه و آی‌پی WARP را ثبت کنید.', wg_reserved:'Reserved (WARP)', wg_warpnote:'نکتهٔ WARP: برنامهٔ رسمی WireGuard نمی‌تواند بایت‌های Reserved موردنیاز WARP را بفرستد — اگر هندشیک وصل شد ولی ترافیک عبور نکرد، نود WARP را در Hiddify یا v2rayN یا AmneziaWG وارد کنید. اگر اصلاً وصل نشد، احتمالاً اندپوینت مسدود است — در شبکه و آی‌پی → WARP یک اندپوینت جایگزین تنظیم و ذخیره کنید.',
     ab_panel:'پنل', ab_worker:'ورکر', ab_desc:'پنل مدیریت Nova Proxy — مدیریت اشتراک‌ها، آی‌پی‌های تمیز، مسیریابی، WARP و DNS برای ورکر کلودفلر شما.', ab_changelog:'تغییرات', ab_links:'پیوندها',
     nav_dashboard:'داشبورد', nav_distribution:'اشتراک‌ها', nav_network:'شبکه و آی‌پی‌ها',
     nav_activity:'فعالیت', nav_settings:'تنظیمات', nav_notifications:'اعلان‌ها', nav_users:'کاربران',
@@ -1554,10 +1587,10 @@ function renderUsers(){
     const uio=io[u.id]||{}; const ioTxt=(uio.up||uio.down)?(' &nbsp; ↑ '+fmtBytes(uio.up)+' &nbsp; ↓ '+fmtBytes(uio.down)):'';
     return `<div class="urow2">
       <div class="uf grow"><label>${t('col_name')}</label><input class="inp" data-un="${i}" value="${String(u.name||'').replace(/"/g,'&quot;')}"></div>
-      <div class="uf" style="width:96px"><label>${t('col_quota')} (GB)</label><input class="inp" type="number" min="0" data-uq="${i}" value="${q?Math.round(q/1073741824):0}"></div>
-      <div class="uf" style="width:150px"><label>${t('col_expiry')}</label><input class="inp" type="date" data-ux="${i}" value="${u.expiry?String(u.expiry).slice(0,10):''}"></div>
-      <div class="uf"><label>${t('col_status')}</label><div class="sw${u.enabled!==false?' on':''}" data-ue="${i}"><span class="k"></span></div></div>
-      <div class="uf" style="margin-inline-start:auto"><label>&nbsp;</label><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn ghost sm" data-open-user="${u.token||''}" title="${t('open')}">${t('open')}</button><button class="btn ghost sm" data-copy-user="${u.token||''}">${t('copy')}</button><button class="btn ghost sm" data-qr-user="${u.token||''}" data-qr-uname="${String(u.name||'').replace(/"/g,'&quot;')}">${t('qr')}</button><button class="btn ghost sm" data-ud="${i}" title="${lang==='fa'?'حذف':'Remove'}" style="color:var(--dg)">✕</button></div></div>
+      <div class="uf uf-qty"><label>${t('col_quota')} (GB)</label><input class="inp" type="number" min="0" data-uq="${i}" value="${q?Math.round(q/1073741824):0}"></div>
+      <div class="uf uf-exp"><label>${t('col_expiry')}</label><input class="inp" type="date" data-ux="${i}" value="${u.expiry?String(u.expiry).slice(0,10):''}"></div>
+      <div class="uf uf-status"><label>${t('col_status')}</label><div class="sw${u.enabled!==false?' on':''}" data-ue="${i}"><span class="k"></span></div></div>
+      <div class="uf uf-actions"><label>&nbsp;</label><div class="urow2-acts"><button class="btn ghost sm" data-open-user="${u.token||''}" title="${t('open')}">${t('open')}</button><button class="btn ghost sm" data-copy-user="${u.token||''}">${t('copy')}</button><button class="btn ghost sm" data-qr-user="${u.token||''}" data-qr-uname="${String(u.name||'').replace(/"/g,'&quot;')}">${t('qr')}</button><button class="btn ghost sm" data-ud="${i}" title="${lang==='fa'?'حذف':'Remove'}" style="color:var(--dg)">✕</button></div></div>
       <div class="used">${(lang==='fa'?'مصرف: ':'used: ')}${usedTxt}${ioTxt} &nbsp; <code>${String(u.tag||'').slice(0,10)}</code></div>
     </div>`;
   }).join('');
@@ -1606,13 +1639,13 @@ async function saveUsers(){ collectUsers();
   // turning it on makes the worker reject the default/dashboard config (it has no per-user tag),
   // which looked like "all configs stopped working".
   const mu=document.getElementById('t2-multiuser').classList.contains('on'); STATE.multiUser=mu;
-  if(!LIVE){ writeUsersCache(mu, STATE.users); renderUsers(); return previewToast(); }
+  if(!LIVE){ writeUsersCache(mu, STATE.users); renderUsers(); flashSaved('users-save2', false); return previewToast(); }
   try{ const r=await fetch('/admin/users.json',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({multiUser:mu, users:STATE.users})});
-    if(r.redirected || /\/login/.test(r.url)){ toast(lang==='fa'?'نشست منقضی شد — دوباره وارد شوید':'Session expired — sign in again'); return; }
+    if(r.redirected || /\/login/.test(r.url)){ toast(lang==='fa'?'نشست منقضی شد — دوباره وارد شوید':'Session expired — sign in again'); flashSaved('users-save2', false); return; }
     let j={}; try{ j=await r.json(); }catch(e){}
-    if(r.ok && j && j.success===true){ writeUsersCache(mu, STATE.users); const n=(typeof j.count==='number')?j.count:STATE.users.length; toast((lang==='fa'?'ذخیره و تأیید شد — ':'Saved & verified — ')+n+(lang==='fa'?' کاربر':(' user'+(n===1?'':'s')))); renderUsers(); }
-    else { toast('⚠️ '+((j&&j.error)||('HTTP '+r.status))); }
-  }catch(e){ toast('⚠️ '+e.message); } }
+    if(r.ok && j && j.success===true){ writeUsersCache(mu, STATE.users); const n=(typeof j.count==='number')?j.count:STATE.users.length; toast((lang==='fa'?'ذخیره و تأیید شد — ':'Saved & verified — ')+n+(lang==='fa'?' کاربر':(' user'+(n===1?'':'s')))); flashSaved('users-save2', true); renderUsers(); }
+    else { toast('⚠️ '+((j&&j.error)||('HTTP '+r.status))); flashSaved('users-save2', false); }
+  }catch(e){ toast('⚠️ '+e.message); flashSaved('users-save2', false); } }
 
 /* ---- Worker requests: live Cloudflare status (connect / disconnect) ---- */
 function renderWorker(){
@@ -1715,9 +1748,9 @@ async function changePassword(){ const msg=document.getElementById('pw-msg'); co
   if((nw||'').length<6){ msg.textContent=lang==='fa'?'حداقل ۶ کاراکتر':'At least 6 characters'; return; }
   msg.textContent=lang==='fa'?'در حال تغییر…':'Changing…';
   try{ const r=await fetch('/admin/security/change-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({current:cur,new:nw})}); let j={}; try{ j=await r.json(); }catch(e){}
-    if(r.ok && j && j.success!==false){ msg.textContent=lang==='fa'?'رمز تغییر کرد ✓':'Password changed ✓'; document.getElementById('pw-cur').value=''; document.getElementById('pw-new').value=''; }
-    else { msg.textContent='⚠️ '+((j&&j.error)||(lang==='fa'?'رمز فعلی اشتباه است':'Wrong current password')); }
-  }catch(e){ msg.textContent='⚠️ '+e.message; } }
+    if(r.ok && j && j.success!==false){ msg.textContent=lang==='fa'?'رمز تغییر کرد ✓':'Password changed ✓'; toast(lang==='fa'?'رمز تغییر کرد ✓':'Password changed ✓'); document.getElementById('pw-cur').value=''; document.getElementById('pw-new').value=''; }
+    else { var _pe='⚠️ '+((j&&j.error)||(lang==='fa'?'رمز فعلی اشتباه است':'Wrong current password')); msg.textContent=_pe; toast(_pe); }
+  }catch(e){ msg.textContent='⚠️ '+e.message; toast('⚠️ '+e.message); } }
 async function twofaStart(){ const msg=document.getElementById('twofa-msg'); if(msg) msg.textContent='';
   if(!LIVE){ STATE.twofaSecret='DEMOKEYNOVA234567'; STATE.twofaOtp='otpauth://totp/Nova%20Proxy?secret=DEMOKEYNOVA234567&issuer=Nova'; document.getElementById('twofa-key').value=STATE.twofaSecret; document.getElementById('twofa-off').style.display='none'; document.getElementById('twofa-setup').style.display='block'; return; }
   try{ const s=await API.get('security/2fa-setup'); STATE.twofaSecret=s.secret; STATE.twofaOtp=s.otpauth||('otpauth://totp/Nova?secret='+s.secret+'&issuer=Nova');
@@ -1832,6 +1865,7 @@ function showView(v){
    ========================================================================== */
 function wgVal(id){ var el=document.getElementById(id); return el? (el.value||'').trim() : ''; }
 function wgBuild(){
+  var resv=(wgVal('wg-reserved')||'').replace(/\s+/g,'');
   var cfg='[Interface]\n'
     +'PrivateKey = '+(wgVal('wg-priv')||'<your-private-key>')+'\n'
     +'Address = '+wgVal('wg-addr')+'\n'
@@ -1841,19 +1875,25 @@ function wgBuild(){
     +'PublicKey = '+wgVal('wg-pub')+'\n'
     +'AllowedIPs = 0.0.0.0/0, ::/0\n'
     +'Endpoint = '+wgVal('wg-ep')+':'+wgVal('wg-port')+'\n'
-    +(wgVal('wg-ka')?('PersistentKeepalive = '+wgVal('wg-ka')+'\n'):'');
+    +(wgVal('wg-ka')?('PersistentKeepalive = '+wgVal('wg-ka')+'\n'):'')
+    +(resv?('# Reserved (WARP client_id) = '+resv+' — the stock WireGuard app cannot send this; if the handshake works but no traffic flows, import the WARP node into Hiddify / v2rayN / AmneziaWG instead.\n'):'');
   var out=document.getElementById('wg-out'); if(out) out.value=cfg;
   return cfg;
 }
 function wgParseInto(conf){
   var map={PrivateKey:'wg-priv',Address:'wg-addr',DNS:'wg-dns',MTU:'wg-mtu',PublicKey:'wg-pub'};
+  var reserved='';
   String(conf).split('\n').forEach(function(line){
+    var rm=line.match(/Reserved[^=]*=\s*([0-9]+\s*,\s*[0-9]+\s*,\s*[0-9]+)/i); if(rm){ reserved=rm[1].replace(/\s+/g,''); return; }
+    if(line.trim().charAt(0)==='#') return;            // ignore other comment lines
     var i=line.indexOf('='); if(i<0) return;
     var k=line.slice(0,i).trim(), val=line.slice(i+1).trim();
+    if(!val) return;                                   // never overwrite a good default with a blank value
     if(map[k]&&document.getElementById(map[k])) document.getElementById(map[k]).value=val;
-    if(k==='Endpoint'){ var ep=val.split(':'); if(document.getElementById('wg-ep')) document.getElementById('wg-ep').value=ep[0]; if(ep[1]&&document.getElementById('wg-port')) document.getElementById('wg-port').value=ep[1]; }
+    if(k==='Endpoint'){ var c=val.lastIndexOf(':'); var host=c>0?val.slice(0,c):val, port=c>0?val.slice(c+1):''; if(document.getElementById('wg-ep')) document.getElementById('wg-ep').value=host; if(port&&document.getElementById('wg-port')) document.getElementById('wg-port').value=port; }
     if(k==='PersistentKeepalive'&&document.getElementById('wg-ka')) document.getElementById('wg-ka').value=val;
   });
+  var rf=document.getElementById('wg-reserved'); if(rf&&reserved) rf.value=reserved;
   wgBuild();
 }
 function wgInit(){
@@ -1862,7 +1902,7 @@ function wgInit(){
   var copy=document.getElementById('wg-copy'); if(copy) copy.onclick=function(){ var v=document.getElementById('wg-out').value||wgBuild(); navigator.clipboard.writeText(v).then(function(){toast(t('copied'));}).catch(function(){}); };
   var dl=document.getElementById('wg-dl'); if(dl) dl.onclick=function(){ var v=document.getElementById('wg-out').value||wgBuild(); var name=(wgVal('wg-name')||'nova-wg').replace(/[^a-zA-Z0-9_-]/g,'_'); var bl=new Blob([v],{type:'text/plain'}); var u=URL.createObjectURL(bl); var a=document.createElement('a'); a.href=u; a.download=name+'.conf'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(u); };
   var qr=document.getElementById('wg-qr'); if(qr) qr.onclick=function(){ var v=document.getElementById('wg-out').value||wgBuild(); var box=document.getElementById('wg-qrbox'); if(!box) return; box.style.display='block'; box.innerHTML=''; try{ new QRCode(box,{text:v,width:220,height:220,correctLevel:QRCode.CorrectLevel.L}); }catch(e){ box.textContent='QR error'; } };
-  var w=document.getElementById('wg-warp'); if(w) w.onclick=async function(){ try{ var r=await fetch('/admin/warp.json?_t='+Date.now()); var j=await r.json(); var conf=j&&(j.conf||j.config||(j.w&&j.w.conf)); if(conf){ wgParseInto(conf); toast(t('wg_loaded')); } else { toast(t('wg_nowarp')); } }catch(e){ toast(t('wg_nowarp')); } };
+  var w=document.getElementById('wg-warp'); if(w) w.onclick=async function(){ try{ var r=await fetch('/admin/warp.json?_t='+Date.now()); var j=await r.json(); var conf=j&&(j.conf||j.config||(j.w&&j.w.conf)); if(conf){ wgParseInto(conf); if(j&&Array.isArray(j.reserved)&&j.reserved.length){ var rf=document.getElementById('wg-reserved'); if(rf){ rf.value=j.reserved.join(','); wgBuild(); } } toast(t('wg_loaded')); } else { toast(t('wg_nowarp')); } }catch(e){ toast(t('wg_nowarp')); } };
 }
 
 /* ---- About: fill worker version + changelog from version.json / system.json ---- */
@@ -1889,7 +1929,7 @@ async function pxSave(){
   c.proxy=c.proxy||{};
   if(m==='proxyip'){ c.proxy.PROXYIP=(document.getElementById('px-proxyip').value||'').trim(); c.chainProxy=''; }
   else { var a=(document.getElementById('px-addr').value||'').trim(); c.chainProxy=a?(m+'://'+a):''; }
-  savedMsg(await API.post('config.json', c));
+  var _ok=await API.post('config.json', c); toast(savedMsg(_ok)); flashSaved('px-save', _ok);
 }
 async function pxVerify(){
   if(!LIVE) return previewToast();
@@ -1916,11 +1956,13 @@ function pxInit(){
   if(LIVE) pxLoad(); else pxApplyMode();
 }
 /* ---- 'Get more': fetch proxy lists from IRNova/Tools, pick by country ---- */
-var PX_SRC={ proxyip:'https://raw.githubusercontent.com/IRNova/Tools/refs/heads/main/all.json', socks5:'https://raw.githubusercontent.com/IRNova/Tools/refs/heads/main/data/SOCKS5.json', http:'https://raw.githubusercontent.com/IRNova/Tools/refs/heads/main/data/HTTP.json', https:'https://raw.githubusercontent.com/IRNova/Tools/refs/heads/main/data/HTTPS.json' };
+/* Repo file names are lowercase (data/socks5.json, data/http.json). There is no HTTPS list
+   in the repo, so HTTPS/TURN/SSTP have no public source — those modes are entered manually. */
+var PX_SRC={ proxyip:'https://raw.githubusercontent.com/IRNova/Tools/refs/heads/main/all.json', socks5:'https://raw.githubusercontent.com/IRNova/Tools/refs/heads/main/data/socks5.json', http:'https://raw.githubusercontent.com/IRNova/Tools/refs/heads/main/data/http.json' };
 var pxMap=null;
 async function pxLoadList(){
   var m=(document.getElementById('px-mode')||{}).value||'proxyip'; var url=PX_SRC[m]; var msg=document.getElementById('px-more-msg');
-  if(!url){ msg.className='msg bad'; msg.textContent=(lang==='fa'?'برای این حالت منبعی نیست (TURN/SSTP)':'No list source for this mode (TURN/SSTP)'); return; }
+  if(!url){ msg.className='msg bad'; msg.textContent=(lang==='fa'?'برای این حالت فهرست عمومی نیست — پروکسی را دستی وارد کنید':'No public list for this mode — enter the proxy manually'); return; }
   msg.className='msg'; msg.textContent=(lang==='fa'?'در حال دریافت…':'Fetching…')+(m==='proxyip'?' (~10MB)':'');
   try{
     var r=await fetch(url,{cache:'no-store'});
@@ -2005,8 +2047,18 @@ function applyTheme(th){
    ========================================================================== */
 let toastTimer;
 function toast(msg){
-  const el = $('#toast'); el.textContent = msg; el.classList.add('show');
-  clearTimeout(toastTimer); toastTimer = setTimeout(()=>el.classList.remove('show'), 1800);
+  const el = $('#toast'); if(!el) return; el.textContent = msg;
+  const bad=/⚠️|✕|fail|failed|ناموفق|منقضی|خطا/i.test(String(msg));
+  el.classList.toggle('err', bad); el.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(()=>el.classList.remove('show'), 2800);
+}
+/* Unmistakable inline confirmation: flash the clicked Save button to "✓ Saved". */
+function flashSaved(id, ok){
+  const b=document.getElementById(id); if(!b) return; if(b._fs) return; b._fs=1;
+  const txt=b.textContent, cls=b.className;
+  b.textContent=ok!==false?(lang==='fa'?'✓ ذخیره شد':'✓ Saved'):(lang==='fa'?'✕ ناموفق':'✕ Failed');
+  b.classList.add(ok!==false?'flash-ok':'flash-bad');
+  setTimeout(()=>{ b.textContent=txt; b.className=cls; b._fs=0; }, 1900);
 }
 function copy(text){ navigator.clipboard && navigator.clipboard.writeText(text); toast(t('copied')); }
 
@@ -2131,7 +2183,7 @@ function syncFormValues(){
   const ec=c.ECHConfig||{}; set('f2-ech-sni', ec.SNI||''); set('f2-ech-dns', ec.DNS||''); set('f2-central', c.centralApi||'');
   set('f2-hosts', (Array.isArray(c.HOSTS)?c.HOSTS:[]).join('\n')); set('f2-uuid', c.UUID||'');
   const og=c.optimizedSubGeneration||{}; set('f2-subname', og.SUBNAME||''); set('f2-subint', og.SUBUpdateTime||3);
-  const scc=c.subConverterConfig||{}; set('f2-subapi', (!scc.SUBAPI||/cmliussss/i.test(scc.SUBAPI))?'https://sub.novaproxy.online':scc.SUBAPI); set('f2-subcfg', scc.SUBCONFIG||''); on('t2-subemoji', !!scc.SUBEMOJI);
+  const scc=c.subConverterConfig||{}; set('f2-subapi', (!scc.SUBAPI||/novaproxy/i.test(scc.SUBAPI))?'https://SUBAPI.cmliussss.net':scc.SUBAPI); set('f2-subcfg', scc.SUBCONFIG||''); on('t2-subemoji', !!scc.SUBEMOJI);
   // Custom + preset routing rules (network)
   set('n2-customrules', n.customRules||'');
   const bc=n.bypassCountries||[]; on('t2-bp-cn', bc.includes('cn')); on('t2-bp-ru', bc.includes('ru'));
@@ -2160,12 +2212,15 @@ async function applyPolicy(){
   toast(ok ? (lang==='fa'?'سیاست اعمال شد ✓':'Policy applied ✓') : savedMsg(false));
 }
 async function saveSettings(){
-  if(!LIVE) return previewToast(); const c=STATE.config;
+  if(!LIVE){ try{ await loadLive(); }catch(e){} if(!LIVE){ flashSaved('save-settings2', false); return previewToast(); } }
+  const c=STATE.config;
+  if(!c || !c.UUID || !c.HOST){ toast('⚠️ '+(lang==='fa'?'تنظیمات هنوز بارگذاری نشده — صفحه را تازه کنید':'Config not loaded yet — reload the page')); flashSaved('save-settings2', false); return; }
   const g=(id)=>{ const e=document.getElementById(id); return e? e.value : undefined; };
+  const isOn=(id)=>{ const e=document.getElementById(id); return e? e.classList.contains('on') : false; };
   const proto=g('f2-proto');
   c.protocolType=(proto && proto!=='all') ? proto : 'vless'; c.multiProtocolSub=false; // All-protocol removed (caused 1101)
   c.transportProtocol=g('f2-trans'); c.Fingerprint=g('f2-fp');
-  document.querySelectorAll('#security-rows [data-toggle]').forEach(row=>{ const k=row.dataset.toggle, on=row.querySelector('.sw').classList.contains('on');
+  document.querySelectorAll('#security-rows [data-toggle]').forEach(row=>{ const k=row.dataset.toggle, sw=row.querySelector('.sw'), on=sw?sw.classList.contains('on'):false;
     if(k==='s_tls') c.enableTLS=on; else c[SEC_MAP[k]]=on; });
   // advanced
   let pa=(g('f2-path')||'/').trim()||'/'; if(!pa.startsWith('/')) pa='/'+pa; c.PATH=pa;
@@ -2177,7 +2232,13 @@ async function saveSettings(){
   const hosts=(g('f2-hosts')||'').split('\n').map(s=>s.trim().toLowerCase().replace(/^https?:\/\//,'').split('/')[0].split(':')[0]).filter(Boolean); if(hosts.length) c.HOSTS=hosts;
   c.optimizedSubGeneration=c.optimizedSubGeneration||{}; c.optimizedSubGeneration.SUBNAME=g('f2-subname')||''; c.optimizedSubGeneration.SUBUpdateTime=Number(g('f2-subint'))||3;
   c.subConverterConfig=c.subConverterConfig||{}; c.subConverterConfig.SUBAPI=(g('f2-subapi')||'').trim(); c.subConverterConfig.SUBCONFIG=(g('f2-subcfg')||'').trim(); c.subConverterConfig.SUBEMOJI=isOn('t2-subemoji');
-  toast(savedMsg(await API.post('config.json', c)));
+  // Save with the real server reason surfaced (so a rejection isn't a silent no-op).
+  let _ok=false, _why='';
+  try{
+    const _r=await fetch('/admin/config.json',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(c)});
+    _ok=_r.ok; if(!_ok){ _why='HTTP '+_r.status; try{ const _j=await _r.json(); if(_j&&_j.error) _why=_j.error; }catch(e){} }
+  }catch(e){ _why=(e&&e.message)||'network error'; }
+  if(_ok){ toast(savedMsg(true)); flashSaved('save-settings2', true); } else { toast('⚠️ '+(lang==='fa'?'ذخیره ناموفق: ':'Save failed: ')+_why); flashSaved('save-settings2', false); }
 }
 async function saveNetwork(){
   if(!LIVE) return previewToast(); const n=STATE.net;
@@ -2196,7 +2257,7 @@ async function saveNetwork(){
   const cats=[]; if(Array.isArray(n.blockCategories) && n.blockCategories.includes('quic')) cats.push('quic'); // keep QUIC (set by the policy card)
   [['malware','t2-bk-malware'],['phishing','t2-bk-phishing'],['cryptominers','t2-bk-crypto']].forEach(([c,id])=>{ if(isOn(id)) cats.push(c); });
   n.blockCategories=cats;
-  toast(savedMsg(await API.post('network-settings.json', n)));
+  { const _nok=await API.post('network-settings.json', n); toast(savedMsg(_nok)); flashSaved('save-network2', _nok); };
 }
 /* ---- WARP account: register / WARP+ license / central pool ---- */
 // Known-good WARP endpoints (Cloudflare anycast). If the default engage.cloudflareclient.com:2408
@@ -2228,12 +2289,18 @@ async function mirrorSave(silent){ if(!LIVE) return previewToast(); const c=STAT
   c.mirror.branch=(document.getElementById('m2-branch').value||'').trim()||'main';
   c.mirror.pathPrefix=(document.getElementById('m2-path').value||'').trim();
   const tk=(document.getElementById('m2-token').value||'').trim(); if(tk){ c.mirror.token=tk; document.getElementById('m2-token').value=''; }
-  const ok=await API.post('config.json', c); if(!silent){ document.getElementById('m2-msg').textContent=savedMsg(ok); } return ok;
+  const ok=await API.post('config.json', c); if(!silent){ const _m=document.getElementById('m2-msg'); if(_m) _m.textContent=savedMsg(ok); toast(savedMsg(ok)); flashSaved('m2-save', ok); } return ok;
 }
 async function mirrorPublish(){ if(!LIVE) return previewToast(); const msg=document.getElementById('m2-msg'); msg.textContent=lang==='fa'?'در حال انتشار…':'Publishing…';
   await mirrorSave(true);
-  try{ const r=await fetch('/admin/publish-mirror',{method:'POST'}); const j=await r.json().catch(()=>({})); msg.textContent = r.ok ? (lang==='fa'?'✓ منتشر شد':'✓ Published') : ('⚠️ '+(j.reason||('HTTP '+r.status))); }
-  catch(e){ msg.textContent='⚠️ '+e.message; } }
+  try{
+    const r=await fetch('/admin/publish-mirror',{method:'POST'}); const j=await r.json().catch(()=>({}));
+    if(r.ok){ msg.textContent=(lang==='fa'?'✓ منتشر شد':'✓ Published'); toast(lang==='fa'?'✓ در گیت‌هاب منتشر شد':'✓ Published to GitHub'); return; }
+    var why=j.reason;
+    if(!why && Array.isArray(j.results)){ var bad=j.results.find(function(x){return x&&!x.ok;}); if(bad){ why=(bad.file?bad.file+': ':'')+(bad.error||('GitHub HTTP '+(bad.status||'?'))); } }
+    msg.textContent='⚠️ '+(why||('HTTP '+r.status)); toast('⚠️ '+(why||('HTTP '+r.status)));
+  }
+  catch(e){ msg.textContent='⚠️ '+e.message; toast('⚠️ '+e.message); } }
 async function saveNotif(){
   if(!LIVE) return previewToast(); const c=STATE.config; c.TG=c.TG||{};
   c.TG.enabled = document.getElementById('t2-tg').classList.contains('on');
@@ -2469,8 +2536,9 @@ const DEMO_USAGE={ u1:31*1073741824, u2:8*1073741824, u3:10*1073741824 };
 let _updVer='';
 async function checkUpdate(){ try{
  const vr=await fetch('/version.json?_t='+Date.now()).then(function(r){return r.json()}).catch(function(){return null});
+ if(vr&&vr.version){ var _pv=document.getElementById('ft-panel-ver'); if(_pv) _pv.textContent='V'+vr.version; }
+ let cur=0; try{ const sys=await API.get('system.json'); if(sys&&sys.version){ var _wv=document.getElementById('ft-worker-ver'); if(_wv) _wv.textContent=(String(sys.version).charAt(0)==='V'?'':'V')+sys.version; cur=parseFloat(String(sys.version).replace(/[^0-9.]/g,''))||0; } }catch(e){}
  if(!vr||!vr.version) return;
- let cur=0; try{ const sys=await API.get('system.json'); cur=parseFloat(String(sys.version||'').replace(/[^0-9.]/g,''))||0; }catch(e){}
  const latest=parseFloat(String(vr.version).replace(/[^0-9.]/g,''))||0; if(latest<=cur) return;
  let dm=''; try{ dm=localStorage.getItem('nova-upd-dismiss')||''; }catch(e){} if(dm===String(vr.version)) return;
  _updVer=String(vr.version);

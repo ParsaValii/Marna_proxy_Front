@@ -1,6 +1,6 @@
 {
-  "version": "3.1",
+  "version": "3.1.6",
   "released": "2026-06",
-  "notes": "D1 storage, location IP scanner, Resistance Policy alerts, login fix.",
+  "notes": "Settings → Save now works. The emoji-flags read called an undefined helper (isOn) that crashed saveSettings before the config POST, so the button silently did nothing — no save, no banner. Fixed, plus a guard so a missing toggle can't throw. Footer Panel/Worker versions are now live (read from version.json and the worker) instead of hardcoded, so they reflect what's actually deployed.",
   "worker_url": "https://raw.githubusercontent.com/iiviirv/panel/main/worker.js"
 }
