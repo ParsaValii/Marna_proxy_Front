@@ -1,6 +1,6 @@
 {
-  "version": "3.4.0",
+  "version": "3.5.0",
   "released": "2026-06",
-  "notes": "MAJOR per-user fix: per-user links (?sub=username) were hitting the external-generator path and returning a 127.0.0.1 error node (the '2 useless configs' bug) — now they use the local Cloudflare-IP generator and get 15-20 real rotating IPs. Per-user links are now rename-safe (matched by stable key, not username) and resolve instantly for just-created users (no more blank nginx page). Added a per-user Save button. VMess removed (unsupported on Cloudflare Workers). CDN list 404 now shows clear guidance. Main subscription was always fine.",
+  "notes": "NEW: Backend mode (optional, OFF by default). Forward traffic to your own Xray/sing-box VPS instead of terminating in the Worker — this unlocks VMess and UDP/voice-video calls (the backend does the protocol + UDP; Nova bridges at the edge). Inspired by cf-xray-proxy. Panel: Network > Backend mode card (toggle + URL + health check, bilingual). Per-user usage/quotas still apply. When OFF, the normal free in-Worker VLESS/Trojan path is 100% unchanged. NEEDS a real backend + live connect-test.",
   "worker_url": "https://raw.githubusercontent.com/iiviirv/panel/main/worker.js"
 }

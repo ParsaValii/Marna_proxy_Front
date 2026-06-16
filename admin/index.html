@@ -789,6 +789,17 @@ html[data-theme=dark] .qr-ph{border-color:#fff}
             <div class="set-grid" style="margin-top:13px"><div class="fg"><label data-i18n="dns_localip">Local DNS IP</label><input class="inp" id="d2-localip" placeholder="8.8.8.8"></div><div class="fg"><label data-i18n="dns_localport">Local DNS port</label><input class="inp" id="d2-localport" placeholder="53"></div></div>
             <div class="field-row"><div class="l" data-i18n="dns_fake">Fake DNS<small data-i18n="dns_fake_h">faster connections, lower latency</small></div><div class="sw" id="t2-fakedns"><span class="k"></span></div></div>
             <div class="set-grid" style="margin-top:13px"><div class="fg"><label data-i18n="dns_fakeip">Fake DNS range</label><input class="inp" id="d2-fakeip" placeholder="198.51.100.1"></div><div class="fg"><label data-i18n="dns_log">Log level</label><select class="inp" id="d2-loglevel"><option value="error">error</option><option value="warn">warn</option><option value="info">info</option><option value="debug">debug</option></select></div></div>
+            <div class="card" style="margin-top:16px;border-color:var(--ac-line)">
+              <div class="card-h"><h3 data-i18n="be_h">🛰 Backend mode (advanced)</h3></div>
+              <div class="card-pad">
+                <p style="font-size:12.5px;color:var(--mu);margin-bottom:12px" data-i18n="be_s">Forward traffic to your own Xray/sing-box server instead of handling it in the Worker. This is the ONLY way to get VMess and working voice/video calls (UDP) — but it requires you to run a backend server (a VPS). Leave OFF to use the normal free in-Worker mode (VLESS/Trojan).</p>
+                <div class="field-row"><div class="l" data-i18n="be_en">Enable backend mode<small data-i18n="be_en_h">when on, Nova bridges to the backend below</small></div><div class="sw" id="t2-backend"><span class="k"></span></div></div>
+                <div class="fg" style="margin-top:11px"><label data-i18n="be_url">Backend URL</label><input class="inp" id="be-url" placeholder="https://your-server.com:8443/path or http://1.2.3.4:10000"></div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button class="btn" id="be-check" data-i18n="be_check">Health check</button></div>
+                <div class="msg" id="be-msg" style="margin-top:8px"></div>
+                <p style="font-size:11.5px;color:var(--wn);margin-top:10px" data-i18n="be_warn">⚠️ Needs a real Xray/sing-box backend. Generate your client configs on the backend, then point them at Nova's domain — Nova will relay to the backend. Test with a real client before relying on it.</p>
+              </div>
+            </div>
             <div style="display:flex;justify-content:flex-end;margin-top:16px"><button class="btn primary" id="save-network2" data-i18n="btn_save">Save</button></div>
           </div>
         </div>
@@ -1157,7 +1168,8 @@ const I18N = {
     env_prod:'Production', grp_ops:'Operations', grp_network:'Network', grp_netset:'Network Settings', grp_config:'Configuration', grp_system:'System', grp_admin:'Administration', grp_tools:'Tools', nav_collapse:'Collapse',
     nav_wireguard:'WireGuard', nav_about:'About', nav_proxy:'Proxy / CDN', nav_corenode:'Core Node', sub_wireguard:'Build a WireGuard config for WARP or a custom peer.', sub_about:'Panel version, changelog and links.', sub_proxy:'How the Worker reaches Cloudflare — PROXYIP / SOCKS5 / HTTP / HTTPS / TURN / SSTP.', sub_corenode:'Your node on every Cloudflare TLS port, on the domain itself.',
     cn_h:'🧩 Core Node', cn_s:'Your node on every Cloudflare TLS port, using the Worker domain directly — separate from the subscription. Copy or scan any port.', cn_copy:'Copy',
-    px_h:'🛡️ Cloudflare CDN access', px_s:"How the Worker reaches Cloudflare's network. Choose a mode, enter the proxy, hit Verify to probe it, then Save. This is the single source of truth — configs pull from here.", px_mode:'Mode', px_proxyip:'PROXYIP address', px_addr:'Proxy address', px_verify:'Verify', px_more_h:'Find proxies', px_more_load:'Load list', px_country:'Country', px_pick:'Proxy', px_use:'Use selected', px_more_s:'Fetch public lists (IRNova/Tools), pick by country, then Use. The PROXYIP list is large (~10MB) — give it a moment. SOCKS5/HTTP/HTTPS load once their files exist in the repo.',
+    be_h:'🛰 Backend mode (advanced)', be_s:'Forward traffic to your own Xray/sing-box server instead of handling it in the Worker. This is the ONLY way to get VMess and working voice/video calls (UDP) — but it requires you to run a backend server (a VPS). Leave OFF to use the normal free in-Worker mode (VLESS/Trojan).', be_en:'Enable backend mode', be_en_h:'when on, Nova bridges to the backend below', be_url:'Backend URL', be_check:'Health check', be_warn:'⚠️ Needs a real Xray/sing-box backend. Generate your client configs on the backend, then point them at Nova\'s domain — Nova will relay to the backend. Test with a real client before relying on it.',
+    px_h:'🛡️ Cloudflare CDN access', px_s:"How the Worker reaches Cloudflare's network. Choose a mode, enter the proxy, hit Verify to probe it, then Save. This is the single source of truth — configs pull from here.", px_mode:'Mode', px_proxyip:'PROXYIP address', px_addr:'Proxy address', px_verify:'Verify', px_more_h:'Find proxies', px_more_load:'Load list', px_country:'Country', px_pick:'Proxy', px_use:'Use selected', px_more_s:'Fetch public lists (PROXYIP from IRNova/Tools, SOCKS5/HTTP/HTTPS from proxifly), pick by country, then Use. The PROXYIP list is large (~10MB) — give it a moment. Free public proxies vary in quality; test before relying on one.',
     wg_h:'🔐 WireGuard config', wg_s:'Build a WireGuard .conf to import into the WireGuard app. Defaults target Cloudflare WARP — edit any field as needed.', wg_loadwarp:'Load from WARP', wg_name:'Name', wg_addr:'Address', wg_dns:'DNS', wg_mtu:'MTU', wg_priv:'Private key', wg_pub:'Peer public key', wg_ep:'Endpoint', wg_port:'Port', wg_ka:'Keepalive', wg_build:'Build config', wg_copy:'Copy', wg_dl:'Download .conf', wg_qrbtn:'QR', wg_loaded:'Loaded from WARP', wg_nowarp:'No WARP config available — register WARP in Network & IPs first.',
     ab_panel:'Panel', ab_worker:'Worker', ab_desc:'Nova Proxy control panel — manage subscriptions, clean IPs, routing, WARP and DNS for your Cloudflare Worker.', ab_changelog:'Changelog', ab_links:'Links',
     nav_dashboard:'Dashboard', nav_distribution:'Subscriptions', nav_network:'Network & IPs',
@@ -1244,7 +1256,8 @@ const I18N = {
     env_prod:'محیط عملیاتی', grp_ops:'عملیات', grp_network:'شبکه', grp_netset:'تنظیمات شبکه', grp_config:'پیکربندی', grp_system:'سیستم', grp_admin:'مدیریت', grp_tools:'ابزارها', nav_collapse:'جمع کردن',
     nav_wireguard:'وایرگارد', nav_about:'درباره', nav_proxy:'پروکسی / CDN', nav_corenode:'نود اصلی', sub_wireguard:'ساخت کانفیگ وایرگارد برای WARP یا پیر دلخواه.', sub_about:'نسخهٔ پنل، تغییرات و پیوندها.', sub_proxy:'نحوه‌ی دسترسی ورکر به کلودفلر — PROXYIP / SOCKS5 / HTTP / HTTPS / TURN / SSTP.', sub_corenode:'نود شما روی همه‌ی پورت‌های TLS کلودفلر، روی خود دامنه.',
     cn_h:'🧩 نود اصلی', cn_s:'نود شما روی همه‌ی پورت‌های TLS کلودفلر، با استفاده‌ی مستقیم از دامنه‌ی ورکر — جدا از اشتراک. هر پورت را کپی یا اسکن کنید.', cn_copy:'کپی',
-    px_h:'🛡️ دسترسی CDN کلودفلر', px_s:'نحوه‌ی دسترسی ورکر به شبکه‌ی کلودفلر. یک حالت را انتخاب کنید، پروکسی را وارد کنید، با Verify بررسی کنید و سپس ذخیره کنید. این تنها منبع معتبر است — کانفیگ‌ها از همین‌جا می‌خوانند.', px_mode:'حالت', px_proxyip:'آدرس PROXYIP', px_addr:'آدرس پروکسی', px_verify:'بررسی', px_more_h:'یافتن پروکسی', px_more_load:'دریافت فهرست', px_country:'کشور', px_pick:'پروکسی', px_use:'استفاده از انتخاب', px_more_s:'فهرست‌های عمومی (IRNova/Tools) را دریافت کنید، بر اساس کشور انتخاب و سپس استفاده کنید. فهرست PROXYIP بزرگ است (~۱۰مگابایت) — کمی صبر کنید. SOCKS5/HTTP/HTTPS وقتی فایل‌هایشان در مخزن باشند بارگذاری می‌شوند.',
+    be_h:'🛰 حالت backend (پیشرفته)', be_s:'ترافیک را به‌جای پردازش در ورکر، به سرور Xray/sing-box خودت بفرست. این تنها راه داشتن VMess و تماس صوتی/تصویری (UDP) است — ولی نیاز به یک سرور backend (VPS) داری. برای حالت رایگانِ معمولی (VLESS/Trojan) خاموش بگذار.', be_en:'فعال‌سازی حالت backend', be_en_h:'وقتی روشن باشد، Nova به backend زیر پل می‌زند', be_url:'آدرس backend', be_check:'بررسی سلامت', be_warn:'⚠️ نیاز به یک backend واقعی (Xray/sing-box) دارد. کانفیگ کلاینت‌ها را روی backend بساز، بعد به دامنهٔ Nova اشاره بده — Nova به backend رله می‌کند. قبل از اتکا، با یک کلاینت واقعی تست کن.',
+    px_h:'🛡️ دسترسی CDN کلودفلر', px_s:'نحوه‌ی دسترسی ورکر به شبکه‌ی کلودفلر. یک حالت را انتخاب کنید، پروکسی را وارد کنید، با Verify بررسی کنید و سپس ذخیره کنید. این تنها منبع معتبر است — کانفیگ‌ها از همین‌جا می‌خوانند.', px_mode:'حالت', px_proxyip:'آدرس PROXYIP', px_addr:'آدرس پروکسی', px_verify:'بررسی', px_more_h:'یافتن پروکسی', px_more_load:'دریافت فهرست', px_country:'کشور', px_pick:'پروکسی', px_use:'استفاده از انتخاب', px_more_s:'فهرست‌های عمومی (PROXYIP از IRNova/Tools و SOCKS5/HTTP/HTTPS از proxifly) را دریافت کنید، بر اساس کشور انتخاب و سپس استفاده کنید. فهرست PROXYIP بزرگ است (~۱۰مگابایت). کیفیت پروکسی‌های عمومی متغیر است؛ قبل از استفاده تست کنید.',
     wg_h:'🔐 کانفیگ وایرگارد', wg_s:'یک فایل .conf وایرگارد بسازید تا در برنامهٔ WireGuard وارد کنید. مقادیر پیش‌فرض برای WARP کلودفلر تنظیم شده‌اند — در صورت نیاز ویرایش کنید.', wg_loadwarp:'دریافت از WARP', wg_name:'نام', wg_addr:'آدرس', wg_dns:'DNS', wg_mtu:'MTU', wg_priv:'کلید خصوصی', wg_pub:'کلید عمومی پیر', wg_ep:'اندپوینت', wg_port:'پورت', wg_ka:'Keepalive', wg_build:'ساخت کانفیگ', wg_copy:'کپی', wg_dl:'دانلود .conf', wg_qrbtn:'QR', wg_loaded:'از WARP بارگذاری شد', wg_nowarp:'کانفیگ WARP موجود نیست — ابتدا در شبکه و آی‌پی WARP را ثبت کنید.',
     ab_panel:'پنل', ab_worker:'ورکر', ab_desc:'پنل مدیریت Nova Proxy — مدیریت اشتراک‌ها، آی‌پی‌های تمیز، مسیریابی، WARP و DNS برای ورکر کلودفلر شما.', ab_changelog:'تغییرات', ab_links:'پیوندها',
     nav_dashboard:'داشبورد', nav_distribution:'اشتراک‌ها', nav_network:'شبکه و آی‌پی‌ها',
@@ -1883,7 +1896,12 @@ const GUIDE = {
     tipList:[
       'Recommended apps: <b>Hiddify</b> and <b>Karing</b> work best on most networks.',
       'Each app card carries the exact config format it needs, so just use its own Import or QR.',
-      'Set per-person data limits and expiry under <b>Users</b>.',
+      '<b>Users:</b> give each person their own link with a data quota, a daily limit, and an expiry date — usage shows on their card, and you can Reset or Save each user individually.',
+      'Working protocols through the Worker are <b>VLESS, Trojan and Shadowsocks</b>. VMess and voice/video calls (UDP) do <b>not</b> work in the free in-Worker mode — that is a Cloudflare limit, not a bug.',
+      '<b>Calls (WhatsApp/Telegram):</b> they need UDP. Turn on <b>WARP</b> (Network & IPs) and use the <b>Nova-WARP</b> node for calls; keep VLESS for browsing.',
+      '<b>Backend mode</b> (Network & IPs, advanced): if you run your own Xray/sing-box VPS, enable it to unlock <b>VMess and working calls</b> — Nova relays to your server. Off by default.',
+      '<b>Routing</b> (Network & IPs): block malware/phishing/QUIC and route China/Russia/sanctioned sites directly.',
+      'Manage everything from the <b>Telegram bot</b> too — status, users, settings, kill-switch, and even one-command Cloudflare install (<code>/install</code>).',
       'Turn on <b>two-factor authentication</b> in Settings to protect this panel.' ] },
   fa:{ qs:'شروع سریع', tips:'نکته‌ها',
     steps:[
@@ -1894,8 +1912,13 @@ const GUIDE = {
     tipList:[
       'برنامه‌های پیشنهادی: <b>هیدیفای</b> و <b>کارینگ</b> روی بیشتر شبکه‌ها بهتر کار می‌کنند.',
       'هر کارت برنامه دقیقاً فرمت موردنیاز خودش را دارد، پس فقط از Import یا QR همان استفاده کنید.',
-      'محدودیت حجم و انقضای هر نفر را در <b>کاربران</b> تنظیم کنید.',
-      'برای محافظت از این پنل، <b>احراز هویت دومرحله‌ای</b> را در تنظیمات روشن کنید.' ] },
+      '<b>کاربران:</b> به هر نفر لینک اختصاصی با سهمیهٔ حجم، سقف روزانه و تاریخ انقضا بده — مصرف روی کارتش نشان داده می‌شود و می‌توانی هر کاربر را جدا «بازنشانی» یا «ذخیره» کنی.',
+      'پروتکل‌هایی که از طریق ورکر کار می‌کنند: <b>VLESS، Trojan و Shadowsocks</b>. VMess و تماس صوتی/تصویری (UDP) در حالت رایگانِ داخل ورکر <b>کار نمی‌کنند</b> — این محدودیت Cloudflare است، نه باگ.',
+      '<b>تماس (واتساپ/تلگرام):</b> به UDP نیاز دارد. <b>WARP</b> را (در شبکه و آی‌پی) روشن کن و برای تماس از نود <b>Nova-WARP</b> استفاده کن؛ برای گشت‌وگذار VLESS بماند.',
+      '<b>حالت Backend</b> (شبکه و آی‌پی، پیشرفته): اگر سرور Xray/sing-box خودت را داری، روشنش کن تا <b>VMess و تماس</b> فعال شود — Nova به سرورت رله می‌کند. پیش‌فرض خاموش است.',
+      '<b>مسیریابی</b> (شبکه و آی‌پی): مسدودسازی بدافزار/فیشینگ/QUIC و عبور مستقیم سایت‌های چین/روسیه/تحریم.',
+      'همه‌چیز را از <b>ربات تلگرام</b> هم می‌توانی مدیریت کنی — وضعیت، کاربران، تنظیمات، کیل‌سوییچ، و حتی نصب یک‌دستوریِ Cloudflare (<code>/install</code>).',
+      'برای محافظت از این پنل، <b>احراز هویت دومرحله‌ای</b> را در تنظیمات روشن کن.' ] },
 };
 function renderGuide(){ const g=GUIDE[lang]||GUIDE.en;
   const sb=document.getElementById('guide-steps'); if(sb) sb.innerHTML=g.steps.map((s,i)=>`<div class="gstep"><span class="n">${i+1}</span><span>${s}</span></div>`).join('');
@@ -2045,7 +2068,7 @@ function pxInit(){
   if(LIVE) pxLoad(); else pxApplyMode();
 }
 /* ---- 'Get more': fetch proxy lists from IRNova/Tools, pick by country ---- */
-var PX_SRC={ proxyip:'https://raw.githubusercontent.com/IRNova/Tools/refs/heads/main/all.json', socks5:'https://raw.githubusercontent.com/IRNova/Tools/refs/heads/main/data/SOCKS5.json', http:'https://raw.githubusercontent.com/IRNova/Tools/refs/heads/main/data/HTTP.json', https:'https://raw.githubusercontent.com/IRNova/Tools/refs/heads/main/data/HTTPS.json' };
+var PX_SRC={ proxyip:'https://raw.githubusercontent.com/IRNova/Tools/refs/heads/main/all.json', socks5:'https://raw.githubusercontent.com/proxifly/free-proxy-list/main/proxies/protocols/socks5/data.json', http:'https://raw.githubusercontent.com/proxifly/free-proxy-list/main/proxies/protocols/http/data.json', https:'https://raw.githubusercontent.com/proxifly/free-proxy-list/main/proxies/protocols/http/data.json' };
 var pxMap=null;
 async function pxLoadList(){
   var m=(document.getElementById('px-mode')||{}).value||'proxyip'; var url=PX_SRC[m]; var msg=document.getElementById('px-more-msg');
@@ -2061,8 +2084,15 @@ async function pxLoadList(){
       items=((d&&d.data)||[]).filter(function(x){ return Array.isArray(x.port)?x.port.indexOf(443)>=0:x.port===443; })
         .map(function(x){ var mt=x.meta||{}; return { proxy:x.ip, country:mt.country||'??', emoji:mt.country_emoji||'🏳️', city:mt.city||'', org:mt.asOrganization||'' }; });
     } else {
-      var a2=Array.isArray(d)?d:((d&&d.data)||[]);
-      items=a2.map(function(x){ return { proxy:x.proxy||x.address||x.ip, country:x.country||'??', emoji:x.country_emoji||'🏳️', city:x.city||'', org:x.asOrganization||'' }; }).filter(function(x){ return x.proxy; });
+      var a2=Array.isArray(d)?d:((d&&d.data)||(d&&d.proxies)||[]);
+      // HTTPS mode reuses the HTTP list, filtered to entries that support HTTPS (proxifly: https:true).
+      if(m==='https') a2=a2.filter(function(x){ return x && x.https===true; });
+      items=a2.map(function(x){ var g=x.geolocation||{};
+        var addr=x.proxy||x.address||(x.ip&&x.port?((x.ip+':'+x.port)):x.ip);
+        // strip any scheme prefix so the Save box gets a clean host:port (or user:pass@host:port)
+        if(typeof addr==='string') addr=addr.replace(/^\w+:\/\//,'');
+        return { proxy:addr, country:(g.country||x.country||'??'), emoji:x.country_emoji||'🏳️', city:(g.city||x.city||''), org:x.asOrganization||x.isp||'' };
+      }).filter(function(x){ return x.proxy && x.country!=='ZZ'; });
     }
     if(!items.length){ msg.className='msg bad'; msg.textContent=(lang==='fa'?'موردی یافت نشد':'No entries found'); return; }
     pxMap={}; items.forEach(function(it){ (pxMap[it.country]=pxMap[it.country]||[]).push(it); });
@@ -2251,6 +2281,7 @@ function syncFormValues(){
   on('t2-antisanc', n.enableAntiSanctionDNS); set('d2-antiprov', n.antiSanctionDNSProvider||'shekan'); set('d2-anticustom', n.antiSanctionCustomDNS||'');
   on('t2-localdns', n.enableLocalDNS); set('d2-localip', n.localDNSIP||'8.8.8.8'); set('d2-localport', n.localDNSPort||'53');
   on('t2-fakedns', n.enableFakeDNS); set('d2-fakeip', n.fakeDNSIP||'198.51.100.1'); set('d2-loglevel', n.logLevel||'error');
+  on('t2-backend', n.backendMode); set('be-url', n.backendUrl||'');
   // Clean IPs (config) — mode + pool API + random params; custom list loaded from ADD.txt
   const osg=c.optimizedSubGeneration||{}, pool=osg.localIPPool||{};
   set('ci-poolapi', c.POOL_API||'https://nova-deploy.pages.dev/api/pool');
@@ -2323,6 +2354,17 @@ async function saveSettings(){
   }catch(e){ _why=(e&&e.message)||'network error'; }
   if(_ok){ toast(savedMsg(true)); flashSaved('save-settings2', true); } else { toast('⚠️ '+(lang==='fa'?'ذخیره ناموفق: ':'Save failed: ')+_why); flashSaved('save-settings2', false); }
 }
+async function backendHealthCheck(){ var el=document.getElementById('be-msg'); var u=(document.getElementById('be-url')||{}).value||''; u=u.trim();
+  if(!/^https?:\/\//i.test(u)){ if(el){ el.className='msg bad'; el.textContent=(lang==='fa'?'یک آدرس معتبر backend وارد کنید (https://...)':'Enter a valid backend URL (https://...)'); } return; }
+  if(el){ el.className='msg'; el.textContent=(lang==='fa'?'در حال بررسی…':'Checking…'); }
+  // Try the backend's /health (cf-xray-proxy convention); fall back to a HEAD on the root.
+  try{ var base=u.replace(/\/+$/,''); var h=base.replace(/(\/[^/]*)?$/,'')+'/health';
+    var r=await fetch(h,{method:'GET',mode:'cors'}).catch(function(){return null;});
+    if(r && r.ok){ if(el){ el.className='msg ok'; el.textContent='✅ '+(lang==='fa'?'backend پاسخ داد (/health)':'Backend reachable (/health)'); } return; }
+    var r2=await fetch(u,{method:'GET',mode:'no-cors'}).catch(function(){return null;});
+    if(el){ el.className='msg'; el.textContent=(lang==='fa'?'پاسخ /health نگرفت؛ اگر backend فقط مسیر اختصاصی دارد طبیعی است. با یک کلاینت واقعی تست کنید.':'No /health response; that\'s normal if your backend only serves its own path. Test with a real client.'); }
+  }catch(e){ if(el){ el.className='msg bad'; el.textContent='⚠️ '+e.message; } }
+}
 async function saveNetwork(){
   if(!LIVE) return previewToast(); const n=STATE.net;
   document.querySelectorAll('#routing-rows [data-toggle]').forEach(row=>{ n[NET_MAP[row.dataset.toggle]] = row.querySelector('.sw').classList.contains('on'); });
@@ -2334,6 +2376,7 @@ async function saveNetwork(){
   n.enableAntiSanctionDNS=isOn('t2-antisanc'); n.antiSanctionDNSProvider=g('d2-antiprov'); n.antiSanctionCustomDNS=(g('d2-anticustom')||'').trim();
   n.enableLocalDNS=isOn('t2-localdns'); n.localDNSIP=(g('d2-localip')||'').trim()||'8.8.8.8'; n.localDNSPort=(g('d2-localport')||'').trim()||'53';
   n.enableFakeDNS=isOn('t2-fakedns'); n.fakeDNSIP=(g('d2-fakeip')||'').trim()||'198.51.100.1'; n.logLevel=g('d2-loglevel');
+  n.backendMode=isOn('t2-backend'); n.backendUrl=(g('be-url')||'').trim();
   // custom + preset rules
   n.customRules=g('n2-customrules')||'';
   n.bypassCountries=[['cn','t2-bp-cn'],['ru','t2-bp-ru']].filter(([,id])=>isOn(id)).map(([c])=>c);
@@ -2534,6 +2577,7 @@ document.addEventListener('click', (e)=>{
   // primary actions -> real backend
   if(e.target.closest('#policy-apply')){ applyPolicy(); return; }
   if(e.target.closest('#save-settings2')){ saveSettings(); return; }
+  if(e.target.closest('#be-check')){ backendHealthCheck(); return; }
   if(e.target.closest('#save-network2')){ saveNetwork(); return; }
   { const cm=e.target.closest('#ci-seg button'); if(cm){ setCiMode(cm.dataset.m); return; } }
   if(e.target.closest('#ci-speedtest')){ runSpeedTest(); return; }
@@ -2621,7 +2665,7 @@ const DEMO_USAGE={ u1:31*1073741824, u2:8*1073741824, u3:10*1073741824 };
 
 /* ---- boot ---- */
 let _updVer='';
-async function checkUpdate(){ try{
+async function checkUpdate(){ return; /* UPDATE BANNER DISABLED — it confused users. To re-enable, delete this 'return;'. */ try{
  const vr=await fetch('/version.json?_t='+Date.now()).then(function(r){return r.json()}).catch(function(){return null});
  if(!vr||!vr.version) return;
  let cur=0; try{ const sys=await API.get('system.json'); cur=parseFloat(String(sys.version||'').replace(/[^0-9.]/g,''))||0; }catch(e){}
