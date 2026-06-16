@@ -1,6 +1,6 @@
 {
-  "version": "3.5.0",
+  "version": "3.5.1",
   "released": "2026-06",
-  "notes": "NEW: Backend mode (optional, OFF by default). Forward traffic to your own Xray/sing-box VPS instead of terminating in the Worker — this unlocks VMess and UDP/voice-video calls (the backend does the protocol + UDP; Nova bridges at the edge). Inspired by cf-xray-proxy. Panel: Network > Backend mode card (toggle + URL + health check, bilingual). Per-user usage/quotas still apply. When OFF, the normal free in-Worker VLESS/Trojan path is 100% unchanged. NEEDS a real backend + live connect-test.",
+  "notes": "Backend mode: added a one-line VPS installer (nova-backend.sh) + a Quick-install command box with Copy in the Backend mode panel card. The user runs it on their own VPS over SSH (credentials never collected/stored). It installs Xray, writes the WebSocket config, opens the firewall, offers a root-password change, and prints the exact Backend URL + client config. Bilingual EN/FA. Backend mode still OFF by default.",
   "worker_url": "https://raw.githubusercontent.com/iiviirv/panel/main/worker.js"
 }
