@@ -864,7 +864,7 @@ html[data-theme=dark] .qr-ph{border-color:#fff}
           <div class="card">
             <div class="card-h"><h3 data-i18n="set_proto">Protocol &amp; transport</h3></div>
             <div class="card-pad">
-              <div class="fg"><label data-i18n="lbl_protocol">Protocol</label><select class="inp" id="f2-proto"><option value="vless">VLESS</option><option value="vmess">VMess</option><option value="trojan">Trojan</option><option value="ss">Shadowsocks</option></select></div>
+              <div class="fg"><label data-i18n="lbl_protocol">Protocol</label><select class="inp" id="f2-proto"><option value="vless">VLESS</option><option value="trojan">Trojan</option><option value="ss">Shadowsocks</option></select></div>
               <div class="fg"><label data-i18n="lbl_transport">Transport</label><select class="inp" id="f2-trans"><option value="ws">WebSocket</option><option value="xhttp">XHTTP</option><option value="grpc">gRPC</option></select></div>
               <div class="fg"><label data-i18n="lbl_fp">TLS fingerprint</label><select class="inp" id="f2-fp"><option value="random">random</option><option value="chrome">chrome</option><option value="firefox">firefox</option><option value="safari">safari</option><option value="ios">ios</option><option value="android">android</option><option value="edge">edge</option></select></div>
               <div class="fg"><label data-i18n="lbl_path">Transport path</label><input class="inp" id="f2-path" placeholder="/"></div>
@@ -1667,6 +1667,7 @@ function renderUsers(){
           <div class="uf"><label>${t('col_daily')} (GB)</label><input class="inp" type="number" min="0" data-udq="${i}" value="${dq?Math.round(dq/1073741824):0}"></div>
           <div class="uf"><label>${t('col_expiry')}</label><input class="inp" type="date" data-ux="${i}" value="${u.expiry?String(u.expiry).slice(0,10):''}"></div>
         </div>
+        <div style="display:flex;justify-content:flex-end;margin-top:10px"><button class="btn primary sm" data-usave="${i}">${lang==='fa'?'💾 ذخیره این کاربر':'💾 Save this user'}</button></div>
       </details>
     </div>`;
   }).join('');
@@ -1712,6 +1713,11 @@ function updateMultiUserUI(){
   }
 }
 async function deleteUser(i){ collectUsers(); (STATE.users||[]).splice(i,1); renderUsers(); if(LIVE) await saveUsers(); }
+async function saveOneUser(i, btn){ collectUsers();
+  if(!LIVE){ toast(lang==='fa'?'حالت پیش‌نمایش':'Preview mode'); return; }
+  const ok = await saveUsers();
+  if(btn){ const old=btn.textContent; btn.textContent=ok?(lang==='fa'?'✓ ذخیره شد':'✓ Saved'):(lang==='fa'?'✗ خطا':'✗ Error'); setTimeout(()=>{ btn.textContent=old; }, 1600); }
+}
 async function resetUser(i){ const u=(STATE.users||[])[i]; if(!u) return;
   if(!confirm((lang==='fa'?'مصرف این کاربر صفر شود و دوباره فعال گردد؟ ':'Reset this user\'s usage and re-enable them? ')+(u.name||u.username||''))) return;
   if(!LIVE){ toast(lang==='fa'?'حالت پیش‌نمایش':'Preview mode'); return; }
@@ -1728,11 +1734,11 @@ async function saveUsers(){ collectUsers();
   const mu=document.getElementById('t2-multiuser').classList.contains('on'); STATE.multiUser=mu;
   if(!LIVE){ writeUsersCache(mu, STATE.users); renderUsers(); return previewToast(); }
   try{ const r=await fetch('/admin/users.json',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({multiUser:mu, users:STATE.users})});
-    if(r.redirected || /\/login/.test(r.url)){ toast(lang==='fa'?'نشست منقضی شد — دوباره وارد شوید':'Session expired — sign in again'); return; }
+    if(r.redirected || /\/login/.test(r.url)){ toast(lang==='fa'?'نشست منقضی شد — دوباره وارد شوید':'Session expired — sign in again'); return false; }
     let j={}; try{ j=await r.json(); }catch(e){}
-    if(r.ok && j && j.success===true){ writeUsersCache(mu, STATE.users); const n=(typeof j.count==='number')?j.count:STATE.users.length; toast((lang==='fa'?'ذخیره و تأیید شد — ':'Saved & verified — ')+n+(lang==='fa'?' کاربر':(' user'+(n===1?'':'s')))); renderUsers(); }
-    else { toast('⚠️ '+((j&&j.error)||('HTTP '+r.status))); }
-  }catch(e){ toast('⚠️ '+e.message); } }
+    if(r.ok && j && j.success===true){ writeUsersCache(mu, STATE.users); const n=(typeof j.count==='number')?j.count:STATE.users.length; toast((lang==='fa'?'ذخیره و تأیید شد — ':'Saved & verified — ')+n+(lang==='fa'?' کاربر':(' user'+(n===1?'':'s')))); renderUsers(); return true; }
+    else { toast('⚠️ '+((j&&j.error)||('HTTP '+r.status))); return false; }
+  }catch(e){ toast('⚠️ '+e.message); return false; } }
 
 /* ---- Worker requests: live Cloudflare status (connect / disconnect) ---- */
 function renderWorker(){
@@ -2047,7 +2053,9 @@ async function pxLoadList(){
   msg.className='msg'; msg.textContent=(lang==='fa'?'در حال دریافت…':'Fetching…')+(m==='proxyip'?' (~10MB)':'');
   try{
     var r=await fetch(url,{cache:'no-store'});
-    if(!r.ok){ msg.className='msg bad'; msg.textContent='⚠️ '+(lang==='fa'?'منبع در دسترس نیست':'Source not available yet')+' ('+r.status+')'; return; }
+    if(!r.ok){ msg.className='msg bad'; msg.textContent=(r.status===404)
+      ? (lang==='fa'?('⚠️ فهرست '+m.toUpperCase()+' هنوز در مخزن منتشر نشده. فعلاً از حالت PROXYIP استفاده کنید (آن کار می‌کند) یا پروکسی را دستی وارد کنید.'):('⚠️ The '+m.toUpperCase()+' list is not published in the repo yet. Use PROXYIP mode for now (it works), or enter a proxy manually.'))
+      : ('⚠️ '+(lang==='fa'?'منبع در دسترس نیست':'Source not available')+' ('+r.status+')'); return; }
     var d=await r.json(); var items=[];
     if(m==='proxyip'){
       items=((d&&d.data)||[]).filter(function(x){ return Array.isArray(x.port)?x.port.indexOf(443)>=0:x.port===443; })
@@ -2104,10 +2112,6 @@ function cnRender(){
   box.querySelectorAll('.cn-qr').forEach(function(b){ b.onclick=function(){ var q=document.getElementById(b.dataset.id); if(!q) return; if(q.style.display==='block'){ q.style.display='none'; return; } q.style.display='block'; q.innerHTML=''; try{ new QRCode(q,{text:decodeURIComponent(b.dataset.l),width:180,height:180,correctLevel:QRCode.CorrectLevel.M}); }catch(e){ q.textContent='QR error'; } }; });
 }
 function cnInit(){ var b=document.getElementById('cn-refresh'); if(b&&!b._w){ b._w=1; b.onclick=function(){ if(LIVE){ loadLive().then(cnRender); } else cnRender(); }; } cnRender(); }
-async function aboutInit(){
-  try{ var j=await fetch('/version.json?_t='+Date.now()).then(function(x){return x.json();}); if(j){ var cl=document.getElementById('ab-changelog'); if(cl) cl.innerHTML='<b>v'+(j.version||'')+'</b> · '+(j.released||'')+'<br>'+String(j.notes||'').replace(/[<>&]/g,function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[c];}); var w=document.getElementById('ab-worker'); if(w) w.textContent='V'+(j.version||'?'); } }catch(e){}
-  try{ var s=await fetch('/admin/system.json?_t='+Date.now()).then(function(x){return x.json();}); if(s&&s.version){ var w2=document.getElementById('ab-worker'); if(w2) w2.textContent=(String(s.version).charAt(0)==='V'?'':'V')+s.version; } }catch(e){}
-}
 function openDrawer(){ $('#sidebar').classList.add('open'); $('#scrim').classList.add('show'); }
 function closeDrawer(){ $('#sidebar').classList.remove('open'); $('#scrim').classList.remove('show'); }
 
@@ -2555,6 +2559,7 @@ document.addEventListener('click', (e)=>{
   if(e.target.closest('#users-save2')){ saveUsers(); return; }
   const ud=e.target.closest('[data-ud]'); if(ud){ deleteUser(+ud.dataset.ud); return; }
   const urs=e.target.closest('[data-ureset]'); if(urs){ resetUser(+urs.dataset.ureset); return; }
+  const usv=e.target.closest('[data-usave]'); if(usv){ saveOneUser(+usv.dataset.usave, usv); return; }
   if(e.target.closest('#pw-change')){ changePassword(); return; }
   if(e.target.closest('#twofa-start')){ twofaStart(); return; }
   if(e.target.closest('#twofa-qr')){ showQR(STATE.twofaOtp||'', 'Nova 2FA'); return; }
@@ -2625,7 +2630,7 @@ async function checkUpdate(){ try{
  _updVer=String(vr.version);
  const bar=document.getElementById('update-bar'); if(!bar) return;
  document.getElementById('update-txt').textContent=(lang==='fa')?('نسخهٔ جدید V'+vr.version+' در دسترس است'+(vr.notes?('. '+vr.notes):'')):('Update available: V'+vr.version+(vr.notes?('. '+vr.notes):''));
- const lk=document.getElementById('update-link'); lk.textContent=(lang==='fa')?'دریافت بروزرسانی':'Get update'; if(vr.worker_url) lk.href=vr.worker_url;
+ const lk=document.getElementById('update-link'); lk.textContent=(lang==='fa')?'دریافت بروزرسانی':'Get update'; if(vr.worker_url){ lk.href=vr.worker_url; lk.style.display=''; } else { lk.style.display='none'; }
  const x=document.getElementById('update-x'); if(x) x.onclick=function(){ bar.style.display='none'; try{ localStorage.setItem('nova-upd-dismiss',_updVer); }catch(e){} };
  bar.style.display='flex';
 }catch(e){} }
