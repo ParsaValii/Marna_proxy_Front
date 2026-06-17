@@ -1,6 +1,6 @@
 {
-  "version": "3.5.7",
+  "version": "3.5.9",
   "released": "2026-06",
-  "notes": "Backend mode now auto-generates a ready-to-use VLESS client link + scannable QR (Hiddify/v2rayNG) the moment you enable it and paste the Backend URL — no manual link building. QR auto-uses your Custom Domain if set. Includes the DoH POST fix (backend mode never intercepts /dns-query or Nova's own endpoints).",
+  "notes": "Fixes the backend 502: the Worker now forwards the ORIGINAL WebSocket upgrade request to the backend (fetch(target, request)) instead of rebuilding headers, so Cloudflare actually establishes the outbound socket. Combined with the port fix (backend must be on a Cloudflare-allowed port like 8080), backend mode now relays VLESS/VMess. Use /backend-test to verify.",
   "worker_url": "https://raw.githubusercontent.com/iiviirv/panel/main/worker.js"
 }
