@@ -82,8 +82,10 @@ button{font-family:inherit;cursor:pointer}
 .nav-group.collapsible:not(.open) .nav{display:none}
 .nav-group.collapsible.open .nav-toggle .chev{transform:rotate(180deg)}
 .app.nav-collapsed .nav-toggle span{display:none}
+.app.nav-collapsed .nav-toggle .chev{display:none}
 .app.nav-collapsed .nav-toggle{justify-content:center}
 .app.nav-collapsed .nav-group.collapsible .nav{display:flex}
+.app.nav-collapsed .nav-group.collapsible:not(.open) .nav{display:flex}
 .nav{display:flex;flex-direction:column;gap:2px}
 .nav-item{
   display:flex;align-items:center;gap:12px;padding:9px 12px;border-radius:var(--r-sm);
