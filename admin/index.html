@@ -2385,6 +2385,10 @@ async function saveSettings(){
 }
 async function backendHealthCheck(){ var el=document.getElementById('be-msg'); var u=(document.getElementById('be-url')||{}).value||''; u=u.trim();
   if(!/^https?:\/\//i.test(u)){ if(el){ el.className='msg bad'; el.textContent=(lang==='fa'?'یک آدرس معتبر backend وارد کنید (http://... یا https://...)':'Enter a valid backend URL (http://... or https://...)'); } return; }
+  // The /backend-test reads the SAVED config, so save the current toggle+URL FIRST. This is what
+  // makes "enable → type URL → Health check" just work, without the user having to find Save.
+  if(el){ el.className='msg'; el.textContent=(lang==='fa'?'در حال ذخیره و تست…':'Saving, then testing…'); }
+  try{ if(LIVE) await saveNetwork(); }catch(e){}
   if(el){ el.className='msg'; el.textContent=(lang==='fa'?'در حال تست واقعیِ ارتباط با backend…':'Running a real backend connectivity test…'); }
   // Use Nova's own /backend-test diagnostic — it actually opens the WebSocket to your backend from
   // inside the Worker and reports whether the relay works. This is the REAL test (not /health).
@@ -2757,11 +2761,16 @@ document.addEventListener('click', (e)=>{
   const trow = e.target.closest('[data-toggle]');
   if(trow){ trow.querySelector('.sw').classList.toggle('on'); return; }
   // standalone switches (telegram alerts, etc.)
-  const sw = e.target.closest('.sw'); if(sw){ sw.classList.toggle('on'); if(sw.id==='t2-multiuser') updateMultiUserUI(); if(sw.id==='t2-backend'){ try{ renderBackendClient(); }catch(_e){} } return; }
+  const sw = e.target.closest('.sw'); if(sw){ sw.classList.toggle('on'); if(sw.id==='t2-multiuser') updateMultiUserUI(); if(sw.id==='t2-backend'){ try{ renderBackendClient(); }catch(_e){} try{ if(LIVE) saveNetwork(); }catch(_e){} } return; }
 });
 { const bf=document.getElementById('backup-file2'); if(bf) bf.onchange=(e)=>{ const f=e.target.files&&e.target.files[0]; if(f) backupImport(f); e.target.value=''; }; }
 { const ff=document.getElementById('f2-frag'); if(ff) ff.addEventListener('change',function(){ const b=document.getElementById('f2-frag-custom'); if(b) b.style.display=this.value==='custom'?'block':'none'; }); }
-{ const bu=document.getElementById('be-url'); if(bu) bu.addEventListener('input',function(){ window.__backendVerified=null; try{ renderBackendClient(); }catch(_e){} try{ checkBackendPort(); }catch(_e){} }); }
+{ const bu=document.getElementById('be-url'); if(bu){
+    bu.addEventListener('input',function(){ window.__backendVerified=null; try{ renderBackendClient(); }catch(_e){} try{ checkBackendPort(); }catch(_e){} });
+    // Persist the URL when the user finishes editing (blur/change) so it's saved without hunting for
+    // the Save button — only auto-save when the port is valid, to avoid saving a known-dead URL.
+    bu.addEventListener('change',function(){ try{ if(LIVE && checkBackendPort()) saveNetwork(); }catch(_e){} });
+  } }
 $('#menu-btn').addEventListener('click', openDrawer)
 /* Collapsible "Network Settings" submenu (closed by default, state remembered) */
 ;(function(){
