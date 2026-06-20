@@ -1,6 +1,6 @@
 {
-  "version": "3.5.9",
-  "released": "2026-06",
-  "notes": "Fixes the backend 502: the Worker now forwards the ORIGINAL WebSocket upgrade request to the backend (fetch(target, request)) instead of rebuilding headers, so Cloudflare actually establishes the outbound socket. Combined with the port fix (backend must be on a Cloudflare-allowed port like 8080), backend mode now relays VLESS/VMess. Use /backend-test to verify.",
+  "version": "3.8.0",
+  "released": "2026-06-20",
+  "notes": "Censorship-resistance and abuse-control hardening: (1) Disguise — move the panel, login and subscription to secret paths you choose (Settings → Network → Disguise), so probing the default /admin or /login just returns a generic page; the shipped worker also encodes protocol strings (vless/trojan) out of the build. (2) Per-ISP clean-IP pool — point Smart IP mode at a folder of per-carrier files (mci.txt, mtn.txt, …) and each user is auto-served IPs for their operator. (3) Request-count quota backstop — per-user request/daily-request limits that enforce even when byte accounting is thin (backend-forward mode). All opt-in; existing installs unchanged.",
   "worker_url": "https://raw.githubusercontent.com/iiviirv/panel/main/worker.js"
 }

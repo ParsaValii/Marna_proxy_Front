@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Nova Proxy — Control Plane</title>
-<meta name="nova-panel-version" content="3.6.3" />
+<meta name="nova-panel-version" content="3.8.0" />
 <link rel="icon" type="image/svg+xml" href="/logo-mark.svg" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -33,9 +33,11 @@
 }
 html[data-theme=light]{
   --bg:#f4f6fb; --panel:#ffffff; --card:#ffffff; --card2:#f7f9fc;
-  --bd:#e6eaf1; --bd2:#dde2eb; --tx:#101622; --tx2:#445066; --mu:#8a93a6;
+  --bd:#e6eaf1; --bd2:#dde2eb; --tx:#101622; --tx2:#3a465c; --mu:#5f6a7d;
   --ac:#0ea5c4; --ac2:#7c3aed; --grad:linear-gradient(120deg,#0891b2,#7c3aed);
   --ring:rgba(8,145,178,.25);
+  /* Readable warning/ok/danger on a LIGHT background — the dark-theme oranges/greens wash out. */
+  --wn:#b45309; --ok:#047857; --dg:#dc2626;
   --shadow:0 1px 2px rgba(20,40,80,.04),0 10px 28px rgba(40,60,110,.10);
 }
 
@@ -211,6 +213,13 @@ html[data-theme=light] .btn.primary{color:#fff}
 .chip.warn{color:var(--wn);border-color:color-mix(in srgb,var(--wn) 35%,transparent);background:color-mix(in srgb,var(--wn) 11%,transparent)}
 .chip.err{color:var(--dg);border-color:color-mix(in srgb,var(--dg) 35%,transparent);background:color-mix(in srgb,var(--dg) 11%,transparent)}
 .chip.info{color:var(--ac);border-color:var(--ac-line);background:var(--ac-soft)}
+
+/* ---- Inline status messages (health check, save, proxy test, etc.) ---- */
+/* Explicit colors so they stay readable in BOTH themes (the light theme remaps --ok/--wn/--dg). */
+.msg{font-size:12px;color:var(--tx2);line-height:1.5}
+.msg.ok{color:var(--ok);font-weight:600}
+.msg.bad{color:var(--dg);font-weight:600}
+.msg.warn{color:var(--wn);font-weight:600}
 
 /* ---- KPI grid ---- */
 .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
@@ -553,8 +562,8 @@ html[data-theme=dark] .qr-ph{border-color:#fff}
         <a data-view="guide" title="Guide" aria-label="Guide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></a>
       </div>
       <a class="logout" href="/logout"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg><span data-i18n="logout">Logout</span></a>
-      <div class="ver"><span data-i18n="ver_panel">Panel</span><b>V3.5.9</b></div>
-      <div class="ver"><span data-i18n="ver_worker">Worker</span><b>V3.5.9</b></div>
+      <div class="ver"><span data-i18n="ver_panel">Panel</span><b id="ver-panel">—</b></div>
+      <div class="ver"><span data-i18n="ver_worker">Worker</span><b id="ver-worker">—</b></div>
     </div>
   </aside>
 
@@ -792,11 +801,25 @@ html[data-theme=dark] .qr-ph{border-color:#fff}
             <div class="field-row"><div class="l" data-i18n="dns_fake">Fake DNS<small data-i18n="dns_fake_h">faster connections, lower latency</small></div><div class="sw" id="t2-fakedns"><span class="k"></span></div></div>
             <div class="set-grid" style="margin-top:13px"><div class="fg"><label data-i18n="dns_fakeip">Fake DNS range</label><input class="inp" id="d2-fakeip" placeholder="198.51.100.1"></div><div class="fg"><label data-i18n="dns_log">Log level</label><select class="inp" id="d2-loglevel"><option value="error">error</option><option value="warn">warn</option><option value="info">info</option><option value="debug">debug</option></select></div></div>
             <div class="card" style="margin-top:16px;border-color:var(--ac-line)">
+              <div class="card-h"><h3 data-i18n="dg_h">🥷 Disguise &amp; secret paths (advanced)</h3></div>
+              <div class="card-pad">
+                <p style="font-size:12.5px;color:var(--mu);margin-bottom:12px" data-i18n="dg_s">Hide the panel from censors who fingerprint the Worker itself. With this on, your panel, login and subscription move to secret paths you choose — probing the default /admin or /login just returns a generic page. Leave OFF to keep the normal /admin, /login, /sub.</p>
+                <div class="field-row"><div class="l" data-i18n="dg_en">Enable disguise<small data-i18n="dg_en_h">use secret paths below instead of /admin, /login, /sub</small></div><div class="sw" id="t-disguise"><span class="k"></span></div></div>
+                <div class="set-grid" style="margin-top:13px">
+                  <div class="fg"><label data-i18n="dg_admin">Admin path</label><input class="inp" id="n-adminpath" spellcheck="false" autocomplete="off" placeholder="e.g. my-panel-9f3"></div>
+                  <div class="fg"><label data-i18n="dg_login">Login path</label><input class="inp" id="n-loginpath" spellcheck="false" autocomplete="off" placeholder="e.g. gate-7k2"></div>
+                  <div class="fg"><label data-i18n="dg_sub">Subscription path</label><input class="inp" id="n-subpath" spellcheck="false" autocomplete="off" placeholder="e.g. feed-x"></div>
+                </div>
+                <div class="notice-box" style="margin-top:12px"><span class="notice-tag" style="background:var(--wn);color:#1a1206" data-i18n="dg_warn_tag">Important</span><span data-i18n="dg_warn">Write down your secret admin path before you save — after saving, the panel is ONLY reachable at /your-admin-path. (Recovery: set an ADMIN_PATH variable on the Worker.) Allowed characters: a–z, 0–9, hyphen, underscore. Leave a field blank to keep its default name.</span></div>
+              </div>
+            </div>
+            <div class="card" style="margin-top:16px;border-color:var(--ac-line)">
               <div class="card-h"><h3 data-i18n="be_h">🛰 Backend mode (advanced)</h3></div>
               <div class="card-pad">
                 <p style="font-size:12.5px;color:var(--mu);margin-bottom:12px" data-i18n="be_s">Forward traffic to your own Xray/sing-box server instead of handling it in the Worker. This is the ONLY way to get VMess and working voice/video calls (UDP) — but it requires you to run a backend server (a VPS). Leave OFF to use the normal free in-Worker mode (VLESS/Trojan).</p>
                 <div class="field-row"><div class="l" data-i18n="be_en">Enable backend mode<small data-i18n="be_en_h">when on, Nova bridges to the backend below</small></div><div class="sw" id="t2-backend"><span class="k"></span></div></div>
                 <div class="fg" style="margin-top:11px"><label data-i18n="be_url">Backend URL</label><input class="inp" id="be-url" placeholder="https://your-server.com:8443/path or http://1.2.3.4:8080"></div>
+                <div id="be-port-warn" class="msg bad" style="display:none;margin-top:7px;font-size:12px"></div>
                 <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button class="btn" id="be-check" data-i18n="be_check">Health check</button></div>
                 <div style="margin-top:14px;padding:12px 14px;border:1px solid var(--bd);border-radius:10px;background:var(--bg)">
                   <div style="font-size:12px;font-weight:700;color:var(--tx2);margin-bottom:8px" data-i18n="be_quick">⚡ Quick install (run on your VPS as root)</div>
@@ -806,6 +829,22 @@ html[data-theme=dark] .qr-ph{border-color:#fff}
                   </div>
                   <p style="font-size:11px;color:var(--mu);margin-top:8px" data-i18n="be_quick_h">Paste this one line into your VPS over SSH. It installs Xray, writes the config, opens the firewall, and prints the exact Backend URL to paste above. Your VPS credentials are never sent anywhere — you run it yourself on your own server.</p>
                 </div>
+                <!-- Manage / remove backend: change port (reinstall) + uninstall, with copyable commands -->
+                <details style="margin-top:12px;border:1px solid var(--bd);border-radius:10px;background:var(--bg);padding:0">
+                  <summary style="cursor:pointer;font-size:12px;font-weight:700;color:var(--tx2);padding:12px 14px;list-style:none" data-i18n="be_manage">🛠 Change port / remove backend</summary>
+                  <div style="padding:0 14px 14px 14px">
+                    <p style="font-size:11.5px;color:var(--mu);margin:0 0 6px" data-i18n="be_manage_port">Change the port — re-run the installer with a Cloudflare-allowed port (8080, 8880, 2052, 2082, 2086, 2095). Ports like 2076/3080/10000 do NOT work.</p>
+                    <div style="display:flex;align-items:center;gap:8px;background:var(--card2);border:1px solid var(--bd);border-radius:8px;padding:8px 10px;direction:ltr">
+                      <code id="be-cmd-port" style="flex:1;font-size:11px;overflow-x:auto;white-space:nowrap;color:var(--tx2)"></code>
+                      <button class="btn ghost sm" id="be-cmd-port-copy" style="flex:0 0 auto" data-i18n="copy">Copy</button>
+                    </div>
+                    <p style="font-size:11.5px;color:var(--mu);margin:14px 0 6px" data-i18n="be_manage_remove">Remove the backend from your VPS — stops Xray and deletes it. (To stop using it in the panel, just turn the toggle off above; the client QR disappears.)</p>
+                    <div style="display:flex;align-items:flex-start;gap:8px;background:var(--card2);border:1px solid var(--bd);border-radius:8px;padding:8px 10px;direction:ltr">
+                      <code id="be-cmd-remove" style="flex:1;font-size:11px;overflow-x:auto;white-space:pre;color:var(--tx2)">systemctl stop xray 2&gt;/dev/null; systemctl disable xray 2&gt;/dev/null; rm -rf /usr/local/etc/xray /usr/local/bin/xray /usr/local/share/xray /etc/systemd/system/xray.service /etc/systemd/system/xray@.service; systemctl daemon-reload; echo "Xray removed."</code>
+                      <button class="btn ghost sm" id="be-cmd-remove-copy" style="flex:0 0 auto" data-i18n="copy">Copy</button>
+                    </div>
+                  </div>
+                </details>
                 <!-- Auto-generated client config + QR (built from Backend URL + this panel's UUID & domain) -->
                 <div id="be-client-wrap" style="margin-top:14px;padding:14px;border:1px solid var(--ac-line);border-radius:12px;background:var(--bg);display:none">
                   <div style="font-size:12.5px;font-weight:700;color:var(--tx2);margin-bottom:4px" data-i18n="be_client_h">📱 Ready-to-use client config</div>
@@ -866,7 +905,7 @@ html[data-theme=dark] .qr-ph{border-color:#fff}
           <div class="card-h"><h3 data-i18n="ci_mode_h">IP selection mode</h3></div>
           <div class="card-pad">
             <div class="modeseg" id="ci-seg"><button data-m="smart" data-i18n="ci_m_smart">Smart (per-ISP)</button><button data-m="custom" data-i18n="ci_m_custom">Custom list</button><button data-m="random" data-i18n="ci_m_random">Random</button></div>
-            <div id="ci-smart"><div class="fg"><label data-i18n="ci_poolapi">Smart IP API (per-ISP database)</label><input class="inp" id="ci-poolapi" placeholder="https://nova-deploy.pages.dev/api/pool"><div style="font-size:11.5px;color:var(--mu);margin-top:6px" data-i18n="ci_poolapi_h">Serves each user IPs tuned to their ISP.</div></div></div>
+            <div id="ci-smart"><div class="fg"><label data-i18n="ci_poolapi">Smart IP source (per-ISP folder)</label><input class="inp" id="ci-poolapi" placeholder="https://raw.githubusercontent.com/IRNova/Tools/main/clean-ip"><div style="font-size:11.5px;color:var(--mu);margin-top:6px" data-i18n="ci_poolapi_h">Folder URL that holds one file per carrier: mci.txt, mtn.txt, rightel.txt, shatel.txt, plus ir.txt and all.txt as fallbacks. Each is a plain ip:port list — exactly what Nova Radar exports. The panel auto-serves each user the file matching their operator.</div></div></div>
             <div id="ci-custom" style="display:none"><div class="fg"><label data-i18n="ci_custom_ips">Custom clean IPs (ip:port#name)</label><textarea class="inp" id="ci-add" spellcheck="false" style="min-height:150px;font-family:ui-monospace,monospace;font-size:12px"></textarea></div></div>
             <div id="ci-random" style="display:none"><div class="set-grid"><div class="fg"><label data-i18n="ci_rcount">Random count</label><input class="inp" id="ci-rcount" type="number" min="1" max="999"></div><div class="fg"><label data-i18n="ci_rport">Port (-1 = mixed)</label><input class="inp" id="ci-rport" type="number"></div></div></div>
             <div style="display:flex;justify-content:flex-end;margin-top:8px"><button class="btn primary" id="ci-save" data-i18n="btn_save">Save</button></div>
@@ -993,6 +1032,25 @@ html[data-theme=dark] .qr-ph{border-color:#fff}
               <button class="btn sm" id="factory-reset" style="background:var(--dg);color:#fff;border-color:var(--dg)" data-i18n="reset_btn">Factory reset</button>
               <span id="reset-msg" style="font-size:12px;color:var(--mu)"></span>
             </div>
+          </div>
+        </div>
+
+        <div class="section-label" data-i18n="upd_h">Update panel</div>
+        <div class="card card-pad">
+          <p style="font-size:12.5px;color:var(--mu);margin-bottom:12px" data-i18n="upd_s">Update your Worker to the latest Nova version straight from here — no manual redeploy. It keeps your database, settings, and password. You provide a Cloudflare API token with Workers Scripts → Edit; it is used once and never stored.</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px">
+            <button class="btn ghost sm" id="upd-check" data-i18n="upd_check">Check for updates</button>
+            <span id="upd-msg" class="msg" style="font-size:12.5px"></span>
+          </div>
+          <div id="upd-box" style="border-top:1px solid var(--bd);margin-top:10px;padding-top:14px">
+            <p style="font-size:12px;color:var(--mu);margin:0 0 8px" data-i18n="upd_token_help">Create a Cloudflare API token (My Profile → API Tokens → Create Custom Token) with permission: Account → Workers Scripts → Edit. Then paste it below.</p>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px">
+              <a class="btn primary sm" href="https://dash.cloudflare.com/profile/api-tokens?permissionGroupKeys=%5B%7B%22key%22%3A%22workers_scripts%22%2C%22type%22%3A%22edit%22%7D%5D&accountId=*&zoneId=all&name=Nova%20Self-Update" target="_blank" rel="noopener" data-i18n="upd_token_link">Create token (1-click)</a>
+            </div>
+            <div class="fg"><label data-i18n="upd_token_lbl">Cloudflare API token</label><input class="inp" id="upd-token" type="text" autocomplete="off" spellcheck="false" placeholder="••••••••••••••••"></div>
+            <div class="fg" id="upd-scriptname-wrap" style="display:none"><label data-i18n="upd_scriptname_lbl">Worker script name</label><input class="inp" id="upd-scriptname" type="text" autocomplete="off" placeholder="nova-..."></div>
+            <div id="upd-acct-wrap" style="display:none;margin-bottom:10px"></div>
+            <button class="btn primary sm" id="upd-now" data-i18n="upd_now">Update now</button>
           </div>
         </div>
 
@@ -1196,7 +1254,8 @@ const I18N = {
     env_prod:'Production', grp_ops:'Operations', grp_network:'Network', grp_netset:'Network Settings', grp_config:'Configuration', grp_system:'System', grp_admin:'Administration', grp_tools:'Tools', nav_collapse:'Collapse',
     nav_wireguard:'WireGuard', nav_about:'About', nav_proxy:'Proxy / CDN', nav_corenode:'Core Node', sub_wireguard:'Build a WireGuard config for WARP or a custom peer.', sub_about:'Panel version, changelog and links.', sub_proxy:'How the Worker reaches Cloudflare — PROXYIP / SOCKS5 / HTTP / HTTPS / TURN / SSTP.', sub_corenode:'Your node on every Cloudflare TLS port, on the domain itself.',
     cn_h:'🧩 Core Node', cn_s:'Your node on every Cloudflare TLS port, using the Worker domain directly — separate from the subscription. Copy or scan any port.', cn_copy:'Copy',
-    be_h:'🛰 Backend mode (advanced)', be_s:'Forward traffic to your own Xray/sing-box server instead of handling it in the Worker. This is the ONLY way to get VMess and working voice/video calls (UDP) — but it requires you to run a backend server (a VPS). Leave OFF to use the normal free in-Worker mode (VLESS/Trojan).', be_en:'Enable backend mode', be_en_h:'when on, Nova bridges to the backend below', be_url:'Backend URL', be_check:'Health check', be_quick:'⚡ Quick install (run on your VPS as root)', be_quick_h:'Paste this one line into your VPS over SSH. It installs Xray, writes the config, opens the firewall, and prints the exact Backend URL to paste above. Your VPS credentials are never sent anywhere — you run it yourself on your own server.', be_warn:'✅ Setup checklist (all required): 1) Run the install command on your VPS — it sets up Xray. 2) Backend port must be Cloudflare-allowed: 8080, 8880, 2052, 2082, 2086, 2095 (NOT 10000). 3) Backend URL must use a DOMAIN, not a raw IP — in Cloudflare DNS add an A record (e.g. vps.yourdomain.com → your VPS IP) set to DNS-only (GRAY cloud). 4) The VPS Xray UUID must match this panel\'s UUID. 5) Click Health check to verify, then scan the QR below. (The "Health check" runs a real test — green ✓ means it works.)', be_client_h:'📱 Ready-to-use client config', be_client_s:'Scan this QR with Hiddify / v2rayNG to connect through your backend. It already points at this panel\'s domain — just scan and connect.', be_client_copy:'Copy link', be_client_qr:'Show big QR', be_client_iran:'🇮🇷 In Iran, *.workers.dev is filtered — add a Custom Domain to the Worker and the QR will use it automatically.',
+    dg_h:'🥷 Disguise & secret paths (advanced)', dg_s:'Hide the panel from censors who fingerprint the Worker itself. With this on, your panel, login and subscription move to secret paths you choose — probing the default /admin or /login just returns a generic page. Leave OFF to keep the normal /admin, /login, /sub.', dg_en:'Enable disguise', dg_en_h:'use secret paths below instead of /admin, /login, /sub', dg_admin:'Admin path', dg_login:'Login path', dg_sub:'Subscription path', dg_warn_tag:'Important', dg_warn:'Write down your secret admin path before you save — after saving, the panel is ONLY reachable at /your-admin-path. (Recovery: set an ADMIN_PATH variable on the Worker.) Allowed characters: a–z, 0–9, hyphen, underscore. Leave a field blank to keep its default name.',
+    be_h:'🛰 Backend mode (advanced)', be_s:'Forward traffic to your own Xray/sing-box server instead of handling it in the Worker. This is the ONLY way to get VMess and working voice/video calls (UDP) — but it requires you to run a backend server (a VPS). Leave OFF to use the normal free in-Worker mode (VLESS/Trojan).', be_en:'Enable backend mode', be_en_h:'when on, Nova bridges to the backend below', be_url:'Backend URL', be_check:'Health check', be_quick:'⚡ Quick install (run on your VPS as root)', be_quick_h:'Paste this one line into your VPS over SSH. Your panel\'s UUID is already baked into the command, so the backend matches automatically — no manual step. It installs Xray, writes the config, opens the firewall, asks for your gray-cloud domain, and prints the exact Backend URL to paste above. Your VPS credentials are never sent anywhere — you run it yourself on your own server.', be_manage:'🛠 Change port / remove backend', be_manage_port:'Change the port — re-run the installer with a Cloudflare-allowed port (8080, 8880, 2052, 2082, 2086, 2095). Ports like 2076/3080/10000 do NOT work. Edit the port in the command, then run it on your VPS:', be_manage_remove:'Remove the backend from your VPS — stops Xray and deletes it. (To stop using it in the panel, just turn the toggle off above; the client QR disappears.) Run on your VPS as root:', be_warn:'✅ Setup checklist (all required): 1) Run the install command on your VPS — it sets up Xray. 2) Backend port must be Cloudflare-allowed: 8080, 8880, 2052, 2082, 2086, 2095 (NOT 10000). 3) Backend URL must use a DOMAIN, not a raw IP — in Cloudflare DNS add an A record (e.g. vps.yourdomain.com → your VPS IP) set to DNS-only (GRAY cloud). 4) The VPS Xray UUID must match this panel\'s UUID. 5) Click Health check to verify, then scan the QR below. (The "Health check" runs a real test — green ✓ means it works.)', be_client_h:'📱 Ready-to-use client config', be_client_s:'This appears only after a successful Health check, so you know the backend really works. Scan it with Hiddify / v2rayNG to connect through your backend — it already points at this panel\'s domain.', be_client_copy:'Copy link', be_client_qr:'Show big QR', be_client_iran:'🇮🇷 In Iran, *.workers.dev is filtered — add a Custom Domain to the Worker and the QR will use it automatically.',
     px_h:'🛡️ Cloudflare CDN access', px_s:"How the Worker reaches Cloudflare's network. Choose a mode, enter the proxy, hit Verify to probe it, then Save. This is the single source of truth — configs pull from here.", px_mode:'Mode', px_proxyip:'PROXYIP address', px_addr:'Proxy address', px_verify:'Verify', px_more_h:'Find proxies', px_more_load:'Load list', px_country:'Country', px_pick:'Proxy', px_use:'Use selected', px_more_s:'Fetch public lists (PROXYIP from IRNova/Tools, SOCKS5/HTTP/HTTPS from proxifly), pick by country, then Use. The PROXYIP list is large (~10MB) — give it a moment. Free public proxies vary in quality; test before relying on one.',
     wg_h:'🔐 WireGuard config', wg_s:'Build a WireGuard .conf to import into the WireGuard app. Defaults target Cloudflare WARP — edit any field as needed.', wg_loadwarp:'Load from WARP', wg_name:'Name', wg_addr:'Address', wg_dns:'DNS', wg_mtu:'MTU', wg_priv:'Private key', wg_pub:'Peer public key', wg_ep:'Endpoint', wg_port:'Port', wg_ka:'Keepalive', wg_build:'Build config', wg_copy:'Copy', wg_dl:'Download .conf', wg_qrbtn:'QR', wg_loaded:'Loaded from WARP', wg_nowarp:'No WARP config available — register WARP in Network & IPs first.',
     ab_panel:'Panel', ab_worker:'Worker', ab_desc:'Nova Proxy control panel — manage subscriptions, clean IPs, routing, WARP and DNS for your Cloudflare Worker.', ab_changelog:'Changelog', ab_links:'Links',
@@ -1210,7 +1269,7 @@ const I18N = {
     ver_panel:'Panel', ver_worker:'Worker', view_all:'View all', refresh:'Refresh', copy:'Copy', open:'Open', qr:'QR', btn_save:'Save',
     cf_estimate:'Estimated', cf_h:'Live status (Cloudflare API)', cf_sub:'Connect an API token to show real request counts instead of an estimate. The token needs Account Analytics: Read.', cf_accid:'Account ID', cf_token:'API token', cf_connect:'Connect', cf_disconnect:'Disconnect',
     dns_yourdoh:'Your private DoH endpoint. Paste it into a Secure DNS field in your browser or VPN client.', dns_test:'Test',
-    reset_h:'Factory reset', reset_s:'Wipes everything from the database (settings, network, clean IPs, users, Cloudflare and Telegram keys) and restores the initial state. Your panel password is kept. This cannot be undone.', reset_btn:'Factory reset',
+    reset_h:'Factory reset', reset_s:'Wipes everything from the database (settings, network, clean IPs, users, Cloudflare and Telegram keys) and restores the initial state. Your panel password is kept. This cannot be undone.', reset_btn:'Factory reset', upd_h:'Update panel', upd_s:'Update your Worker to the latest Nova version straight from here — no manual redeploy. It keeps your database, settings, and password. You provide a Cloudflare API token with Workers Scripts → Edit; it is used once and never stored.', upd_check:'Check for updates', upd_token_help:'Click "Create token" — it opens Cloudflare with the right permission (Workers Scripts → Edit) already selected. Just press "Continue to summary" → "Create Token", copy it, and paste below. The token is used once and never stored.', upd_token_link:'Create token (1-click)', upd_token_lbl:'Cloudflare API token', upd_scriptname_lbl:'Worker script name', upd_now:'Update now',
     kill_h:'Kill switch', kill_s:'Emergency stop. While on, every proxy connection and subscription fetch is refused (503). The admin panel stays reachable so you can switch it back off. Use it if your service is being abused.', kill_banner:'Service is paused. All proxy traffic and subscription fetches are stopped. Turn the kill switch off in Settings to resume.',
     nav_guide:'Guide', sub_guide:'How to use Nova Proxy, step by step.', logout:'Logout',
     /* KPIs */
@@ -1271,7 +1330,7 @@ const I18N = {
     mirror_h:'GitHub mirror (blocked-domain failover)', mirror_intro:'Publishes your sub to a GitHub repo so users keep a permanent raw.githubusercontent.com link even if your domain gets filtered.', mirror_en:'Enable mirror', mirror_en_h:'also auto-publishes hourly', mirror_repo:'Repo (owner/name)', mirror_branch:'Branch', mirror_path:'Path (optional)', mirror_token:'GitHub token', mirror_publish:'Publish now',
     nav_cleanips:'Clean IPs', sub_cleanips:'Pick clean Cloudflare IPs, or speed-test for the fastest.',
     ci_speed_h:'🚀 Speed test', ci_speed_s:'Find the fastest clean IPs for your current network and apply them automatically.', ci_src:'Source', ci_country:'Country', dc_h:'📍 Your datacenter', dc_s:"Where your connection currently exits Cloudflare's network.", dc_refresh:'Refresh', dc_unknown:'Unknown location', ct_h:'🧪 Connectivity test', ct_s:'Check which key sites are reachable through your current connection.', ct_run:'Run tests', ct_blocked:'blocked', ech_h:'🔒 About ECH', ech_q1:'What is ECH?', ech_a1:'ECH (Encrypted Client Hello) hides the website name (SNI) inside the TLS handshake, so a censor watching your traffic cannot see which site you are connecting to. It is a privacy upgrade over plain TLS.', ech_q2:'Is ECH blocked in Iran?', ech_a2:'Right now, yes. Iran filtering throttles or blocks ECH handshakes, so turning it on usually breaks the connection (no ping). Keep it OFF unless you have tested that your network passes it.', ech_q3:'How should I use ECH?', ech_a3:'Leave ECH off by default (it is off in the Resistance Policy). If filtering eases or you are on a network that allows it, you can enable it for extra privacy. Test your connection right after turning it on, and turn it back off if your ping disappears.', ci_port:'Port', ci_keep:'Keep best', ci_total:'IPs to test', ci_speed_btn:'Speed test & apply best', ci_lat:'Latency', ci_jit:'Jitter', ci_loss:'Loss',
-    ci_mode_h:'IP selection mode', ci_m_smart:'Smart (per-ISP)', ci_m_custom:'Custom list', ci_m_random:'Random', ci_poolapi:'Smart IP API (per-ISP database)', ci_poolapi_h:'Serves each user IPs tuned to their ISP.', ci_custom_ips:'Custom clean IPs (ip:port#name)', ci_rcount:'Random count', ci_rport:'Port (-1 = mixed)',
+    ci_mode_h:'IP selection mode', ci_m_smart:'Smart (per-ISP)', ci_m_custom:'Custom list', ci_m_random:'Random', ci_poolapi:'Smart IP source (per-ISP folder)', ci_poolapi_h:'Folder URL holding one file per carrier: mci.txt, mtn.txt, rightel.txt, shatel.txt, plus ir.txt and all.txt fallbacks. Each is a plain ip:port list — exactly what Nova Radar exports. Each user is auto-served the file for their operator.', ci_custom_ips:'Custom clean IPs (ip:port#name)', ci_rcount:'Random count', ci_rport:'Port (-1 = mixed)',
     dns_h:'Secure DNS', dns_doh:'DNS-over-HTTPS', dns_doh_h:'encrypt DNS lookups', dns_dohprov:'DoH provider', dns_antisanc:'Anti-sanction DNS', dns_antisanc_h:'reach Google, GitHub, npm and other geo-blocked services', dns_antiprov:'Anti-sanction provider', dns_custom:'Custom DNS (if Custom)', dns_local:'Local DNS', dns_local_h:'resolve some names on the device', dns_localip:'Local DNS IP', dns_localport:'Local DNS port', dns_fake:'Fake DNS', dns_fake_h:'faster connections, lower latency', dns_fakeip:'Fake DNS range', dns_log:'Log level',
     lbl_path:'Transport path', lbl_grpcmode:'gRPC mode', lbl_frag:'TLS fragment (DPI evasion)', frag_off:'Off', frag_custom:'Custom', frag_len:'Fragment length', frag_int:'Fragment interval', frag_pkt:'Fragment packets', lbl_proxyip:'PROXYIP (reverse proxy, optional)', lbl_chain:'Chain proxy / fix IP (optional)', chain_test:'Test', lbl_uuid:'UUID (used in your configs)',
     set_adv:'Domains, ECH & subscription', hosts_h:'Domains (HOST)', hosts_help:'One domain per line. The first is the main host. Connect each to your Worker first.', hosts_check:'Check health', adv_h2:'ECH & Central', ech_sni:'ECH SNI', ech_dns:'ECH DoH', central_api:'Central API (optional)',
@@ -1284,7 +1343,8 @@ const I18N = {
     env_prod:'محیط عملیاتی', grp_ops:'عملیات', grp_network:'شبکه', grp_netset:'تنظیمات شبکه', grp_config:'پیکربندی', grp_system:'سیستم', grp_admin:'مدیریت', grp_tools:'ابزارها', nav_collapse:'جمع کردن',
     nav_wireguard:'وایرگارد', nav_about:'درباره', nav_proxy:'پروکسی / CDN', nav_corenode:'نود اصلی', sub_wireguard:'ساخت کانفیگ وایرگارد برای WARP یا پیر دلخواه.', sub_about:'نسخهٔ پنل، تغییرات و پیوندها.', sub_proxy:'نحوه‌ی دسترسی ورکر به کلودفلر — PROXYIP / SOCKS5 / HTTP / HTTPS / TURN / SSTP.', sub_corenode:'نود شما روی همه‌ی پورت‌های TLS کلودفلر، روی خود دامنه.',
     cn_h:'🧩 نود اصلی', cn_s:'نود شما روی همه‌ی پورت‌های TLS کلودفلر، با استفاده‌ی مستقیم از دامنه‌ی ورکر — جدا از اشتراک. هر پورت را کپی یا اسکن کنید.', cn_copy:'کپی',
-    be_h:'🛰 حالت backend (پیشرفته)', be_s:'ترافیک را به‌جای پردازش در ورکر، به سرور Xray/sing-box خودت بفرست. این تنها راه داشتن VMess و تماس صوتی/تصویری (UDP) است — ولی نیاز به یک سرور backend (VPS) داری. برای حالت رایگانِ معمولی (VLESS/Trojan) خاموش بگذار.', be_en:'فعال‌سازی حالت backend', be_en_h:'وقتی روشن باشد، Nova به backend زیر پل می‌زند', be_url:'آدرس backend', be_check:'بررسی سلامت', be_quick:'⚡ نصب سریع (روی VPS خودت با root اجرا کن)', be_quick_h:'این یک خط را از طریق SSH روی VPS بچسبان. Xray را نصب می‌کند، کانفیگ را می‌نویسد، فایروال را باز می‌کند و آدرس backend دقیق را برای گذاشتن در بالا چاپ می‌کند. اطلاعات VPS تو هیچ‌جا فرستاده نمی‌شود — خودت روی سرور خودت اجرایش می‌کنی.', be_warn:'✅ چک‌لیست راه‌اندازی (همه لازم است): ۱) دستور نصب را روی VPS اجرا کن — Xray را نصب می‌کند. ۲) پورت backend باید جزو پورت‌های مجاز Cloudflare باشد: 8080, 8880, 2052, 2082, 2086, 2095 (نه 10000). ۳) آدرس backend باید با دامنه باشد، نه IP خام — در Cloudflare DNS یک رکورد A بساز (مثل vps.yourdomain.com → IP سرورت) با حالت DNS-only (ابر خاکستری). ۴) UUIDِ Xray روی VPS باید با UUIDِ این پنل یکی باشد. ۵) دکمهٔ «بررسی سلامت» را بزن تا تأیید شود، بعد QR زیر را اسکن کن. (دکمهٔ «بررسی سلامت» یک تست واقعی اجرا می‌کند — تیک سبز ✓ یعنی کار می‌کند.)', be_client_h:'📱 کانفیگ آمادهٔ کلاینت', be_client_s:'این QR را با هیدیفای / v2rayNG اسکن کن تا از طریق backend وصل شوی. همین حالا به دامنهٔ این پنل اشاره می‌کند — فقط اسکن کن و وصل شو.', be_client_copy:'کپی لینک', be_client_qr:'نمایش QR بزرگ', be_client_iran:'🇮🇷 در ایران، *.workers.dev فیلتر است — یک دامنهٔ اختصاصی به ورکر اضافه کن تا QR خودکار از آن استفاده کند.',
+    dg_h:'🥷 استتار و مسیرهای مخفی (پیشرفته)', dg_s:'پنل را از سانسورچی‌هایی که خودِ ورکر را شناسایی می‌کنند پنهان کن. وقتی روشن باشد، پنل، ورود و اشتراک به مسیرهای مخفی دلخواه تو منتقل می‌شوند — و درخواست به /admin یا /login پیش‌فرض فقط یک صفحهٔ عمومی برمی‌گرداند. برای حفظ مسیرهای معمول /admin، /login، /sub خاموش بگذار.', dg_en:'فعال‌سازی استتار', dg_en_h:'به‌جای /admin، /login، /sub از مسیرهای مخفی زیر استفاده کن', dg_admin:'مسیر پنل', dg_login:'مسیر ورود', dg_sub:'مسیر اشتراک', dg_warn_tag:'مهم', dg_warn:'قبل از ذخیره، مسیر مخفی پنل را یادداشت کن — بعد از ذخیره، پنل فقط از /مسیر-پنل-تو در دسترس است. (بازیابی: یک متغیر ADMIN_PATH روی ورکر تنظیم کن.) کاراکترهای مجاز: a–z، ۰–۹، خط تیره، زیرخط. هر فیلد را خالی بگذاری، همان نام پیش‌فرض می‌ماند.',
+    be_h:'🛰 حالت backend (پیشرفته)', be_s:'ترافیک را به‌جای پردازش در ورکر، به سرور Xray/sing-box خودت بفرست. این تنها راه داشتن VMess و تماس صوتی/تصویری (UDP) است — ولی نیاز به یک سرور backend (VPS) داری. برای حالت رایگانِ معمولی (VLESS/Trojan) خاموش بگذار.', be_en:'فعال‌سازی حالت backend', be_en_h:'وقتی روشن باشد، Nova به backend زیر پل می‌زند', be_url:'آدرس backend', be_check:'بررسی سلامت', be_quick:'⚡ نصب سریع (روی VPS خودت با root اجرا کن)', be_quick_h:'این یک خط را از طریق SSH روی VPS بچسبان. UUIDِ پنل از قبل داخل دستور قرار گرفته، پس backend به‌طور خودکار با پنل هماهنگ می‌شود — بدون مرحلهٔ دستی. Xray را نصب می‌کند، کانفیگ را می‌نویسد، فایروال را باز می‌کند، نام دامنهٔ ابرخاکستری را می‌پرسد و آدرس backend دقیق را برای گذاشتن در بالا چاپ می‌کند. اطلاعات VPS تو هیچ‌جا فرستاده نمی‌شود — خودت روی سرور خودت اجرایش می‌کنی.', be_manage:'🛠 تغییر پورت / حذف backend', be_manage_port:'تغییر پورت — نصب‌کننده را با یک پورت مجاز Cloudflare دوباره اجرا کن (8080, 8880, 2052, 2082, 2086, 2095). پورت‌هایی مثل 2076/3080/10000 کار نمی‌کنند. پورت را در دستور ویرایش کن و روی VPS اجرا کن:', be_manage_remove:'حذف backend از روی VPS — Xray را متوقف و پاک می‌کند. (برای قطع استفاده در پنل، فقط کلید بالا را خاموش کن؛ QR کلاینت محو می‌شود.) روی VPS با root اجرا کن:', be_warn:'✅ چک‌لیست راه‌اندازی (همه لازم است): ۱) دستور نصب را روی VPS اجرا کن — Xray را نصب می‌کند. ۲) پورت backend باید جزو پورت‌های مجاز Cloudflare باشد: 8080, 8880, 2052, 2082, 2086, 2095 (نه 10000). ۳) آدرس backend باید با دامنه باشد، نه IP خام — در Cloudflare DNS یک رکورد A بساز (مثل vps.yourdomain.com → IP سرورت) با حالت DNS-only (ابر خاکستری). ۴) UUIDِ Xray روی VPS باید با UUIDِ این پنل یکی باشد. ۵) دکمهٔ «بررسی سلامت» را بزن تا تأیید شود، بعد QR زیر را اسکن کن. (دکمهٔ «بررسی سلامت» یک تست واقعی اجرا می‌کند — تیک سبز ✓ یعنی کار می‌کند.)', be_client_h:'📱 کانفیگ آمادهٔ کلاینت', be_client_s:'این فقط بعد از «بررسی سلامت» موفق نمایش داده می‌شود تا مطمئن شوی backend واقعاً کار می‌کند. آن را با هیدیفای / v2rayNG اسکن کن تا از طریق backend وصل شوی — همین حالا به دامنهٔ این پنل اشاره می‌کند.', be_client_copy:'کپی لینک', be_client_qr:'نمایش QR بزرگ', be_client_iran:'🇮🇷 در ایران، *.workers.dev فیلتر است — یک دامنهٔ اختصاصی به ورکر اضافه کن تا QR خودکار از آن استفاده کند.',
     px_h:'🛡️ دسترسی CDN کلودفلر', px_s:'نحوه‌ی دسترسی ورکر به شبکه‌ی کلودفلر. یک حالت را انتخاب کنید، پروکسی را وارد کنید، با Verify بررسی کنید و سپس ذخیره کنید. این تنها منبع معتبر است — کانفیگ‌ها از همین‌جا می‌خوانند.', px_mode:'حالت', px_proxyip:'آدرس PROXYIP', px_addr:'آدرس پروکسی', px_verify:'بررسی', px_more_h:'یافتن پروکسی', px_more_load:'دریافت فهرست', px_country:'کشور', px_pick:'پروکسی', px_use:'استفاده از انتخاب', px_more_s:'فهرست‌های عمومی (PROXYIP از IRNova/Tools و SOCKS5/HTTP/HTTPS از proxifly) را دریافت کنید، بر اساس کشور انتخاب و سپس استفاده کنید. فهرست PROXYIP بزرگ است (~۱۰مگابایت). کیفیت پروکسی‌های عمومی متغیر است؛ قبل از استفاده تست کنید.',
     wg_h:'🔐 کانفیگ وایرگارد', wg_s:'یک فایل .conf وایرگارد بسازید تا در برنامهٔ WireGuard وارد کنید. مقادیر پیش‌فرض برای WARP کلودفلر تنظیم شده‌اند — در صورت نیاز ویرایش کنید.', wg_loadwarp:'دریافت از WARP', wg_name:'نام', wg_addr:'آدرس', wg_dns:'DNS', wg_mtu:'MTU', wg_priv:'کلید خصوصی', wg_pub:'کلید عمومی پیر', wg_ep:'اندپوینت', wg_port:'پورت', wg_ka:'Keepalive', wg_build:'ساخت کانفیگ', wg_copy:'کپی', wg_dl:'دانلود .conf', wg_qrbtn:'QR', wg_loaded:'از WARP بارگذاری شد', wg_nowarp:'کانفیگ WARP موجود نیست — ابتدا در شبکه و آی‌پی WARP را ثبت کنید.',
     ab_panel:'پنل', ab_worker:'ورکر', ab_desc:'پنل مدیریت Nova Proxy — مدیریت اشتراک‌ها، آی‌پی‌های تمیز، مسیریابی، WARP و DNS برای ورکر کلودفلر شما.', ab_changelog:'تغییرات', ab_links:'پیوندها',
@@ -1298,7 +1358,7 @@ const I18N = {
     ver_panel:'پنل', ver_worker:'ورکر', view_all:'مشاهدهٔ همه', refresh:'بازخوانی', copy:'کپی', open:'باز کردن', qr:'کد QR', btn_save:'ذخیره',
     cf_estimate:'تخمینی', cf_h:'وضعیت زنده (API کلودفلر)', cf_sub:'برای نمایش تعداد واقعی درخواست‌ها به‌جای تخمین، یک توکن API وصل کنید. توکن به دسترسی Account Analytics: Read نیاز دارد.', cf_accid:'شناسهٔ حساب', cf_token:'توکن API', cf_connect:'اتصال', cf_disconnect:'قطع اتصال',
     dns_yourdoh:'نشانی DoH خصوصی شما. آن را در فیلد DNS امن مرورگر یا کلاینت VPN بگذارید.', dns_test:'تست',
-    reset_h:'بازنشانی کارخانه‌ای', reset_s:'همه‌چیز را از پایگاه‌داده پاک می‌کند (تنظیمات، شبکه، IPهای تمیز، کاربران، کلیدهای کلودفلر و تلگرام) و به حالت اولیه برمی‌گرداند. رمز پنل حفظ می‌شود. این کار قابل بازگشت نیست.', reset_btn:'بازنشانی کارخانه‌ای',
+    reset_h:'بازنشانی کارخانه‌ای', reset_s:'همه‌چیز را از پایگاه‌داده پاک می‌کند (تنظیمات، شبکه، IPهای تمیز، کاربران، کلیدهای کلودفلر و تلگرام) و به حالت اولیه برمی‌گرداند. رمز پنل حفظ می‌شود. این کار قابل بازگشت نیست.', reset_btn:'بازنشانی کارخانه‌ای', upd_h:'به‌روزرسانی پنل', upd_s:'ورکر خود را مستقیماً از همین‌جا به آخرین نسخهٔ Nova به‌روزرسانی کن — بدون دیپلوی دستی. دیتابیس، تنظیمات و رمز عبور حفظ می‌شوند. یک توکن API کلودفلر با دسترسی Workers Scripts → Edit می‌دهی؛ فقط یک‌بار استفاده می‌شود و هیچ‌جا ذخیره نمی‌شود.', upd_check:'بررسی به‌روزرسانی', upd_token_help:'روی «ساخت توکن» بزن — کلودفلر با دسترسی درست (Workers Scripts → Edit) از قبل انتخاب‌شده باز می‌شود. فقط «Continue to summary» ← «Create Token» را بزن، توکن را کپی کن و پایین جای‌گذاری کن. توکن فقط یک‌بار استفاده و هیچ‌جا ذخیره نمی‌شود.', upd_token_link:'ساخت توکن (یک‌کلیک)', upd_token_lbl:'توکن API کلودفلر', upd_scriptname_lbl:'نام اسکریپت ورکر', upd_now:'به‌روزرسانی اکنون',
     kill_h:'دکمهٔ توقف اضطراری', kill_s:'توقف اضطراری. وقتی روشن باشد، هر اتصال پراکسی و دریافت اشتراک رد می‌شود (۵۰۳). پنل مدیریت باز می‌ماند تا بتوانید دوباره خاموشش کنید. اگر سرویس‌تان مورد سوءاستفاده است از آن استفاده کنید.', kill_banner:'سرویس متوقف است. همهٔ ترافیک پراکسی و دریافت اشتراک‌ها متوقف شده. برای ازسرگیری، Kill switch را در تنظیمات خاموش کنید.',
     nav_guide:'راهنما', sub_guide:'راهنمای گام‌به‌گام استفاده از نوا پروکسی.', logout:'خروج',
     kpi_network:'شبکه', kpi_storage:'حافظه', kpi_worker:'مصرف ورکر', kpi_traffic:'مصرف امروز',
@@ -1351,7 +1411,7 @@ const I18N = {
     mirror_h:'آینه گیت‌هاب (پشتیبان دامنه مسدودشده)', mirror_intro:'ساب شما را در یک ریپو گیت‌هاب منتشر می‌کند تا کاربران یک لینک دائمی raw.githubusercontent.com داشته باشند حتی اگر دامنه‌تان فیلتر شود.', mirror_en:'فعال‌سازی آینه', mirror_en_h:'هر ساعت هم خودکار منتشر می‌شود', mirror_repo:'ریپو (owner/name)', mirror_branch:'شاخه', mirror_path:'مسیر (اختیاری)', mirror_token:'توکن گیت‌هاب', mirror_publish:'انتشار فوری',
     nav_cleanips:'آی‌پی‌های تمیز', sub_cleanips:'آی‌پی‌های تمیز کلودفلر را انتخاب کنید یا سریع‌ترین را تست کنید.',
     ci_speed_h:'🚀 تست سرعت', ci_speed_s:'سریع‌ترین آی‌پی‌های تمیز را برای شبکهٔ فعلی‌تان پیدا و خودکار اعمال کنید.', ci_src:'منبع', ci_country:'کشور', dc_h:'📍 دیتاسنتر شما', dc_s:'محل خروج فعلی اتصال شما از شبکه کلودفلر.', dc_refresh:'بروزرسانی', dc_unknown:'موقعیت نامشخص', ct_h:'🧪 تست اتصال', ct_s:'بررسی کنید کدام سایت‌های مهم از طریق اتصال فعلی شما در دسترس هستند.', ct_run:'اجرای تست', ct_blocked:'مسدود', ech_h:'🔒 درباره ECH', ech_q1:'ECH چیست؟', ech_a1:'ECH یا Encrypted Client Hello نام سایت (SNI) را داخل دست‌دادن TLS پنهان می‌کند تا سانسورچی نتواند ببیند به کدام سایت وصل می‌شوید. این یک ارتقای حریم خصوصی نسبت به TLS معمولی است.', ech_q2:'آیا ECH در ایران مسدود است؟', ech_a2:'در حال حاضر بله. فیلترینگ ایران دست‌دادن ECH را کند یا مسدود می‌کند، بنابراین روشن کردن آن معمولاً اتصال را قطع می‌کند (بدون پینگ). تا وقتی مطمئن نشده‌اید شبکه شما آن را عبور می‌دهد، خاموش نگه دارید.', ech_q3:'چطور از ECH استفاده کنم؟', ech_a3:'به‌طور پیش‌فرض ECH را خاموش بگذارید (در سیاست مقاومت خاموش است). اگر فیلترینگ کمتر شد یا روی شبکه‌ای هستید که آن را اجازه می‌دهد، می‌توانید برای حریم خصوصی بیشتر روشنش کنید. درست بعد از روشن کردن، اتصال را تست کنید و اگر پینگ‌تان از بین رفت دوباره خاموشش کنید.', ci_port:'پورت', ci_keep:'نگه‌داشتن بهترین', ci_total:'تعداد تست', ci_speed_btn:'تست سرعت و اعمال بهترین', ci_lat:'تأخیر', ci_jit:'جیتر', ci_loss:'افت',
-    ci_mode_h:'حالت انتخاب آی‌پی', ci_m_smart:'هوشمند (هر اپراتور)', ci_m_custom:'لیست سفارشی', ci_m_random:'تصادفی', ci_poolapi:'API آی‌پی هوشمند (دیتابیس هر اپراتور)', ci_poolapi_h:'به هر کاربر آی‌پی متناسب با اپراتورش می‌دهد.', ci_custom_ips:'آی‌پی‌های تمیز سفارشی (ip:port#name)', ci_rcount:'تعداد تصادفی', ci_rport:'پورت (۱- = ترکیبی)',
+    ci_mode_h:'حالت انتخاب آی‌پی', ci_m_smart:'هوشمند (هر اپراتور)', ci_m_custom:'لیست سفارشی', ci_m_random:'تصادفی', ci_poolapi:'منبع آی‌پی هوشمند (پوشهٔ هر اپراتور)', ci_poolapi_h:'آدرس پوشه‌ای که برای هر اپراتور یک فایل دارد: mci.txt، mtn.txt، rightel.txt، shatel.txt، به‌علاوهٔ ir.txt و all.txt به‌عنوان جایگزین. هر فایل یک لیست سادهٔ ip:port است — دقیقاً همان خروجی Nova Radar. پنل به‌طور خودکار فایل متناسب با اپراتور هر کاربر را به او می‌دهد.', ci_custom_ips:'آی‌پی‌های تمیز سفارشی (ip:port#name)', ci_rcount:'تعداد تصادفی', ci_rport:'پورت (۱- = ترکیبی)',
     dns_h:'DNS امن', dns_doh:'DNS-over-HTTPS', dns_doh_h:'رمزگذاری جست‌وجوهای DNS', dns_dohprov:'ارائه‌دهندهٔ DoH', dns_antisanc:'DNS ضدتحریم', dns_antisanc_h:'دسترسی به گوگل، گیت‌هاب، npm و سرویس‌های جغرافیایی مسدود', dns_antiprov:'ارائه‌دهندهٔ ضدتحریم', dns_custom:'DNS سفارشی (اگر سفارشی)', dns_local:'DNS محلی', dns_local_h:'حل برخی نام‌ها روی دستگاه', dns_localip:'آی‌پی DNS محلی', dns_localport:'پورت DNS محلی', dns_fake:'Fake DNS', dns_fake_h:'اتصال سریع‌تر، تأخیر کمتر', dns_fakeip:'بازهٔ Fake DNS', dns_log:'سطح لاگ',
     lbl_path:'مسیر حمل‌ونقل', lbl_grpcmode:'حالت gRPC', lbl_frag:'تکه‌تکه‌سازی TLS (عبور از DPI)', frag_off:'خاموش', frag_custom:'سفارشی', frag_len:'طول فرگمنت', frag_int:'فاصله فرگمنت', frag_pkt:'بسته‌های فرگمنت', lbl_proxyip:'PROXYIP (پروکسی معکوس، اختیاری)', lbl_chain:'پراکسی زنجیره‌ای / آی‌پی ثابت (اختیاری)', chain_test:'تست', lbl_uuid:'UUID (در کانفیگ‌های شما)',
     set_adv:'دامنه‌ها، ECH و اشتراک', hosts_h:'دامنه‌ها (HOST)', hosts_help:'هر دامنه در یک خط. خط اول دامنهٔ اصلی است. ابتدا هرکدام را به Worker وصل کنید.', hosts_check:'بررسی سلامت', adv_h2:'ECH و مرکزی', ech_sni:'ECH SNI', ech_dns:'ECH DoH', central_api:'API مرکزی (اختیاری)',
@@ -1498,7 +1558,7 @@ const CLIENTS = [
   { name:'v2rayNG',  color:'#2563eb', rec:false, fmt:'b64',   deep:u=>'v2rayng://install-config?url='+encodeURIComponent(u),           and:'https://github.com/2dust/v2rayNG/releases' },
   { name:'FlClash',  color:'#0ea5c4', rec:false, fmt:'clash', deep:u=>'clash://install-config?url='+encodeURIComponent(u),             and:'https://github.com/chen08209/FlClash/releases' },
 ];
-function subFor(fmt){ const tok=((STATE.config||{}).optimizedSubGeneration||{}).TOKEN||''; return location.origin+'/sub?token='+tok+(fmt && fmt!=='auto' ? '&'+fmt : ''); }
+function subFor(fmt){ const tok=((STATE.config||{}).optimizedSubGeneration||{}).TOKEN||''; return location.origin+'/'+novaSubSeg()+'?token='+tok+(fmt && fmt!=='auto' ? '&'+fmt : ''); }
 function clientCard(c){
   const sub=subFor(c.fmt), esc=sub.replace(/"/g,'&quot;');
   const stores=[ c.ios? `<a class="btn ghost sm" href="${c.ios}" target="_blank" rel="noopener">iOS</a>` : '',
@@ -1658,7 +1718,8 @@ function ensureUserFields(arr){ const seen={}; (arr||[]).forEach(u=>{ if(u && u.
     if(!u.username){ let base=slugify(u.name)||('user'+(i+1)), name=base, n=2; while(seen[name]){ name=base+n; n++; } seen[name]=1; u.username=name; }
   });
 }
-function userSubLink(u){ return location.origin+'/sub?sub='+encodeURIComponent(u.username||'')+'&key='+(u.key||'')+'&b64'; }
+function novaSubSeg(){ try{ return (window.__novaPaths&&window.__novaPaths.sub)||'sub'; }catch(e){ return 'sub'; } }
+function userSubLink(u){ return location.origin+'/'+novaSubSeg()+'?sub='+encodeURIComponent(u.username||'')+'&key='+(u.key||'')+'&b64'; }
 function renderUsers(){
   const box=document.getElementById('users-body2'); if(!box) return;
   const arr=STATE.users||[], usage=STATE.usage||{};
@@ -1669,15 +1730,19 @@ function renderUsers(){
   if(!arr.length){ box.innerHTML='<p style="color:var(--mu);font-size:13px;padding:8px 0">'+(lang==='fa'?'هنوز کاربری نیست. یکی اضافه کنید.':'No users yet. Add one.')+'</p>'; return; }
   const io=STATE.usageIO||{};
   const esc=(s)=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+  const reqs=STATE.reqs||{}, reqsDay=STATE.reqsDay||{};
   box.innerHTML=arr.map((u,i)=>{
     const used=usage[u.id]||0, q=u.quotaBytes||0;
     const day=(STATE.usageDay||{})[u.id]||0, dq=u.dailyQuotaBytes||0;
+    const rl=u.reqLimit||0, drl=u.dailyReqLimit||0, ru=reqs[u.id]||0, rud=reqsDay[u.id]||0;
     const pct=q? Math.min(100, Math.round(used/q*100)) : 0;
     const usedTxt=fmtBytes(used)+(q?(' / '+fmtBytes(q)):' / ∞');
     const uio=io[u.id]||{};
     const ioTxt=(uio.up||uio.down)?('↑ '+fmtBytes(uio.up)+' &nbsp; ↓ '+fmtBytes(uio.down)):'';
     const dayTxt=(day||dq)?((lang==='fa'?'امروز ':'today ')+fmtBytes(day)+(dq?(' / '+fmtBytes(dq)):'')):'';
-    const REASON={ 'quota':(lang==='fa'?'سهمیه تمام شد':'quota reached'), 'daily-quota':(lang==='fa'?'سقف روزانه':'daily limit'), 'expired':(lang==='fa'?'منقضی شد':'expired') };
+    // Request-count usage: shown only when a request limit is configured for this user.
+    const reqTxt=(rl||drl)?((lang==='fa'?'درخواست ':'reqs ')+ru.toLocaleString()+(rl?(' / '+rl.toLocaleString()):'')+(drl?((lang==='fa'?' · امروز ':' · today ')+rud.toLocaleString()+' / '+drl.toLocaleString()):'')):'';
+    const REASON={ 'quota':(lang==='fa'?'سهمیه تمام شد':'quota reached'), 'daily-quota':(lang==='fa'?'سقف روزانه':'daily limit'), 'req-quota':(lang==='fa'?'سقف درخواست':'request limit'), 'daily-req-quota':(lang==='fa'?'سقف درخواست روزانه':'daily request limit'), 'expired':(lang==='fa'?'منقضی شد':'expired') };
     const reasonTxt=(u.enabled===false && u.disabledReason)?(REASON[u.disabledReason]||u.disabledReason):'';
     const expTxt=u.expiry? ((lang==='fa'?'انقضا ':'expires ')+String(u.expiry).slice(0,10)) : (lang==='fa'?'بدون انقضا':'no expiry');
     const link=userSubLink(u);
@@ -1691,7 +1756,7 @@ function renderUsers(){
         <button class="btn ghost sm" data-ud="${i}" title="${lang==='fa'?'حذف':'Remove'}" style="color:var(--dg);flex:0 0 auto;padding:0 10px">✕</button>
       </div>
       <div class="ucard-bar${warn}"><i style="width:${q?pct:0}%"></i></div>
-      <div class="ucard-meta"><span><b>${usedTxt}</b>${q?(' &middot; '+pct+'%'):''}</span>${dayTxt?('<span>'+dayTxt+'</span>'):''}${ioTxt?('<span>'+ioTxt+'</span>'):''}<span>${expTxt}</span>${reasonTxt?('<span style="color:var(--dg);font-weight:700">⛔ '+reasonTxt+'</span>'):''}</div>
+      <div class="ucard-meta"><span><b>${usedTxt}</b>${q?(' &middot; '+pct+'%'):''}</span>${dayTxt?('<span>'+dayTxt+'</span>'):''}${reqTxt?('<span>'+reqTxt+'</span>'):''}${ioTxt?('<span>'+ioTxt+'</span>'):''}<span>${expTxt}</span>${reasonTxt?('<span style="color:var(--dg);font-weight:700">⛔ '+reasonTxt+'</span>'):''}</div>
       <div class="ucard-link"><code title="${esc(link)}">${esc(link)}</code></div>
       <div class="ucard-acts">
         <button class="btn ghost sm" data-open-user="${esc(link)}" data-islink="1" title="${t('open')}">${t('open')}</button>
@@ -1706,6 +1771,8 @@ function renderUsers(){
           <div class="uf"><label>${lang==='fa'?'نام‌کاربری (لینک)':'Username (link)'}</label><input class="inp" data-uu="${i}" value="${esc(u.username)}"></div>
           <div class="uf"><label>${t('col_quota')} (GB)</label><input class="inp" type="number" min="0" data-uq="${i}" value="${q?Math.round(q/1073741824):0}"></div>
           <div class="uf"><label>${t('col_daily')} (GB)</label><input class="inp" type="number" min="0" data-udq="${i}" value="${dq?Math.round(dq/1073741824):0}"></div>
+          <div class="uf"><label title="${lang==='fa'?'سقف تعداد درخواست (۰ = نامحدود). پشتیبانِ سهمیه وقتی شمارش بایت قابل‌اتکا نیست (حالت backend).':'Max request count (0 = unlimited). A quota backstop for when byte counting is unreliable (backend mode).'}">${lang==='fa'?'سقف درخواست':'Req limit'}</label><input class="inp" type="number" min="0" data-ur="${i}" value="${rl||0}"></div>
+          <div class="uf"><label title="${lang==='fa'?'سقف درخواست روزانه (۰ = نامحدود).':'Daily request limit (0 = unlimited).'}">${lang==='fa'?'درخواست روزانه':'Daily reqs'}</label><input class="inp" type="number" min="0" data-udr="${i}" value="${drl||0}"></div>
           <div class="uf"><label>${t('col_expiry')}</label><input class="inp" type="date" data-ux="${i}" value="${u.expiry?String(u.expiry).slice(0,10):''}"></div>
         </div>
         <div style="display:flex;justify-content:flex-end;margin-top:10px"><button class="btn primary sm" data-usave="${i}">${lang==='fa'?'💾 ذخیره این کاربر':'💾 Save this user'}</button></div>
@@ -1719,6 +1786,8 @@ function collectUsers(){ const box=document.getElementById('users-body2'); if(!b
   box.querySelectorAll('[data-uu]').forEach(el=>{ const u=arr[+el.dataset.uu]; if(u){ const v=slugify(el.value); if(v) u.username=v; } });
   box.querySelectorAll('[data-uq]').forEach(el=>{ const u=arr[+el.dataset.uq]; if(u){ const g=Number(el.value)||0; u.quotaBytes=g>0?Math.round(g*1073741824):0; } });
   box.querySelectorAll('[data-udq]').forEach(el=>{ const u=arr[+el.dataset.udq]; if(u){ const g=Number(el.value)||0; u.dailyQuotaBytes=g>0?Math.round(g*1073741824):0; } });
+  box.querySelectorAll('[data-ur]').forEach(el=>{ const u=arr[+el.dataset.ur]; if(u){ const n=Math.max(0,Math.floor(Number(el.value)||0)); u.reqLimit=n>0?n:0; } });
+  box.querySelectorAll('[data-udr]').forEach(el=>{ const u=arr[+el.dataset.udr]; if(u){ const n=Math.max(0,Math.floor(Number(el.value)||0)); u.dailyReqLimit=n>0?n:0; } });
   box.querySelectorAll('[data-ux]').forEach(el=>{ const u=arr[+el.dataset.ux]; if(u) u.expiry=el.value||''; });
   box.querySelectorAll('[data-ue]').forEach(el=>{ const u=arr[+el.dataset.ue]; if(u) u.enabled=el.classList.contains('on'); });
 }
@@ -1731,7 +1800,7 @@ function writeUsersCache(mu,users){ try{ localStorage.setItem('nova_users_cache'
 async function loadUsersFromServer(){
   let serverUsers=[], usage={}, usageIO={}, mu=false, parsed=false;
   try{ const r=await fetch('/admin/users.json?_t='+Date.now(),{cache:'no-store'});
-    if(!(r.redirected || /\/login/.test(r.url))){ const d=await r.json(); serverUsers=Array.isArray(d.users)?d.users:[]; usage=d.usage||{}; usageIO=d.usageIO||{}; STATE.usageDay=d.usageDay||{}; mu=d.multiUser===true; parsed=true; }
+    if(!(r.redirected || /\/login/.test(r.url))){ const d=await r.json(); serverUsers=Array.isArray(d.users)?d.users:[]; usage=d.usage||{}; usageIO=d.usageIO||{}; STATE.usageDay=d.usageDay||{}; STATE.reqs=d.reqs||{}; STATE.reqsDay=d.reqsDay||{}; mu=d.multiUser===true; parsed=true; }
   }catch(e){}
   const c=readUsersCache();
   if(c && Array.isArray(c.users) && (Date.now()-(c.t||0))<120000 && (!parsed || c.users.length!==serverUsers.length || JSON.stringify(c.users)!==JSON.stringify(serverUsers))){
@@ -1901,6 +1970,68 @@ async function twofaDisable(){ const msg=document.getElementById('twofa-dmsg'); 
     if(r.ok && j && j.success!==false){ toast(lang==='fa'?'۲FA خاموش شد':'2FA turned off'); set2faUI(false); } else { msg.textContent='⚠️ '+((j&&j.error)||(lang==='fa'?'کد اشتباه است':'Wrong code')); }
   }catch(e){ msg.textContent='⚠️ '+e.message; } }
 
+/* ---- In-panel self-update ---- */
+async function updateCheck(){
+  // Only REPORTS status. The token box + Update button are always visible, so the user can update
+  // (or re-install the same version) regardless of whether this check succeeds or says up-to-date.
+  var msg=document.getElementById('upd-msg');
+  if(!LIVE) return previewToast();
+  if(msg){ msg.className='msg'; msg.textContent=(lang==='fa'?'در حال بررسی…':'Checking…'); }
+  try{
+    var r=await fetch('admin/update-check.json',{cache:'no-store'});
+    var ct=(r.headers.get('content-type')||'');
+    if(ct.indexOf('application/json')<0){
+      // Old worker that doesn't have the update-check endpoint yet → returns an HTML page, not JSON.
+      if(msg){ msg.className='msg warn'; msg.textContent='⚠️ '+(lang==='fa'?'این ورکر هنوز نسخهٔ قدیمی است (قابلیت بررسی ندارد). با توکن زیر همین حالا به آخرین نسخه به‌روزرسانی کن.':'This worker is still an older version (no update-check endpoint). Use the token below to update to the latest now.'); }
+      return;
+    }
+    var j=await r.json();
+    var cur=j.current||'?', latest=j.latest||'?';
+    if(j.updateAvailable){
+      if(msg){ msg.className='msg warn'; msg.textContent='⬆ '+(lang==='fa'?('نسخهٔ جدید موجود است — فعلی '+cur+' ← جدید '+latest):('Update available — current '+cur+' → latest '+latest)); }
+    } else if(j.latest){
+      if(msg){ msg.className='msg ok'; msg.textContent='✓ '+(lang==='fa'?('روی آخرین نسخه هستی ('+cur+'). می‌توانی برای نصب دوباره از توکن زیر استفاده کنی.'):('You are on the latest version ('+cur+'). You can still re-install with the token below.')); }
+    } else {
+      if(msg){ msg.className='msg bad'; msg.textContent='⚠️ '+(lang==='fa'?'بررسی نسخه ممکن نشد. ':'Could not check for updates. ')+(j.error||''); }
+    }
+  }catch(e){ if(msg){ msg.className='msg warn'; msg.textContent='⚠️ '+(lang==='fa'?('بررسی نسخه ممکن نشد ('+e.message+'). با توکن زیر می‌توانی به‌روزرسانی کنی.'):('Version check failed ('+e.message+'). You can still update with the token below.')); } }
+}
+async function updateNow(extra){
+  var msg=document.getElementById('upd-msg'); if(!LIVE) return previewToast();
+  var token=((document.getElementById('upd-token')||{}).value||'').trim();
+  if(!token){ if(msg){ msg.className='msg bad'; msg.textContent=(lang==='fa'?'ابتدا توکن را وارد کن':'Enter your token first'); } return; }
+  var body={ token: token };
+  var sn=((document.getElementById('upd-scriptname')||{}).value||'').trim(); if(sn) body.scriptName=sn;
+  if(extra && extra.accountId) body.accountId=extra.accountId;
+  if(msg){ msg.className='msg'; msg.textContent=(lang==='fa'?'در حال به‌روزرسانی…':'Updating…'); }
+  try{
+    var r=await fetch('admin/self-update.json',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    var j=await r.json();
+    if(j.success){
+      if(msg){ msg.className='msg ok'; msg.textContent='✅ '+(lang==='fa'?('به‌روزرسانی شروع شد'+(j.version?(' (نسخهٔ '+j.version+')'):'')+'. پنل در حال جایگزینی است — حدود ۳۰ ثانیه صبر کن و صفحه را تازه کن. سپس توکن را در Cloudflare باطل کن.'):('Update started'+(j.version?(' (v'+j.version+')'):'')+'. Your panel is being replaced — wait ~30s and refresh. Then revoke the token in Cloudflare.')); }
+      var t=document.getElementById('upd-token'); if(t) t.value='';
+      return;
+    }
+    if(j.error==='multiple_accounts' && Array.isArray(j.accounts)){
+      var wrap=document.getElementById('upd-acct-wrap');
+      if(wrap){ wrap.style.display='block';
+        wrap.innerHTML='<div style="font-size:12px;color:var(--mu);margin-bottom:6px">'+(lang==='fa'?'چند حساب پیدا شد — یکی را انتخاب کن:':'Multiple accounts found — pick one:')+'</div>'+
+          j.accounts.map(function(a){ return '<button class="btn ghost sm upd-acct" data-acct="'+String(a.id).replace(/"/g,'&quot;')+'" style="margin:0 6px 6px 0">'+String(a.name||a.id).replace(/</g,'&lt;')+'</button>'; }).join('');
+      }
+      if(msg){ msg.className='msg'; msg.textContent=(lang==='fa'?'حساب را انتخاب کن.':'Choose your account.'); }
+      return;
+    }
+    if(j.error==='need_script_name'){
+      var w=document.getElementById('upd-scriptname-wrap'); if(w) w.style.display='block';
+      if(msg){ msg.className='msg bad'; msg.textContent=(lang==='fa'?'نام اسکریپت ورکر را وارد کن (برای دامنهٔ اختصاصی لازم است).':'Enter your Worker script name (needed on a custom domain).'); }
+      return;
+    }
+    var emap={ no_token:(lang==='fa'?'توکن وارد نشده':'No token'), token_invalid:(lang==='fa'?'توکن نامعتبر است':'Token is invalid'), no_accounts:(lang==='fa'?'هیچ حسابی برای این توکن دیده نشد':'No accounts for this token'), cannot_read_bindings:(lang==='fa'?'نتوانستم تنظیمات فعلی ورکر را بخوانم — به‌روزرسانی برای جلوگیری از پاک شدن دیتابیس متوقف شد':'Could not read the worker\'s current bindings — update stopped to avoid wiping your database'), fetch_worker_failed:(lang==='fa'?'دریافت نسخهٔ جدید ناموفق بود':'Failed to download the new version'), bad_worker_source:(lang==='fa'?'فایل ورکر دریافت‌شده معتبر نبود':'Downloaded worker file was invalid'), upload_failed:(lang==='fa'?'آپلود ناموفق بود':'Upload failed') };
+    var em=emap[j.error]||(j.error||'error');
+    if(msg){ msg.className='msg bad'; msg.textContent='✗ '+em+(j.detail?(' — '+j.detail):''); }
+  }catch(e){ if(msg){ msg.className='msg bad'; msg.textContent='⚠️ '+e.message; } }
+}
+
 /* ---- Backup & restore (config + network) ---- */
 async function backupExport(){ const msg=document.getElementById('backup-msg'); if(!LIVE) return previewToast(); msg.textContent=lang==='fa'?'در حال آماده‌سازی…':'Preparing…';
   try{ const [c,n]=await Promise.all([API.get('config.json'), API.get('network-settings.json').catch(()=>({}))]);
@@ -1929,6 +2060,8 @@ const GUIDE = {
       '<b>Calls (WhatsApp/Telegram):</b> they need UDP. Turn on <b>WARP</b> (Network & IPs) and use the <b>Nova-WARP</b> node for calls; keep VLESS for browsing.',
       '<b>Backend mode</b> (Network & IPs, advanced): if you run your own Xray/sing-box VPS, enable it to unlock <b>VMess and working calls</b> — Nova relays to your server. Off by default.',
       '<b>Routing</b> (Network & IPs): block malware/phishing/QUIC and route China/Russia/sanctioned sites directly.',
+      '<b>Smart clean IPs (per-ISP):</b> in Network → Clean IPs → Smart, point the source at a folder of per-carrier files (mci.txt, mtn.txt, rightel.txt, …). Each user is auto-served the IPs for their operator; missing files fall back to ir.txt then all.txt. Refresh the files with Nova Radar and the panel pulls them automatically.',
+      '<b>Disguise (advanced):</b> in Network → Disguise you can move the panel, login and subscription to secret paths. Probing the default /admin or /login then returns a generic page. Write down your secret path first — afterwards the panel is only reachable there (recovery: set an ADMIN_PATH variable on the Worker).',
       'Manage everything from the <b>Telegram bot</b> too — status, users, settings, kill-switch, and even one-command Cloudflare install (<code>/install</code>).',
       'Turn on <b>two-factor authentication</b> in Settings to protect this panel.' ] },
   fa:{ qs:'شروع سریع', tips:'نکته‌ها',
@@ -1945,6 +2078,8 @@ const GUIDE = {
       '<b>تماس (واتساپ/تلگرام):</b> به UDP نیاز دارد. <b>WARP</b> را (در شبکه و آی‌پی) روشن کن و برای تماس از نود <b>Nova-WARP</b> استفاده کن؛ برای گشت‌وگذار VLESS بماند.',
       '<b>حالت Backend</b> (شبکه و آی‌پی، پیشرفته): اگر سرور Xray/sing-box خودت را داری، روشنش کن تا <b>VMess و تماس</b> فعال شود — Nova به سرورت رله می‌کند. پیش‌فرض خاموش است.',
       '<b>مسیریابی</b> (شبکه و آی‌پی): مسدودسازی بدافزار/فیشینگ/QUIC و عبور مستقیم سایت‌های چین/روسیه/تحریم.',
+      '<b>آی‌پی تمیز هوشمند (هر اپراتور):</b> در شبکه ← آی‌پی‌های تمیز ← هوشمند، منبع را روی پوشه‌ای از فایل‌های هر اپراتور تنظیم کن (mci.txt، mtn.txt، rightel.txt، …). به هر کاربر به‌طور خودکار آی‌پی‌های اپراتور خودش داده می‌شود؛ اگر فایلی نبود، به ir.txt و سپس all.txt برمی‌گردد. فایل‌ها را با Nova Radar تازه کن و پنل خودکار می‌خواندشان.',
+      '<b>استتار (پیشرفته):</b> در شبکه ← استتار می‌توانی پنل، ورود و اشتراک را به مسیرهای مخفی منتقل کنی. آن‌وقت درخواست به /admin یا /login پیش‌فرض یک صفحهٔ عمومی برمی‌گرداند. اول مسیر مخفی را یادداشت کن — بعد از آن پنل فقط از همان‌جا در دسترس است (بازیابی: یک متغیر ADMIN_PATH روی ورکر تنظیم کن).',
       'همه‌چیز را از <b>ربات تلگرام</b> هم می‌توانی مدیریت کنی — وضعیت، کاربران، تنظیمات، کیل‌سوییچ، و حتی نصب یک‌دستوریِ Cloudflare (<code>/install</code>).',
       'برای محافظت از این پنل، <b>احراز هویت دومرحله‌ای</b> را در تنظیمات روشن کن.' ] },
 };
@@ -2285,7 +2420,7 @@ function mapToggleState(){
 }
 function mapSub(){
   const tok=(STATE.config.optimizedSubGeneration||{}).TOKEN||'';
-  STATE.subUrl = location.origin+'/sub?token='+tok+'&b64';
+  STATE.subUrl = location.origin+'/'+novaSubSeg()+'?token='+tok+'&b64';
   $$('.sublink code').forEach(el=>{ el.textContent=STATE.subUrl; });
 }
 /* selects + notification fields are real DOM controls; set them after every render */
@@ -2309,10 +2444,10 @@ function syncFormValues(){
   on('t2-antisanc', n.enableAntiSanctionDNS); set('d2-antiprov', n.antiSanctionDNSProvider||'shekan'); set('d2-anticustom', n.antiSanctionCustomDNS||'');
   on('t2-localdns', n.enableLocalDNS); set('d2-localip', n.localDNSIP||'8.8.8.8'); set('d2-localport', n.localDNSPort||'53');
   on('t2-fakedns', n.enableFakeDNS); set('d2-fakeip', n.fakeDNSIP||'198.51.100.1'); set('d2-loglevel', n.logLevel||'error');
-  on('t2-backend', n.backendMode); set('be-url', n.backendUrl||''); try{ renderBackendClient(); }catch(e){}
+  on('t2-backend', n.backendMode); set('be-url', n.backendUrl||''); try{ renderBackendClient(); }catch(e){} try{ checkBackendPort(); }catch(e){} try{ fillBackendInstallCmd(); }catch(e){}
   // Clean IPs (config) — mode + pool API + random params; custom list loaded from ADD.txt
   const osg=c.optimizedSubGeneration||{}, pool=osg.localIPPool||{};
-  set('ci-poolapi', c.POOL_API||'https://nova-deploy.pages.dev/api/pool');
+  set('ci-poolapi', c.POOL_API||'https://raw.githubusercontent.com/IRNova/Tools/main/clean-ip');
   set('ci-rcount', pool.randomCount||16); set('ci-rport', pool.specifiedPorts!=null?pool.specifiedPorts:-1);
   setCiMode(c.POOL_API ? 'smart' : (pool.randomIP===false ? 'custom' : 'random'));
   fetch('/admin/ADD.txt?_t='+Date.now()).then(r=>r.text()).then(txt=>{ const a=document.getElementById('ci-add'); if(a) a.value=(txt==='null'?'':txt); }).catch(()=>{});
@@ -2330,6 +2465,8 @@ function syncFormValues(){
   set('n2-customrules', n.customRules||'');
   const bc=n.bypassCountries||[]; on('t2-bp-cn', bc.includes('cn')); on('t2-bp-ru', bc.includes('ru'));
   const bk=n.blockCategories||[]; on('t2-bk-malware', bk.includes('malware')); on('t2-bk-phishing', bk.includes('phishing')); on('t2-bk-crypto', bk.includes('cryptominers'));
+  // Disguise (secret admin/login/sub paths)
+  on('t-disguise', n.disguise); set('n-adminpath', n.adminPath||''); set('n-loginpath', n.loginPath||''); set('n-subpath', n.subPath||'');
 }
 
 async function loadLive(){
@@ -2384,6 +2521,10 @@ async function saveSettings(){
 }
 async function backendHealthCheck(){ var el=document.getElementById('be-msg'); var u=(document.getElementById('be-url')||{}).value||''; u=u.trim();
   if(!/^https?:\/\//i.test(u)){ if(el){ el.className='msg bad'; el.textContent=(lang==='fa'?'یک آدرس معتبر backend وارد کنید (http://... یا https://...)':'Enter a valid backend URL (http://... or https://...)'); } return; }
+  // The /backend-test reads the SAVED config, so save the current toggle+URL FIRST. This is what
+  // makes "enable → type URL → Health check" just work, without the user having to find Save.
+  if(el){ el.className='msg'; el.textContent=(lang==='fa'?'در حال ذخیره و تست…':'Saving, then testing…'); }
+  try{ if(LIVE) await saveNetwork(); }catch(e){}
   if(el){ el.className='msg'; el.textContent=(lang==='fa'?'در حال تست واقعیِ ارتباط با backend…':'Running a real backend connectivity test…'); }
   // Use Nova's own /backend-test diagnostic — it actually opens the WebSocket to your backend from
   // inside the Worker and reports whether the relay works. This is the REAL test (not /health).
@@ -2392,7 +2533,12 @@ async function backendHealthCheck(){ var el=document.getElementById('be-msg'); v
     if(!resp){ if(el){ el.className='msg'; el.textContent=(lang==='fa'?'تست در دسترس نیست (ورکر را به آخرین نسخه آپدیت کن). با یک کلاینت واقعی تست کن.':'Diagnostic unavailable (update the Worker to the latest version). Test with a real client.'); } return; }
     var j=await resp.json().catch(function(){return null;});
     if(!j){ if(el){ el.className='msg'; el.textContent=(lang==='fa'?'پاسخ نامعتبر. با یک کلاینت واقعی تست کن.':'Unexpected response. Test with a real client.'); } return; }
-    if(j.ok){ if(el){ el.className='msg ok'; el.textContent='✅ '+(lang==='fa'?('backend کار می‌کند! Nova با موفقیت به آن وصل شد (۱۰۱). در '+(j.elapsedMs||'?')+'ms. حالا با کلاینت وصل شو.'):('Backend works! Nova reached it (101) in '+(j.elapsedMs||'?')+'ms. Connect with a client now.')); } return; }
+    if(j.ok){ if(el){ el.className='msg ok'; el.textContent='✅ '+(lang==='fa'?('backend کار می‌کند! Nova با موفقیت به آن وصل شد (۱۰۱). در '+(j.elapsedMs||'?')+'ms. حالا با کلاینت وصل شو.'):('Backend works! Nova reached it (101) in '+(j.elapsedMs||'?')+'ms. Connect with a client now.')); }
+        // Backend proven reachable → unlock the client QR/link for THIS exact URL.
+        window.__backendVerified=u; try{ renderBackendClient(); }catch(e){}
+        return; }
+    // any non-ok result → make sure the QR is hidden (backend not proven)
+    window.__backendVerified=null; try{ renderBackendClient(); }catch(e){}
     // not ok — show the specific reason from the diagnostic
     var step=(j.steps&&j.steps[0])?j.steps[0]:'';
     var hint='';
@@ -2418,12 +2564,69 @@ function backendClientLink(){
   var ep=encodeURIComponent(path);
   return 'vless://'+uuid+'@'+domain+':443?security=tls&type=ws&host='+domain+'&sni='+domain+'&path='+ep+'&encryption=none#Nova-Backend';
 }
+// Cloudflare Workers can only fetch() a fixed set of ports. If the Backend URL uses anything else
+// (e.g. 10000, 3080), the Worker silently can't reach the VPS — the #1 cause of "backend not
+// reachable". Warn the moment a bad port is typed so it's caught before saving.
+var CF_HTTP_PORTS=[80,8080,8880,2052,2082,2086,2095];
+var CF_HTTPS_PORTS=[443,2053,2083,2087,2096,8443];
+function checkBackendPort(){
+  var box=document.getElementById('be-port-warn'); if(!box) return true;
+  var u=((document.getElementById('be-url')||{}).value||'').trim();
+  if(!/^https?:\/\//i.test(u)){ box.style.display='none'; return true; }
+  var parsed; try{ parsed=new URL(u); }catch(e){ box.style.display='none'; return true; }
+  var isHttps=parsed.protocol==='https:';
+  // default port (no :port) is fine: 443 for https, and http with no port means 80 (allowed)
+  var portStr=parsed.port;
+  if(!portStr){ box.style.display='none'; return true; }
+  var port=parseInt(portStr,10);
+  var allowed=isHttps?CF_HTTPS_PORTS:CF_HTTP_PORTS;
+  if(allowed.indexOf(port)>=0){ box.style.display='none'; return true; }
+  // bad port → warn (do not block; user may still save, but they're told why it'll fail)
+  var list=allowed.join(', ');
+  box.style.display='block';
+  box.textContent=(lang==='fa'
+    ? ('⚠ پورت '+port+' جزو پورت‌های مجاز Cloudflare نیست. ورکر نمی‌تواند به آن وصل شود. برای '+(isHttps?'HTTPS':'HTTP')+' یکی از این پورت‌ها را استفاده کن: '+list)
+    : ('⚠ Port '+port+' is NOT a Cloudflare-allowed port — the Worker can’t reach it. For '+(isHttps?'HTTPS':'HTTP')+' use one of: '+list));
+  return false;
+}
+// Bake THIS panel's UUID into the one-line VPS install command, so the backend installs with the
+// matching UUID automatically (no manual sed step, no "random UUID won't match" warning). Falls back
+// to the plain command if the UUID isn't loaded yet.
+function backendInstallCmd(){
+  var uuid=((STATE.config||{}).UUID||'').trim();
+  var base='bash <(curl -fsSL https://raw.githubusercontent.com/IRNova/Tools/main/nova-backend.sh)';
+  return uuid ? ('NOVA_UUID='+uuid+' '+base) : base;
+}
+// The change-port command: same installer, with NOVA_PORT set. We suggest 2082 as the example
+// (a valid Cloudflare port); the user can edit it to any allowed port before running.
+function backendPortCmd(){
+  var uuid=((STATE.config||{}).UUID||'').trim();
+  var base='bash <(curl -fsSL https://raw.githubusercontent.com/IRNova/Tools/main/nova-backend.sh)';
+  var pre='NOVA_PORT=2082 '+(uuid?('NOVA_UUID='+uuid+' '):'');
+  return pre+base;
+}
+function fillBackendInstallCmd(){
+  var el=document.getElementById('be-cmd'); if(el) el.textContent=backendInstallCmd();
+  var pe=document.getElementById('be-cmd-port'); if(pe) pe.textContent=backendPortCmd();
+}
+// The client QR/link is only shown once the backend is PROVEN reachable by a Health check (sets
+// window.__backendVerified to the exact URL that passed). Just enabling the toggle or typing a URL
+// is NOT enough — showing a QR for an unverified/broken backend gave users a config that silently
+// failed. If the URL changes after a successful check, the flag no longer matches and the QR hides
+// again until they re-run Health check.
 function renderBackendClient(){
   var wrap=document.getElementById('be-client-wrap'); if(!wrap) return;
   var enabled=isOn2('t2-backend');
   var u=((document.getElementById('be-url')||{}).value||'').trim();
-  var link=(enabled && /^https?:\/\//i.test(u)) ? backendClientLink() : '';
-  if(!link){ wrap.style.display='none'; return; }
+  var verified=(window.__backendVerified && window.__backendVerified===u);
+  var link=(enabled && verified && /^https?:\/\//i.test(u)) ? backendClientLink() : '';
+  if(!link){
+    // No backend / empty URL → hide AND wipe any previously-rendered QR + link so nothing stale remains.
+    wrap.style.display='none';
+    var oc=document.getElementById('be-vless'); if(oc) oc.textContent='';
+    var ob=document.getElementById('be-qr'); if(ob) ob.innerHTML='';
+    return;
+  }
   wrap.style.display='block';
   var code=document.getElementById('be-vless'); if(code) code.textContent=link;
   var box=document.getElementById('be-qr'); if(box){ box.innerHTML=''; if(window.QRCode){ try{ new QRCode(box,{text:link,width:132,height:132,correctLevel:QRCode.CorrectLevel.M}); }catch(e){} } else { box.textContent='QR'; } }
@@ -2447,7 +2650,13 @@ async function saveNetwork(){
   const cats=[]; if(Array.isArray(n.blockCategories) && n.blockCategories.includes('quic')) cats.push('quic'); // keep QUIC (set by the policy card)
   [['malware','t2-bk-malware'],['phishing','t2-bk-phishing'],['cryptominers','t2-bk-crypto']].forEach(([c,id])=>{ if(isOn(id)) cats.push(c); });
   n.blockCategories=cats;
+  // Disguise (secret admin/login/sub paths). Sanitised here too, so the saved value matches what the worker accepts.
+  const _slug=(v)=>String(v||'').trim().toLowerCase().replace(/^\/+|\/+$/g,'').replace(/[^a-z0-9_-]/g,'').slice(0,40);
+  n.disguise=isOn('t-disguise'); n.adminPath=_slug(g('n-adminpath')); n.loginPath=_slug(g('n-loginpath')); n.subPath=_slug(g('n-subpath'));
   { const _nok=await API.post('network-settings.json', n); toast(savedMsg(_nok)); flashSaved('save-network2', _nok); };
+  // Refresh the backend client preview after saving so the QR/link reflects what was just saved.
+  // (Clearing the Backend URL or turning backend mode off must remove the QR, not leave a stale one.)
+  try{ renderBackendClient(); }catch(e){}
 }
 /* ---- WARP account: register / WARP+ license / central pool ---- */
 // Known-good WARP endpoints (Cloudflare anycast). If the default engage.cloudflareclient.com:2408
@@ -2642,7 +2851,9 @@ document.addEventListener('click', (e)=>{
   if(e.target.closest('#policy-apply')){ applyPolicy(); return; }
   if(e.target.closest('#save-settings2')){ saveSettings(); return; }
   if(e.target.closest('#be-check')){ backendHealthCheck(); return; }
-  if(e.target.closest('#be-cmd-copy')){ var cmd=(document.getElementById('be-cmd')||{}).textContent||''; copy(cmd); return; }
+  if(e.target.closest('#be-cmd-copy')){ var cmd; try{ cmd=backendInstallCmd(); }catch(_e){ cmd=(document.getElementById('be-cmd')||{}).textContent||''; } copy(cmd); return; }
+  if(e.target.closest('#be-cmd-port-copy')){ var pcmd; try{ pcmd=backendPortCmd(); }catch(_e){ pcmd=(document.getElementById('be-cmd-port')||{}).textContent||''; } copy(pcmd); return; }
+  if(e.target.closest('#be-cmd-remove-copy')){ copy((document.getElementById('be-cmd-remove')||{}).textContent||''); return; }
   if(e.target.closest('#be-vless-copy')){ copy((document.getElementById('be-vless')||{}).textContent||''); return; }
   if(e.target.closest('#be-vless-qr') || e.target.closest('#be-qr')){ var l=(document.getElementById('be-vless')||{}).textContent||''; if(l) showQR(l,'Nova Backend'); return; }
   if(e.target.closest('#save-network2')){ saveNetwork(); return; }
@@ -2662,6 +2873,9 @@ document.addEventListener('click', (e)=>{
   if(e.target.closest('#cf-connect')){ cfConnect(); return; }
   if(e.target.closest('#cf-disconnect')){ cfDisconnect(); return; }
   if(e.target.closest('#factory-reset')){ factoryReset(); return; }
+  if(e.target.closest('#upd-check')){ updateCheck(); return; }
+  if(e.target.closest('#upd-now')){ updateNow(); return; }
+  { var _ua=e.target.closest('.upd-acct'); if(_ua){ updateNow({ accountId: _ua.getAttribute('data-acct') }); return; } }
   if(e.target.closest('#t2-kill')){ toggleKill(); return; }
   if(e.target.closest('#doh-copy')){ copy(location.origin+'/dns-query'); return; }
   if(e.target.closest('#doh-test')){ dohTest(); return; }
@@ -2687,11 +2901,11 @@ document.addEventListener('click', (e)=>{
   const ib = e.target.closest('[data-import-sub]'); if(ib){ navigator.clipboard && navigator.clipboard.writeText(ib.dataset.importSub); toast(t('app_copied')); return; }
   // copy actions
   const cp = e.target.closest('[data-copy]'); if(cp){ const el=$(cp.getAttribute('data-copy')); copy(el? el.textContent : (STATE.subUrl||'')); return; }
-  const ou = e.target.closest('[data-open-user]'); if(ou){ const url=ou.dataset.islink? ou.dataset.openUser : (location.origin+'/sub?token='+ou.dataset.openUser+'&b64'); window.open(url,'_blank','noopener'); return; }
-  const qu = e.target.closest('[data-qr-user]'); if(qu){ const url=qu.dataset.islink? qu.dataset.qrUser : (location.origin+'/sub?token='+qu.dataset.qrUser+'&b64'); showQR(url, qu.dataset.qrUname||'User'); return; }
-  const qfm = e.target.closest('[data-qr-fmt]'); if(qfm){ const tok=(STATE.config.optimizedSubGeneration||{}).TOKEN||''; const q=qfm.dataset.qrFmt; showQR(location.origin+'/sub?token='+tok+(q && q!=='auto' ? '&'+q : ''), 'Nova '+(qfm.dataset.qrFmtname||q)); return; }
-  const cu = e.target.closest('[data-copy-user]'); if(cu){ copy(cu.dataset.islink? cu.dataset.copyUser : (location.origin+'/sub?token='+cu.dataset.copyUser+'&b64')); return; }
-  const cfm = e.target.closest('[data-copy-fmt]'); if(cfm){ const tok=(STATE.config.optimizedSubGeneration||{}).TOKEN||''; const q=cfm.dataset.copyFmt; copy(location.origin+'/sub?token='+tok+(q && q!=='auto' ? '&'+q : '')); return; }
+  const ou = e.target.closest('[data-open-user]'); if(ou){ const url=ou.dataset.islink? ou.dataset.openUser : (location.origin+'/'+novaSubSeg()+'?token='+ou.dataset.openUser+'&b64'); window.open(url,'_blank','noopener'); return; }
+  const qu = e.target.closest('[data-qr-user]'); if(qu){ const url=qu.dataset.islink? qu.dataset.qrUser : (location.origin+'/'+novaSubSeg()+'?token='+qu.dataset.qrUser+'&b64'); showQR(url, qu.dataset.qrUname||'User'); return; }
+  const qfm = e.target.closest('[data-qr-fmt]'); if(qfm){ const tok=(STATE.config.optimizedSubGeneration||{}).TOKEN||''; const q=qfm.dataset.qrFmt; showQR(location.origin+'/'+novaSubSeg()+'?token='+tok+(q && q!=='auto' ? '&'+q : ''), 'Nova '+(qfm.dataset.qrFmtname||q)); return; }
+  const cu = e.target.closest('[data-copy-user]'); if(cu){ copy(cu.dataset.islink? cu.dataset.copyUser : (location.origin+'/'+novaSubSeg()+'?token='+cu.dataset.copyUser+'&b64')); return; }
+  const cfm = e.target.closest('[data-copy-fmt]'); if(cfm){ const tok=(STATE.config.optimizedSubGeneration||{}).TOKEN||''; const q=cfm.dataset.copyFmt; copy(location.origin+'/'+novaSubSeg()+'?token='+tok+(q && q!=='auto' ? '&'+q : '')); return; }
   // policy toggle (flips local state; persisted by "Apply policy")
   const prow = e.target.closest('[data-policy]');
   if(prow){ const key=prow.dataset.policy; const p=MOCK.policy.find(x=>x.key===key); p.on=!p.on; renderPolicy(); return; }
@@ -2699,11 +2913,16 @@ document.addEventListener('click', (e)=>{
   const trow = e.target.closest('[data-toggle]');
   if(trow){ trow.querySelector('.sw').classList.toggle('on'); return; }
   // standalone switches (telegram alerts, etc.)
-  const sw = e.target.closest('.sw'); if(sw){ sw.classList.toggle('on'); if(sw.id==='t2-multiuser') updateMultiUserUI(); if(sw.id==='t2-backend'){ try{ renderBackendClient(); }catch(_e){} } return; }
+  const sw = e.target.closest('.sw'); if(sw){ sw.classList.toggle('on'); if(sw.id==='t2-multiuser') updateMultiUserUI(); if(sw.id==='t2-backend'){ try{ renderBackendClient(); }catch(_e){} try{ if(LIVE) saveNetwork(); }catch(_e){} } return; }
 });
 { const bf=document.getElementById('backup-file2'); if(bf) bf.onchange=(e)=>{ const f=e.target.files&&e.target.files[0]; if(f) backupImport(f); e.target.value=''; }; }
 { const ff=document.getElementById('f2-frag'); if(ff) ff.addEventListener('change',function(){ const b=document.getElementById('f2-frag-custom'); if(b) b.style.display=this.value==='custom'?'block':'none'; }); }
-{ const bu=document.getElementById('be-url'); if(bu) bu.addEventListener('input',function(){ try{ renderBackendClient(); }catch(_e){} }); }
+{ const bu=document.getElementById('be-url'); if(bu){
+    bu.addEventListener('input',function(){ window.__backendVerified=null; try{ renderBackendClient(); }catch(_e){} try{ checkBackendPort(); }catch(_e){} });
+    // Persist the URL when the user finishes editing (blur/change) so it's saved without hunting for
+    // the Save button — only auto-save when the port is valid, to avoid saving a known-dead URL.
+    bu.addEventListener('change',function(){ try{ if(LIVE && checkBackendPort()) saveNetwork(); }catch(_e){} });
+  } }
 $('#menu-btn').addEventListener('click', openDrawer)
 /* Collapsible "Network Settings" submenu (closed by default, state remembered) */
 ;(function(){
@@ -2733,16 +2952,34 @@ const DEMO_USAGE={ u1:31*1073741824, u2:8*1073741824, u3:10*1073741824 };
 
 /* ---- boot ---- */
 let _updVer='';
-async function checkUpdate(){ return; /* UPDATE BANNER DISABLED — it confused users. To re-enable, delete this 'return;'. */ try{
- const vr=await fetch('/version.json?_t='+Date.now()).then(function(r){return r.json()}).catch(function(){return null});
- if(!vr||!vr.version) return;
- let cur=0; try{ const sys=await API.get('system.json'); cur=parseFloat(String(sys.version||'').replace(/[^0-9.]/g,''))||0; }catch(e){}
- const latest=parseFloat(String(vr.version).replace(/[^0-9.]/g,''))||0; if(latest<=cur) return;
- let dm=''; try{ dm=localStorage.getItem('nova-upd-dismiss')||''; }catch(e){} if(dm===String(vr.version)) return;
- _updVer=String(vr.version);
+// Update banner: shows ONLY when the running worker is older than the latest published version.
+// The "Update" button takes the user straight to Settings → Update panel (in-panel self-update),
+// not to a raw GitHub URL. Dismiss is remembered per-version so it doesn't nag.
+async function checkUpdate(){ try{
+ if(!LIVE) return;
+ // Use the worker's own update-check endpoint (compares running version vs GitHub). Old workers
+ // without this endpoint return HTML, not JSON — in that case stay silent (no banner).
+ let j=null;
+ try{
+   const r=await fetch('admin/update-check.json',{cache:'no-store'});
+   if((r.headers.get('content-type')||'').indexOf('application/json')<0) return;
+   j=await r.json();
+ }catch(e){ return; }
+ if(!j || !j.updateAvailable || !j.latest) return;
+ const verStr=String(j.latest);
+ let dm=''; try{ dm=localStorage.getItem('nova-upd-dismiss')||''; }catch(e){} if(dm===verStr) return;
+ _updVer=verStr;
  const bar=document.getElementById('update-bar'); if(!bar) return;
- document.getElementById('update-txt').textContent=(lang==='fa')?('نسخهٔ جدید V'+vr.version+' در دسترس است'+(vr.notes?('. '+vr.notes):'')):('Update available: V'+vr.version+(vr.notes?('. '+vr.notes):''));
- const lk=document.getElementById('update-link'); lk.textContent=(lang==='fa')?'دریافت بروزرسانی':'Get update'; if(vr.worker_url){ lk.href=vr.worker_url; lk.style.display=''; } else { lk.style.display='none'; }
+ document.getElementById('update-txt').textContent=(lang==='fa')
+   ?('نسخهٔ جدید V'+verStr+' در دسترس است — می‌توانی از تنظیمات پنل به‌روزرسانی کنی'+(j.notes?('. '+j.notes):''))
+   :('Update available: V'+verStr+' — you can update from the panel Settings'+(j.notes?('. '+j.notes):''));
+ const lk=document.getElementById('update-link');
+ lk.textContent=(lang==='fa')?'به‌روزرسانی':'Update'; lk.style.display='';
+ lk.removeAttribute('target'); lk.setAttribute('href','#');
+ lk.onclick=function(ev){ if(ev) ev.preventDefault();
+   try{ showView('settings'); }catch(e){}
+   setTimeout(function(){ try{ var el=document.getElementById('upd-box'); var card=el?el.closest('.card'):null; (card||el||{scrollIntoView:function(){}}).scrollIntoView({behavior:'smooth',block:'center'}); }catch(e){} }, 120);
+ };
  const x=document.getElementById('update-x'); if(x) x.onclick=function(){ bar.style.display='none'; try{ localStorage.setItem('nova-upd-dismiss',_updVer); }catch(e){} };
  bar.style.display='flex';
 }catch(e){} }
@@ -2825,9 +3062,40 @@ document.addEventListener('click',(e)=>{ const b=e.target.closest('#chart-range 
 // redraw on resize (debounced) and on theme/lang change
 let _tcrz; window.addEventListener('resize',()=>{ clearTimeout(_tcrz); _tcrz=setTimeout(()=>{ if(currentView==='dashboard') TChart.render(); },150); });
 
+// Fill the two version badges from REAL sources instead of hardcoded numbers:
+//  • Worker badge  = the running worker's version (admin/system.json → version), with the latest
+//    published worker version (IRNova/Nova-Proxy version.json) shown after it when newer.
+//  • Panel  badge  = the panel HTML's own embedded version (this file's <meta> tag), with the latest
+//    published panel version (Nova-Panel/nova-panel.github.io version.json) shown after it when newer.
+var WORKER_VERSION_JSON='https://raw.githubusercontent.com/IRNova/Nova-Proxy/main/public/version.json';
+var PANEL_VERSION_JSON='https://raw.githubusercontent.com/Nova-Panel/nova-panel.github.io/main/version.json';
+function _vnorm(s){ return String(s||'').replace(/^[vV]/,'').trim(); }
+function _vgt(a,b){ var pa=_vnorm(a).split('.').map(function(n){return parseInt(n,10)||0;}); var pb=_vnorm(b).split('.').map(function(n){return parseInt(n,10)||0;}); for(var i=0;i<Math.max(pa.length,pb.length);i++){ var x=pa[i]||0,y=pb[i]||0; if(x>y)return true; if(x<y)return false; } return false; }
+function _setVer(elId, current, latest){
+  var el=document.getElementById(elId); if(!el) return;
+  var cur=_vnorm(current);
+  if(!cur){ el.textContent='—'; return; }
+  if(latest && _vgt(latest, cur)){ el.innerHTML='V'+cur+' <span style="color:var(--wn);font-weight:700" title="'+(lang==='fa'?('نسخهٔ جدید: V'+_vnorm(latest)):('Update available: V'+_vnorm(latest)))+'">↑V'+_vnorm(latest)+'</span>'; }
+  else { el.textContent='V'+cur; }
+}
+async function loadVersions(){
+  // Worker: running version from system.json (falls back to the panel meta if offline)
+  var workerCur='';
+  try{ var sys=await API.get('system.json'); workerCur=_vnorm(sys && sys.version); }catch(e){}
+  // Panel: this HTML's embedded version
+  var meta=document.querySelector('meta[name="nova-panel-version"]');
+  var panelCur=_vnorm(meta && meta.getAttribute('content'));
+  // show what we know immediately
+  _setVer('ver-worker', workerCur || panelCur, null);
+  _setVer('ver-panel', panelCur, null);
+  // then enrich with "latest available" from GitHub (best-effort; never blocks the UI)
+  try{ var wr=await fetch(WORKER_VERSION_JSON,{cache:'no-store'}); var wj=await wr.json(); _setVer('ver-worker', workerCur||panelCur, wj && wj.version); }catch(e){}
+  try{ var pr=await fetch(PANEL_VERSION_JSON,{cache:'no-store'}); var pj=await pr.json(); _setVer('ver-panel', panelCur, pj && pj.version); }catch(e){}
+}
 (async function init(){
   applyTheme(localStorage.getItem('nova-theme') || 'light');
   await loadLive();   // pull real /admin data when served by the Worker; falls back to MOCK otherwise
+  try{ loadVersions(); }catch(e){}
   if(LIVE){ loadSecurity(); loadWarpStatus(); }
   else { STATE.users=DEMO_USERS.map(u=>({...u})); STATE.usage=DEMO_USAGE; STATE.multiUser=true; }
   applyLang(lang);    // renders everything (incl. syncFormValues) in the chosen language
