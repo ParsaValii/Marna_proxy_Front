@@ -1029,7 +1029,7 @@ html[data-theme=dark] .qr-ph{border-color:#fff}
             <button class="btn ghost sm" id="upd-check" data-i18n="upd_check">Check for updates</button>
             <span id="upd-msg" class="msg" style="font-size:12.5px"></span>
           </div>
-          <div id="upd-box" style="display:none;border-top:1px solid var(--bd);margin-top:10px;padding-top:14px">
+          <div id="upd-box" style="border-top:1px solid var(--bd);margin-top:10px;padding-top:14px">
             <p style="font-size:12px;color:var(--mu);margin:0 0 8px" data-i18n="upd_token_help">Create a Cloudflare API token (My Profile → API Tokens → Create Custom Token) with permission: Account → Workers Scripts → Edit. Then paste it below.</p>
             <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px">
               <a class="btn primary sm" href="https://dash.cloudflare.com/profile/api-tokens?permissionGroupKeys=%5B%7B%22key%22%3A%22workers_scripts%22%2C%22type%22%3A%22edit%22%7D%5D&accountId=*&zoneId=all&name=Nova%20Self-Update" target="_blank" rel="noopener" data-i18n="upd_token_link">Create token (1-click)</a>
@@ -1948,22 +1948,29 @@ async function twofaDisable(){ const msg=document.getElementById('twofa-dmsg'); 
 
 /* ---- In-panel self-update ---- */
 async function updateCheck(){
-  var msg=document.getElementById('upd-msg'); var box=document.getElementById('upd-box');
+  // Only REPORTS status. The token box + Update button are always visible, so the user can update
+  // (or re-install the same version) regardless of whether this check succeeds or says up-to-date.
+  var msg=document.getElementById('upd-msg');
   if(!LIVE) return previewToast();
   if(msg){ msg.className='msg'; msg.textContent=(lang==='fa'?'در حال بررسی…':'Checking…'); }
   try{
-    var r=await fetch('admin/update-check.json',{cache:'no-store'}); var j=await r.json();
+    var r=await fetch('admin/update-check.json',{cache:'no-store'});
+    var ct=(r.headers.get('content-type')||'');
+    if(ct.indexOf('application/json')<0){
+      // Old worker that doesn't have the update-check endpoint yet → returns an HTML page, not JSON.
+      if(msg){ msg.className='msg warn'; msg.textContent='⚠️ '+(lang==='fa'?'این ورکر هنوز نسخهٔ قدیمی است (قابلیت بررسی ندارد). با توکن زیر همین حالا به آخرین نسخه به‌روزرسانی کن.':'This worker is still an older version (no update-check endpoint). Use the token below to update to the latest now.'); }
+      return;
+    }
+    var j=await r.json();
     var cur=j.current||'?', latest=j.latest||'?';
     if(j.updateAvailable){
       if(msg){ msg.className='msg warn'; msg.textContent='⬆ '+(lang==='fa'?('نسخهٔ جدید موجود است — فعلی '+cur+' ← جدید '+latest):('Update available — current '+cur+' → latest '+latest)); }
-      if(box) box.style.display='block';
     } else if(j.latest){
-      if(msg){ msg.className='msg ok'; msg.textContent='✓ '+(lang==='fa'?('روی آخرین نسخه هستی ('+cur+')'):('You are on the latest version ('+cur+')')); }
-      if(box) box.style.display='none';
+      if(msg){ msg.className='msg ok'; msg.textContent='✓ '+(lang==='fa'?('روی آخرین نسخه هستی ('+cur+'). می‌توانی برای نصب دوباره از توکن زیر استفاده کنی.'):('You are on the latest version ('+cur+'). You can still re-install with the token below.')); }
     } else {
       if(msg){ msg.className='msg bad'; msg.textContent='⚠️ '+(lang==='fa'?'بررسی نسخه ممکن نشد. ':'Could not check for updates. ')+(j.error||''); }
     }
-  }catch(e){ if(msg){ msg.className='msg bad'; msg.textContent='⚠️ '+e.message; } }
+  }catch(e){ if(msg){ msg.className='msg warn'; msg.textContent='⚠️ '+(lang==='fa'?('بررسی نسخه ممکن نشد ('+e.message+'). با توکن زیر می‌توانی به‌روزرسانی کنی.'):('Version check failed ('+e.message+'). You can still update with the token below.')); } }
 }
 async function updateNow(extra){
   var msg=document.getElementById('upd-msg'); if(!LIVE) return previewToast();
