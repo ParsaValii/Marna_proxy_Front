@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Nova Proxy — Control Plane</title>
+<title>Nova Proxy — Control Panel</title>
 <meta name="nova-panel-version" content="3.8.0" />
 <link rel="icon" type="image/svg+xml" href="/logo-mark.svg" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -765,6 +765,15 @@ html[data-theme=dark] .qr-ph{border-color:#fff}
               <button class="btn ghost sm" id="cr2-add" data-i18n="rules_add">+ Add</button>
             </div>
             <div class="fg" style="margin-bottom:0"><textarea class="inp" id="n2-customrules" spellcheck="false" style="min-height:110px;font-family:ui-monospace,monospace;font-size:12px" placeholder="DOMAIN-SUFFIX,digikala.com,DIRECT&#10;DOMAIN-KEYWORD,doubleclick,REJECT"></textarea></div>
+          </div>
+        </div>
+
+        <!-- Monthly data cap (abuse / Cloudflare-ToS safety) -->
+        <div class="card">
+          <div class="card-h"><h3>Monthly data cap · سقف داده ماهانه</h3></div>
+          <div class="card-pad">
+            <p style="font-size:12px;color:var(--mu);margin-bottom:11px">Auto-pauses all proxy traffic for the rest of the month once this much data is used — a backstop that protects your Cloudflare account from abuse-detection suspensions. 0 = no cap. · با رسیدن مصرف ماه به این مقدار، ترافیک تا پایان ماه متوقف می‌شود تا حساب Cloudflare از مسدودی در امان بماند. صفر = بدون محدودیت.</p>
+            <div class="fg" style="margin-bottom:0;max-width:260px"><label>GB / month (0 = off)</label><input class="inp" id="n2-monthlycap" type="number" min="0" step="1" inputmode="numeric" placeholder="0"></div>
           </div>
         </div>
 
@@ -1810,7 +1819,7 @@ async function loadUsersFromServer(){
   }
   return { users:serverUsers, usage, usageIO, multiUser:mu };
 }
-async function addUser(){ const _sw=document.getElementById('t2-multiuser'); if(!_sw || !_sw.classList.contains('on')){ toast(lang==='fa'?'ابتدا «چندکاربره» را روشن کنید':'Turn on Multi-user first to add users'); return; } collectUsers(); STATE.users=STATE.users||[]; STATE.users.push({ id:uRid(), name:'user'+(STATE.users.length+1), username:'', tag:uRid().slice(0,10), token:uRid()+uRid().slice(0,8), key:uRid().slice(0,12), quotaBytes:0, expiry:'', enabled:true, created:new Date().toISOString() }); renderUsers(); if(LIVE) await saveUsers(); }
+async function addUser(){ const _sw=document.getElementById('t2-multiuser'); if(!_sw || !_sw.classList.contains('on')){ toast(lang==='fa'?'ابتدا «چندکاربره» را روشن کنید':'Turn on Multi-user first to add users'); return; } collectUsers(); STATE.users=STATE.users||[]; STATE.users.push({ id:uRid(), name:'user'+(STATE.users.length+1), username:'', tag:uRid().slice(0,10), token:uRid()+uRid().slice(0,8), key:uRid().slice(0,12), quotaBytes:50*1073741824, expiry:new Date(Date.now()+180*86400000).toISOString().slice(0,10), enabled:true, created:new Date().toISOString() }); renderUsers(); if(LIVE) await saveUsers(); }
 function updateMultiUserUI(){
   const sw=document.getElementById('t2-multiuser'); const on = !!(sw && sw.classList.contains('on'));
   const btn=document.getElementById('users-add2');
@@ -1992,7 +2001,7 @@ async function updateCheck(){
     } else if(j.latest){
       if(msg){ msg.className='msg ok'; msg.textContent='✓ '+(lang==='fa'?('روی آخرین نسخه هستی ('+cur+'). می‌توانی برای نصب دوباره از توکن زیر استفاده کنی.'):('You are on the latest version ('+cur+'). You can still re-install with the token below.')); }
     } else {
-      if(msg){ msg.className='msg bad'; msg.textContent='⚠️ '+(lang==='fa'?'بررسی نسخه ممکن نشد. ':'Could not check for updates. ')+(j.error||''); }
+      if(msg){ msg.className='msg warn'; msg.textContent='⚠️ '+(lang==='fa'?'سرور بروزرسانی در دسترس نیست — هنوز version.json روی IRNova/Nova-Proxy منتشر نشده؟':'Couldn\'t reach the update server — is version.json published on IRNova/Nova-Proxy?'); }
     }
   }catch(e){ if(msg){ msg.className='msg warn'; msg.textContent='⚠️ '+(lang==='fa'?('بررسی نسخه ممکن نشد ('+e.message+'). با توکن زیر می‌توانی به‌روزرسانی کنی.'):('Version check failed ('+e.message+'). You can still update with the token below.')); } }
 }
@@ -2462,7 +2471,7 @@ function syncFormValues(){
   const og=c.optimizedSubGeneration||{}; set('f2-subname', og.SUBNAME||''); set('f2-subint', og.SUBUpdateTime||3);
   const scc=c.subConverterConfig||{}; set('f2-subapi', (!scc.SUBAPI||/novaproxy/i.test(scc.SUBAPI))?'https://SUBAPI.cmliussss.net':scc.SUBAPI); set('f2-subcfg', scc.SUBCONFIG||''); on('t2-subemoji', !!scc.SUBEMOJI);
   // Custom + preset routing rules (network)
-  set('n2-customrules', n.customRules||'');
+  set('n2-customrules', n.customRules||''); set('n2-monthlycap', n.monthlyCapGB||0);
   const bc=n.bypassCountries||[]; on('t2-bp-cn', bc.includes('cn')); on('t2-bp-ru', bc.includes('ru'));
   const bk=n.blockCategories||[]; on('t2-bk-malware', bk.includes('malware')); on('t2-bk-phishing', bk.includes('phishing')); on('t2-bk-crypto', bk.includes('cryptominers'));
   // Disguise (secret admin/login/sub paths)
@@ -2645,7 +2654,7 @@ async function saveNetwork(){
   n.enableFakeDNS=isOn('t2-fakedns'); n.fakeDNSIP=(g('d2-fakeip')||'').trim()||'198.51.100.1'; n.logLevel=g('d2-loglevel');
   n.backendMode=isOn('t2-backend'); n.backendUrl=(g('be-url')||'').trim();
   // custom + preset rules
-  n.customRules=g('n2-customrules')||'';
+  n.customRules=g('n2-customrules')||''; n.monthlyCapGB=Math.max(0,Math.floor(Number(g('n2-monthlycap'))||0));
   n.bypassCountries=[['cn','t2-bp-cn'],['ru','t2-bp-ru']].filter(([,id])=>isOn(id)).map(([c])=>c);
   const cats=[]; if(Array.isArray(n.blockCategories) && n.blockCategories.includes('quic')) cats.push('quic'); // keep QUIC (set by the policy card)
   [['malware','t2-bk-malware'],['phishing','t2-bk-phishing'],['cryptominers','t2-bk-crypto']].forEach(([c,id])=>{ if(isOn(id)) cats.push(c); });
@@ -2957,14 +2966,20 @@ let _updVer='';
 // not to a raw GitHub URL. Dismiss is remembered per-version so it doesn't nag.
 async function checkUpdate(){ try{
  if(!LIVE) return;
- // Use the worker's own update-check endpoint (compares running version vs GitHub). Old workers
- // without this endpoint return HTML, not JSON — in that case stay silent (no banner).
+ // Primary: the worker's update-check endpoint (knows the exact running version). Fallback: if the
+ // worker is older / can't reach GitHub, compare the running version to the latest published
+ // version fetched straight from IRNova/Nova-Proxy (raw.githubusercontent.com allows CORS here).
  let j=null;
  try{
    const r=await fetch('admin/update-check.json',{cache:'no-store'});
-   if((r.headers.get('content-type')||'').indexOf('application/json')<0) return;
-   j=await r.json();
- }catch(e){ return; }
+   if((r.headers.get('content-type')||'').indexOf('application/json')>=0) j=await r.json();
+ }catch(e){}
+ if(!j || !j.latest){
+   let cur='';
+   try{ const sr=await API.get('system.json'); cur=_vnorm(sr&&sr.version); }catch(e){}
+   if(!cur){ const meta=document.querySelector('meta[name="nova-panel-version"]'); cur=_vnorm(meta&&meta.getAttribute('content')); }
+   try{ const gr=await fetch(WORKER_VERSION_JSON,{cache:'no-store'}); if(gr.ok){ const gj=await gr.json(); j={ latest:_vnorm(gj&&gj.version), notes:(gj&&gj.notes)||'', updateAvailable:!!(gj&&gj.version&&cur&&_vgt(_vnorm(gj.version),cur)) }; } }catch(e){}
+ }
  if(!j || !j.updateAvailable || !j.latest) return;
  const verStr=String(j.latest);
  let dm=''; try{ dm=localStorage.getItem('nova-upd-dismiss')||''; }catch(e){} if(dm===verStr) return;
