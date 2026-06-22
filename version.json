@@ -1,6 +1,6 @@
 {
   "version": "3.8.0",
-  "released": "2026-06-20",
-  "notes": "Censorship-resistance and abuse-control hardening: (1) Disguise — move the panel, login and subscription to secret paths you choose (Settings → Network → Disguise), so probing the default /admin or /login just returns a generic page; the shipped worker also encodes protocol strings (vless/trojan) out of the build. (2) Per-ISP clean-IP pool — point Smart IP mode at a folder of per-carrier files (mci.txt, mtn.txt, …) and each user is auto-served IPs for their operator. (3) Request-count quota backstop — per-user request/daily-request limits that enforce even when byte accounting is thin (backend-forward mode). All opt-in; existing installs unchanged.",
-  "worker_url": "https://raw.githubusercontent.com/iiviirv/panel/main/worker.js"
+  "released": "2026-06-21",
+  "notes": "One-click in-app updates: connect a single Cloudflare API token once (Account Analytics: Read + Workers Scripts: Edit) and the panel shows live Worker usage AND self-updates with one click — no token re-entry, no manual redeploy; the Update panel now reflects \"Cloudflare connected\" and an older worker is told to deploy v3.8.0 once. Also in 3.8.0: Disguise mode (move panel/login/subscription to secret paths; protocol strings encoded out of the build); per-ISP clean-IP pool (per-carrier files auto-served by operator); request-count quota backstop; multi-SOCKS5 with client failover + static/pinned exit IP + daily/weekly auto-rotation; Clash/FlClash (mihomo) import fix; KV-budget fix (D1 is now primary — clears the 'KV request ended' error); monthly bandwidth cap + auto-pause; Telegram bot back-buttons + live usage; full Farsi/English localization. WebSocket stays the default transport (XHTTP opt-in for Xray-core apps; gRPC retired).",
+  "worker_url": "https://raw.githubusercontent.com/IRNova/Nova-Proxy/main/worker.js"
 }

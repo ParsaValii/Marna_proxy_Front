@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Nova Proxy — Control Plane</title>
+<title>Nova Proxy — Control Panel</title>
 <meta name="nova-panel-version" content="3.8.0" />
 <link rel="icon" type="image/svg+xml" href="/logo-mark.svg" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -594,6 +594,8 @@ html[data-theme=dark] .qr-ph{border-color:#fff}
     <main class="content">
       <div id="update-bar" style="display:none;align-items:center;gap:12px;margin:0 0 16px;padding:11px 16px;border:1px solid var(--ac);background:color-mix(in srgb,var(--ac) 10%,transparent);border-radius:12px;font-size:13px"><span style="font-size:16px">🔔</span><span style="flex:1" id="update-txt"></span><a id="update-link" class="btn primary sm" href="#" target="_blank" rel="noopener">Get update</a><button id="update-x" aria-label="dismiss" style="background:none;border:none;color:var(--mu);cursor:pointer;font-size:18px;line-height:1">×</button></div>
 
+      <div id="cf-connect-bar" style="display:none;align-items:center;gap:12px;margin:0 0 16px;padding:11px 16px;border:1px solid var(--ac);background:color-mix(in srgb,var(--ac) 10%,transparent);border-radius:12px;font-size:13px"><span style="font-size:16px">☁️</span><span style="flex:1" id="cf-bar-txt"></span><button id="cf-bar-go" class="btn primary sm" type="button">Connect token</button><button id="cf-bar-x" type="button" aria-label="dismiss" style="background:none;border:none;color:var(--mu);cursor:pointer;font-size:18px;line-height:1">×</button></div>
+
       <div id="kill-banner" style="display:none;align-items:center;gap:8px;background:var(--dg);color:#fff;padding:11px 16px;border-radius:12px;margin-bottom:14px;font-size:13px;font-weight:600">🚨 <span data-i18n="kill_banner">Service is paused. All proxy traffic and subscription fetches are stopped. Turn the kill switch off in Settings to resume.</span></div>
 
       <!-- ============ DASHBOARD ============ -->
@@ -765,6 +767,15 @@ html[data-theme=dark] .qr-ph{border-color:#fff}
               <button class="btn ghost sm" id="cr2-add" data-i18n="rules_add">+ Add</button>
             </div>
             <div class="fg" style="margin-bottom:0"><textarea class="inp" id="n2-customrules" spellcheck="false" style="min-height:110px;font-family:ui-monospace,monospace;font-size:12px" placeholder="DOMAIN-SUFFIX,digikala.com,DIRECT&#10;DOMAIN-KEYWORD,doubleclick,REJECT"></textarea></div>
+          </div>
+        </div>
+
+        <!-- Monthly data cap (abuse / Cloudflare-ToS safety) -->
+        <div class="card">
+          <div class="card-h"><h3>Monthly data cap · سقف داده ماهانه</h3></div>
+          <div class="card-pad">
+            <p style="font-size:12px;color:var(--mu);margin-bottom:11px">Auto-pauses all proxy traffic for the rest of the month once this much data is used — a backstop that protects your Cloudflare account from abuse-detection suspensions. 0 = no cap. · با رسیدن مصرف ماه به این مقدار، ترافیک تا پایان ماه متوقف می‌شود تا حساب Cloudflare از مسدودی در امان بماند. صفر = بدون محدودیت.</p>
+            <div class="fg" style="margin-bottom:0;max-width:260px"><label>GB / month (0 = off)</label><input class="inp" id="n2-monthlycap" type="number" min="0" step="1" inputmode="numeric" placeholder="0"></div>
           </div>
         </div>
 
@@ -943,7 +954,7 @@ html[data-theme=dark] .qr-ph{border-color:#fff}
             <div class="card-h"><h3 data-i18n="set_proto">Protocol &amp; transport</h3></div>
             <div class="card-pad">
               <div class="fg"><label data-i18n="lbl_protocol">Protocol</label><select class="inp" id="f2-proto"><option value="vless">VLESS</option><option value="trojan">Trojan</option><option value="ss">Shadowsocks</option></select></div>
-              <div class="fg"><label data-i18n="lbl_transport">Transport</label><select class="inp" id="f2-trans"><option value="ws">WebSocket</option><option value="xhttp">XHTTP</option><option value="grpc">gRPC</option></select></div>
+              <div class="fg"><label data-i18n="lbl_transport">Transport</label><select class="inp" id="f2-trans"><option value="ws">WebSocket (recommended — all apps)</option><option value="xhttp">XHTTP (Xray-core apps only, e.g. v2rayNG)</option><option value="grpc">gRPC (legacy)</option></select></div>
               <div class="fg"><label data-i18n="lbl_fp">TLS fingerprint</label><select class="inp" id="f2-fp"><option value="random">random</option><option value="chrome">chrome</option><option value="firefox">firefox</option><option value="safari">safari</option><option value="ios">ios</option><option value="android">android</option><option value="edge">edge</option></select></div>
               <div class="fg"><label data-i18n="lbl_path">Transport path</label><input class="inp" id="f2-path" placeholder="/"></div>
               <div class="fg"><label data-i18n="lbl_grpcmode">gRPC mode</label><select class="inp" id="f2-grpcmode"><option value="gun">gun</option><option value="multi">multi</option></select></div>
@@ -1043,11 +1054,15 @@ html[data-theme=dark] .qr-ph{border-color:#fff}
             <span id="upd-msg" class="msg" style="font-size:12.5px"></span>
           </div>
           <div id="upd-box" style="border-top:1px solid var(--bd);margin-top:10px;padding-top:14px">
+            <div id="upd-connected" style="display:none;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;padding:10px 12px;border:1px solid var(--ac);background:color-mix(in srgb,var(--ac) 10%,transparent);border-radius:10px;font-size:12.5px"><span style="font-size:15px">☁️</span><span style="flex:1;min-width:180px" data-i18n="upd_connected">Cloudflare connected ✓ — updates are one-click. Just press “Update now” below.</span><a href="#" id="upd-usetoken" style="font-size:11.5px;color:var(--mu)" data-i18n="upd_usetoken">Use a different token</a></div>
+            <div id="upd-token-area">
             <p style="font-size:12px;color:var(--mu);margin:0 0 8px" data-i18n="upd_token_help">Create a Cloudflare API token (My Profile → API Tokens → Create Custom Token) with permission: Account → Workers Scripts → Edit. Then paste it below.</p>
             <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px">
-              <a class="btn primary sm" href="https://dash.cloudflare.com/profile/api-tokens?permissionGroupKeys=%5B%7B%22key%22%3A%22workers_scripts%22%2C%22type%22%3A%22edit%22%7D%5D&accountId=*&zoneId=all&name=Nova%20Self-Update" target="_blank" rel="noopener" data-i18n="upd_token_link">Create token (1-click)</a>
+              <a class="btn primary sm" href="https://dash.cloudflare.com/profile/api-tokens?permissionGroupKeys=%5B%7B%22key%22%3A%22workers_scripts%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22account_analytics%22%2C%22type%22%3A%22read%22%7D%5D&accountId=*&zoneId=all&name=Nova%20Cloudflare" target="_blank" rel="noopener" data-i18n="upd_token_link">Create token (1-click)</a>
             </div>
             <div class="fg"><label data-i18n="upd_token_lbl">Cloudflare API token</label><input class="inp" id="upd-token" type="text" autocomplete="off" spellcheck="false" placeholder="••••••••••••••••"></div>
+            <div style="font-size:11px;color:var(--mu);margin:-2px 0 8px" data-i18n="upd_saved_note"></div>
+            </div>
             <div class="fg" id="upd-scriptname-wrap" style="display:none"><label data-i18n="upd_scriptname_lbl">Worker script name</label><input class="inp" id="upd-scriptname" type="text" autocomplete="off" placeholder="nova-..."></div>
             <div id="upd-acct-wrap" style="display:none;margin-bottom:10px"></div>
             <button class="btn primary sm" id="upd-now" data-i18n="upd_now">Update now</button>
@@ -1079,9 +1094,11 @@ html[data-theme=dark] .qr-ph{border-color:#fff}
               <div class="meter" style="height:8px;margin-top:6px;border-radius:999px;background:var(--card2);border:1px solid var(--bd);overflow:hidden"><i id="u-bar" style="display:block;height:100%;width:18%;background:var(--ac)"></i></div>
               <div style="border-top:1px solid var(--bd);margin-top:16px;padding-top:14px">
                 <div style="font-weight:600;font-size:13px;margin-bottom:4px" data-i18n="cf_h">Live status (Cloudflare API)</div>
-                <div style="font-size:11.5px;color:var(--mu);margin-bottom:11px" data-i18n="cf_sub">Connect an API token to show real request counts instead of an estimate. The token needs Account Analytics: Read.</div>
-                <div class="fg"><label data-i18n="cf_accid">Account ID</label><input class="inp" id="cf-accid" spellcheck="false" placeholder="023e105f4ecef8ad9ca31a8372d0c353"></div>
+                <div style="font-size:11.5px;color:var(--mu);margin-bottom:10px" data-i18n="cf_sub"></div>
+                <div style="margin-bottom:9px"><a class="btn primary sm" href="https://dash.cloudflare.com/profile/api-tokens?permissionGroupKeys=%5B%7B%22key%22%3A%22account_analytics%22%2C%22type%22%3A%22read%22%7D%2C%7B%22key%22%3A%22workers_scripts%22%2C%22type%22%3A%22edit%22%7D%5D&name=Nova%20Cloudflare" target="_blank" rel="noopener" data-i18n="upd_token_link">Create token (1-click)</a></div>
                 <div class="fg"><label data-i18n="cf_token">API token</label><input class="inp" type="password" id="cf-token" placeholder="••••••••••••••••"></div>
+                <div class="fg"><label><span data-i18n="cf_accid">Account ID</span> <span data-i18n="cf_accid_opt" style="color:var(--mu);font-weight:400">(optional — auto-detected)</span></label><input class="inp" id="cf-accid" spellcheck="false" data-i18n-ph="cf_accid_ph" placeholder="leave blank to auto-detect"></div>
+                <div id="cf-acct-wrap" style="display:none;margin-bottom:9px"></div>
                 <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:2px"><button class="btn ghost sm" id="cf-disconnect" data-i18n="cf_disconnect">Disconnect</button><button class="btn primary sm" id="cf-connect" data-i18n="cf_connect">Connect</button></div>
                 <div id="cf-msg" style="font-size:12px;color:var(--mu);margin-top:9px;text-align:end;min-height:16px"></div>
               </div>
@@ -1178,7 +1195,12 @@ html[data-theme=dark] .qr-ph{border-color:#fff}
             </div>
             <div class="fg px-sec" id="px-sec-proxyip" style="margin-top:11px"><label data-i18n="px_proxyip">PROXYIP address</label><input class="inp" id="px-proxyip" placeholder="proxyip.example.com:443 or 1.2.3.4"></div>
             <div class="px-sec" id="px-sec-addr" style="margin-top:11px">
-              <div class="fg"><label data-i18n="px_addr">Proxy address</label><input class="inp" id="px-addr" placeholder="user:password@host:port"></div>
+              <div class="fg"><label data-i18n="px_addr">Proxy address(es)</label><textarea class="inp" id="px-addr" rows="3" spellcheck="false" style="font-family:ui-monospace,monospace;font-size:12px" placeholder="user:password@host:port"></textarea><div style="font-size:11.5px;color:var(--mu);margin-top:5px">One proxy per line. <b>One</b> = fixed/static exit IP (good for Instagram); <b>two–three</b> = the app rotates and fails over between them. · یک پروکسی در هر خط؛ یکی = آی‌پی ثابت، دو تا سه = چرخش و جایگزینی خودکار.</div></div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;margin-top:10px">
+                <div class="fg" style="flex:1;min-width:150px;margin:0"><label>Auto-rotate</label><select class="inp" id="px-rotate"><option value="">Off — use all</option><option value="daily">Daily</option><option value="weekly">Weekly</option></select></div>
+                <div class="fg" style="width:120px;margin:0"><label>Active count</label><input class="inp" id="px-rotcount" type="number" min="1" step="1" placeholder="3"></div>
+              </div>
+              <div style="font-size:11.5px;color:var(--mu);margin-top:5px">With several proxies above, Auto-rotate serves a different subset each day/week — the exit set changes automatically and clients pick it up on their next subscription refresh. · با چند پروکسی، هر روز/هفته زیرمجموعه‌ای متفاوت ارائه می‌شود.</div>
             </div>
             <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
               <button class="btn" id="px-verify" data-i18n="px_verify">Verify</button>
@@ -1267,9 +1289,9 @@ const I18N = {
     sub_users:'Per-user links, quotas, and expiry.',
     status_operational:'Operational', status_on:'On', status_off:'Off', status_nominal:'Nominal',
     ver_panel:'Panel', ver_worker:'Worker', view_all:'View all', refresh:'Refresh', copy:'Copy', open:'Open', qr:'QR', btn_save:'Save',
-    cf_estimate:'Estimated', cf_h:'Live status (Cloudflare API)', cf_sub:'Connect an API token to show real request counts instead of an estimate. The token needs Account Analytics: Read.', cf_accid:'Account ID', cf_token:'API token', cf_connect:'Connect', cf_disconnect:'Disconnect',
+    cf_estimate:'Estimated', cf_h:'Live status (Cloudflare API)', cf_sub:'Paste a Cloudflare API token to show real request counts — your Account ID is auto-detected. Click "Create token", press Continue to summary → Create Token, copy it, and paste below. Give it Account Analytics: Read + Workers Scripts: Edit — then this one token powers both live usage and one-click updates.', cf_accid:'Account ID', cf_accid_opt:'(optional — auto-detected)', cf_accid_ph:'leave blank to auto-detect', cf_token:'API token', cf_connect:'Connect', cf_disconnect:'Disconnect', upd_saved_note:'Already connected Cloudflare in the Worker-usage card? Leave this blank and just press Update now.',
     dns_yourdoh:'Your private DoH endpoint. Paste it into a Secure DNS field in your browser or VPN client.', dns_test:'Test',
-    reset_h:'Factory reset', reset_s:'Wipes everything from the database (settings, network, clean IPs, users, Cloudflare and Telegram keys) and restores the initial state. Your panel password is kept. This cannot be undone.', reset_btn:'Factory reset', upd_h:'Update panel', upd_s:'Update your Worker to the latest Nova version straight from here — no manual redeploy. It keeps your database, settings, and password. You provide a Cloudflare API token with Workers Scripts → Edit; it is used once and never stored.', upd_check:'Check for updates', upd_token_help:'Click "Create token" — it opens Cloudflare with the right permission (Workers Scripts → Edit) already selected. Just press "Continue to summary" → "Create Token", copy it, and paste below. The token is used once and never stored.', upd_token_link:'Create token (1-click)', upd_token_lbl:'Cloudflare API token', upd_scriptname_lbl:'Worker script name', upd_now:'Update now',
+    reset_h:'Factory reset', reset_s:'Wipes everything from the database (settings, network, clean IPs, users, Cloudflare and Telegram keys) and restores the initial state. Your panel password is kept. This cannot be undone.', reset_btn:'Factory reset', upd_h:'Update panel', upd_s:'Update your Worker to the latest Nova version straight from here — no manual redeploy. It keeps your database, settings, and password. You provide a Cloudflare API token with Workers Scripts → Edit; it is used once and never stored. Requires Nova v3.8.0+ on your Worker — if you are on an older version, deploy v3.8.0 once manually, then updates here are one-click.', upd_check:'Check for updates', upd_token_help:'Click "Create token" — it opens Cloudflare with the right permission (Workers Scripts → Edit) already selected. Just press "Continue to summary" → "Create Token", copy it, and paste below. The token is used once and never stored.', upd_token_link:'Create token (1-click)', upd_token_lbl:'Cloudflare API token', upd_scriptname_lbl:'Worker script name', upd_now:'Update now', upd_connected:'Cloudflare connected ✓ — updates are one-click. Just press “Update now” below.', upd_usetoken:'Use a different token',
     kill_h:'Kill switch', kill_s:'Emergency stop. While on, every proxy connection and subscription fetch is refused (503). The admin panel stays reachable so you can switch it back off. Use it if your service is being abused.', kill_banner:'Service is paused. All proxy traffic and subscription fetches are stopped. Turn the kill switch off in Settings to resume.',
     nav_guide:'Guide', sub_guide:'How to use Nova Proxy, step by step.', logout:'Logout',
     /* KPIs */
@@ -1313,7 +1335,7 @@ const I18N = {
     lbl_protocol:'Protocol', lbl_transport:'Transport', lbl_fp:'TLS fingerprint',
     lbl_curpw:'Current password', lbl_newpw:'New password', btn_changepw:'Change password',
     btn_enable2fa:'Enable 2FA', twofa_hint:'Require a 6-digit code at login. Works with Google Authenticator, Authy, and others.',
-    s_tls:'TLS', s_tls_d:'Encrypt the tunnel', s_ech:'ECH', s_ech_d:'Encrypted Client Hello', s_rp:'Random path', s_rp_d:'randomize the node path',
+    s_tls:'TLS', s_tls_d:'On = TLS (recommended). Off = non-TLS over Cloudflare HTTP ports — use only if TLS/443 is filtered on your network; less private.', s_ech:'ECH', s_ech_d:'Encrypted Client Hello', s_rp:'Random path', s_rp_d:'randomize the node path',
     s_0rtt:'0-RTT', s_0rtt_d:'Faster reconnects', s_scv:'Skip cert verify', s_scv_d:'Allow insecure TLS',
     /* notifications */
     notif_worker:'Worker requests', notif_today:'requests today (Cloudflare free plan)',
@@ -1356,9 +1378,9 @@ const I18N = {
     sub_users:'لینک‌های هر کاربر، سهمیه و انقضا.',
     status_operational:'عملیاتی', status_on:'روشن', status_off:'خاموش', status_nominal:'عادی',
     ver_panel:'پنل', ver_worker:'ورکر', view_all:'مشاهدهٔ همه', refresh:'بازخوانی', copy:'کپی', open:'باز کردن', qr:'کد QR', btn_save:'ذخیره',
-    cf_estimate:'تخمینی', cf_h:'وضعیت زنده (API کلودفلر)', cf_sub:'برای نمایش تعداد واقعی درخواست‌ها به‌جای تخمین، یک توکن API وصل کنید. توکن به دسترسی Account Analytics: Read نیاز دارد.', cf_accid:'شناسهٔ حساب', cf_token:'توکن API', cf_connect:'اتصال', cf_disconnect:'قطع اتصال',
+    cf_estimate:'تخمینی', cf_h:'وضعیت زنده (API کلودفلر)', cf_sub:'یک توکن API کلودفلر را بچسبان تا تعداد واقعی درخواست‌ها نمایش داده شود — شناسهٔ حساب خودکار پیدا می‌شود. روی «ساخت توکن» بزن، سپس Continue to summary ← Create Token را بزن، کپی کن و پایین جای‌گذاری کن. به آن دسترسی Account Analytics: Read و Workers Scripts: Edit بده — همین یک توکن، هم مصرف زنده و هم به‌روزرسانی یک‌کلیکی را فعال می‌کند.', cf_accid:'شناسهٔ حساب', cf_accid_opt:'(اختیاری — خودکار پیدا می‌شود)', cf_accid_ph:'خالی بگذار تا خودکار پیدا شود', cf_token:'توکن API', cf_connect:'اتصال', cf_disconnect:'قطع اتصال', upd_saved_note:'قبلاً کلودفلر را در کارت «مصرف ورکر» وصل کرده‌اید؟ این را خالی بگذارید و فقط «به‌روزرسانی اکنون» را بزنید.',
     dns_yourdoh:'نشانی DoH خصوصی شما. آن را در فیلد DNS امن مرورگر یا کلاینت VPN بگذارید.', dns_test:'تست',
-    reset_h:'بازنشانی کارخانه‌ای', reset_s:'همه‌چیز را از پایگاه‌داده پاک می‌کند (تنظیمات، شبکه، IPهای تمیز، کاربران، کلیدهای کلودفلر و تلگرام) و به حالت اولیه برمی‌گرداند. رمز پنل حفظ می‌شود. این کار قابل بازگشت نیست.', reset_btn:'بازنشانی کارخانه‌ای', upd_h:'به‌روزرسانی پنل', upd_s:'ورکر خود را مستقیماً از همین‌جا به آخرین نسخهٔ Nova به‌روزرسانی کن — بدون دیپلوی دستی. دیتابیس، تنظیمات و رمز عبور حفظ می‌شوند. یک توکن API کلودفلر با دسترسی Workers Scripts → Edit می‌دهی؛ فقط یک‌بار استفاده می‌شود و هیچ‌جا ذخیره نمی‌شود.', upd_check:'بررسی به‌روزرسانی', upd_token_help:'روی «ساخت توکن» بزن — کلودفلر با دسترسی درست (Workers Scripts → Edit) از قبل انتخاب‌شده باز می‌شود. فقط «Continue to summary» ← «Create Token» را بزن، توکن را کپی کن و پایین جای‌گذاری کن. توکن فقط یک‌بار استفاده و هیچ‌جا ذخیره نمی‌شود.', upd_token_link:'ساخت توکن (یک‌کلیک)', upd_token_lbl:'توکن API کلودفلر', upd_scriptname_lbl:'نام اسکریپت ورکر', upd_now:'به‌روزرسانی اکنون',
+    reset_h:'بازنشانی کارخانه‌ای', reset_s:'همه‌چیز را از پایگاه‌داده پاک می‌کند (تنظیمات، شبکه، IPهای تمیز، کاربران، کلیدهای کلودفلر و تلگرام) و به حالت اولیه برمی‌گرداند. رمز پنل حفظ می‌شود. این کار قابل بازگشت نیست.', reset_btn:'بازنشانی کارخانه‌ای', upd_h:'به‌روزرسانی پنل', upd_s:'ورکر خود را مستقیماً از همین‌جا به آخرین نسخهٔ Nova به‌روزرسانی کن — بدون دیپلوی دستی. دیتابیس، تنظیمات و رمز عبور حفظ می‌شوند. یک توکن API کلودفلر با دسترسی Workers Scripts → Edit می‌دهی؛ فقط یک‌بار استفاده می‌شود و هیچ‌جا ذخیره نمی‌شود. نیازمند نسخهٔ ۳.۸.۰ به بالا روی ورکر است — اگر نسخهٔ قدیمی‌تری داری، یک‌بار نسخهٔ ۳.۸.۰ را دستی Deploy کن؛ پس از آن به‌روزرسانی‌ها این‌جا یک‌کلیکی می‌شوند.', upd_check:'بررسی به‌روزرسانی', upd_token_help:'روی «ساخت توکن» بزن — کلودفلر با دسترسی درست (Workers Scripts → Edit) از قبل انتخاب‌شده باز می‌شود. فقط «Continue to summary» ← «Create Token» را بزن، توکن را کپی کن و پایین جای‌گذاری کن. توکن فقط یک‌بار استفاده و هیچ‌جا ذخیره نمی‌شود.', upd_token_link:'ساخت توکن (یک‌کلیک)', upd_token_lbl:'توکن API کلودفلر', upd_scriptname_lbl:'نام اسکریپت ورکر', upd_now:'به‌روزرسانی اکنون', upd_connected:'کلودفلر وصل است ✓ — به‌روزرسانی‌ها فقط با یک کلیک انجام می‌شوند. کافی است «به‌روزرسانی اکنون» را بزنید.', upd_usetoken:'استفاده از توکن دیگر',
     kill_h:'دکمهٔ توقف اضطراری', kill_s:'توقف اضطراری. وقتی روشن باشد، هر اتصال پراکسی و دریافت اشتراک رد می‌شود (۵۰۳). پنل مدیریت باز می‌ماند تا بتوانید دوباره خاموشش کنید. اگر سرویس‌تان مورد سوءاستفاده است از آن استفاده کنید.', kill_banner:'سرویس متوقف است. همهٔ ترافیک پراکسی و دریافت اشتراک‌ها متوقف شده. برای ازسرگیری، Kill switch را در تنظیمات خاموش کنید.',
     nav_guide:'راهنما', sub_guide:'راهنمای گام‌به‌گام استفاده از نوا پروکسی.', logout:'خروج',
     kpi_network:'شبکه', kpi_storage:'حافظه', kpi_worker:'مصرف ورکر', kpi_traffic:'مصرف امروز',
@@ -1396,7 +1418,7 @@ const I18N = {
     lbl_protocol:'پروتکل', lbl_transport:'حمل‌ونقل', lbl_fp:'اثر انگشت TLS',
     lbl_curpw:'رمز فعلی', lbl_newpw:'رمز جدید', btn_changepw:'تغییر رمز',
     btn_enable2fa:'فعال‌سازی ۲FA', twofa_hint:'یک کد ۶ رقمی هنگام ورود لازم می‌شود. با Google Authenticator، Authy و دیگر برنامه‌ها کار می‌کند.',
-    s_tls:'TLS', s_tls_d:'رمزگذاری تونل', s_ech:'ECH', s_ech_d:'مخفی‌سازی SNI', s_rp:'مسیر تصادفی', s_rp_d:'تصادفی‌کردن مسیر نود',
+    s_tls:'TLS', s_tls_d:'روشن = TLS (توصیه‌شده). خاموش = بدون TLS روی پورت‌های HTTP کلودفلر — فقط اگر TLS/۴۴۳ روی شبکه‌ات مسدود است؛ امنیت کمتر.', s_ech:'ECH', s_ech_d:'مخفی‌سازی SNI', s_rp:'مسیر تصادفی', s_rp_d:'تصادفی‌کردن مسیر نود',
     s_0rtt:'0-RTT', s_0rtt_d:'اتصال مجدد سریع‌تر', s_scv:'رد تأیید گواهی', s_scv_d:'اجازهٔ TLS ناامن',
     notif_worker:'درخواست‌های ورکر', notif_today:'درخواست امروز (پلن رایگان کلودفلر)',
     notif_tg:'اعلان‌های تلگرام', notif_tg_en:'فعال‌سازی اعلان تلگرام', notif_tg_h:'پیام در هر دریافت، تغییر و ورود',
@@ -1810,7 +1832,7 @@ async function loadUsersFromServer(){
   }
   return { users:serverUsers, usage, usageIO, multiUser:mu };
 }
-async function addUser(){ const _sw=document.getElementById('t2-multiuser'); if(!_sw || !_sw.classList.contains('on')){ toast(lang==='fa'?'ابتدا «چندکاربره» را روشن کنید':'Turn on Multi-user first to add users'); return; } collectUsers(); STATE.users=STATE.users||[]; STATE.users.push({ id:uRid(), name:'user'+(STATE.users.length+1), username:'', tag:uRid().slice(0,10), token:uRid()+uRid().slice(0,8), key:uRid().slice(0,12), quotaBytes:0, expiry:'', enabled:true, created:new Date().toISOString() }); renderUsers(); if(LIVE) await saveUsers(); }
+async function addUser(){ const _sw=document.getElementById('t2-multiuser'); if(!_sw || !_sw.classList.contains('on')){ toast(lang==='fa'?'ابتدا «چندکاربره» را روشن کنید':'Turn on Multi-user first to add users'); return; } collectUsers(); STATE.users=STATE.users||[]; STATE.users.push({ id:uRid(), name:'user'+(STATE.users.length+1), username:'', tag:uRid().slice(0,10), token:uRid()+uRid().slice(0,8), key:uRid().slice(0,12), quotaBytes:50*1073741824, expiry:new Date(Date.now()+180*86400000).toISOString().slice(0,10), enabled:true, created:new Date().toISOString() }); renderUsers(); if(LIVE) await saveUsers(); }
 function updateMultiUserUI(){
   const sw=document.getElementById('t2-multiuser'); const on = !!(sw && sw.classList.contains('on'));
   const btn=document.getElementById('users-add2');
@@ -1869,18 +1891,24 @@ function renderWorker(){
     chip.className='chip warn'; if(chipTx){ chipTx.removeAttribute('data-i18n'); chipTx.textContent=lang==='fa'?'تخمینی':'Estimated'; }
   }
 }
-async function cfConnect(){
+async function cfConnect(extra){
   const msg=document.getElementById('cf-msg'); if(!LIVE) return previewToast();
-  const acc=(document.getElementById('cf-accid').value||'').trim(), tok=(document.getElementById('cf-token').value||'').trim();
-  if(!acc||!tok){ if(msg) msg.textContent=lang==='fa'?'شناسهٔ حساب و توکن را وارد کنید':'Enter Account ID and API token'; return; }
+  const tok=(document.getElementById('cf-token').value||'').trim();
+  const acc=(document.getElementById('cf-accid').value||'').trim();
+  if(!tok){ if(msg) msg.textContent=lang==='fa'?'توکن را وارد کنید':'Enter your API token'; return; }
   if(msg) msg.textContent=lang==='fa'?'در حال اتصال…':'Connecting…';
+  const body={ token: tok }; if(extra&&extra.accountId) body.accountId=extra.accountId; else if(acc) body.accountId=acc;
   try{
-    const r=await fetch('/admin/cf.json',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({AccountID:acc, APIToken:tok})});
-    if(!r.ok){ if(msg) msg.textContent='⚠️ '+(lang==='fa'?'ذخیرهٔ کلید ناموفق بود':'could not save key'); return; }
-    const ur=await fetch('/admin/getCloudflareUsage?AccountID='+encodeURIComponent(acc)+'&APIToken='+encodeURIComponent(tok));
-    const u=await ur.json().catch(()=>null);
-    if(u && u.success){ STATE.config.CF=STATE.config.CF||{}; STATE.config.CF.Usage=u; renderWorker(); renderKPIs(); if(msg) msg.textContent=lang==='fa'?'وصل شد ✓':'Connected ✓'; }
-    else { if(msg) msg.textContent='⚠️ '+(lang==='fa'?'کلید ذخیره شد ولی آماری نیامد — توکن را بررسی کنید':'key saved but no stats — check the token')+((u&&u.error)?(' — '+u.error):''); }
+    const r=await fetch('/admin/cf-usage-setup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const j=await r.json().catch(()=>null);
+    if(j && j.success){ STATE.config.CF=STATE.config.CF||{}; STATE.config.CF.Usage=j.usage; if(j.accountId){ const a=document.getElementById('cf-accid'); if(a) a.value=j.accountId; } const w=document.getElementById('cf-acct-wrap'); if(w){ w.style.display='none'; w.innerHTML=''; } renderWorker(); renderKPIs(); try{ var _cb=document.getElementById('cf-connect-bar'); if(_cb) _cb.style.display='none'; localStorage.removeItem('nova-cf-dismiss'); setUpdConnected(true); }catch(e){} if(msg) msg.textContent=lang==='fa'?'وصل شد ✓':'Connected ✓'; return; }
+    if(j && j.error==='multiple_accounts' && Array.isArray(j.accounts)){
+      const w=document.getElementById('cf-acct-wrap');
+      if(w){ w.style.display='block'; w.innerHTML='<div style="font-size:12px;color:var(--mu);margin-bottom:6px">'+(lang==='fa'?'چند حساب پیدا شد — یکی را انتخاب کن:':'Multiple accounts — pick one:')+'</div>'+j.accounts.map(function(a){ return '<button class="btn ghost sm cf-acct" data-acct="'+String(a.id).replace(/"/g,'&quot;')+'" style="margin:0 6px 6px 0">'+String(a.name||a.id).replace(/</g,'&lt;')+'</button>'; }).join(''); }
+      if(msg) msg.textContent=lang==='fa'?'حساب را انتخاب کن.':'Choose your account.'; return;
+    }
+    var emap={ no_token:(lang==='fa'?'توکن وارد نشده':'No token'), token_invalid:(lang==='fa'?'توکن نامعتبر است':'Token is invalid'), no_accounts:(lang==='fa'?'حسابی برای این توکن نبود':'No accounts for this token'), usage_failed:(lang==='fa'?'آمار نیامد — توکن به Account Analytics: Read نیاز دارد':'No stats — token needs Account Analytics: Read') };
+    if(msg) msg.textContent='⚠️ '+((emap[j&&j.error])||(j&&j.error)||'error')+((j&&j.detail)?(' — '+j.detail):'');
   }catch(e){ if(msg) msg.textContent='⚠️ '+e.message; }
 }
 async function cfDisconnect(){
@@ -1890,7 +1918,7 @@ async function cfDisconnect(){
     await fetch('/admin/cf.json',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({init:true})});
     if(STATE.config.CF) STATE.config.CF.Usage=null;
     const a=document.getElementById('cf-accid'), tk=document.getElementById('cf-token'); if(a) a.value=''; if(tk) tk.value='';
-    renderWorker(); renderKPIs(); if(msg) msg.textContent=lang==='fa'?'قطع شد':'Disconnected';
+    renderWorker(); renderKPIs(); try{ setUpdConnected(false); }catch(e){} if(msg) msg.textContent=lang==='fa'?'قطع شد':'Disconnected';
   }catch(e){ if(msg) msg.textContent='⚠️ '+e.message; }
 }
 /* ---- DoH endpoint (this worker's private resolver) ---- */
@@ -1971,6 +1999,14 @@ async function twofaDisable(){ const msg=document.getElementById('twofa-dmsg'); 
   }catch(e){ msg.textContent='⚠️ '+e.message; } }
 
 /* ---- In-panel self-update ---- */
+function updMsgOldWorker(){
+  var msg=document.getElementById('upd-msg'); if(!msg) return;
+  msg.className='msg warn';
+  var url='https://github.com/IRNova/Nova-Proxy/blob/main/worker.js';
+  msg.innerHTML=(lang==='fa'
+    ?'⚠️ این ورکر نسخهٔ قدیمی است و هنوز به‌روزرسانی درون‌برنامه‌ای ندارد. یک‌بار در کلودفلر فایل <a href="'+url+'" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline">worker.js نسخهٔ 3.8.0</a> را جای‌گذاری و Deploy کن؛ پس از آن همهٔ به‌روزرسانی‌های بعدی این‌جا یک‌کلیکی می‌شوند.'
+    :'⚠️ This worker is an older version without in-app updates yet. Open Cloudflare once and paste/deploy <a href="'+url+'" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline">worker.js v3.8.0</a> — after that, every future update here is one-click.');
+}
 async function updateCheck(){
   // Only REPORTS status. The token box + Update button are always visible, so the user can update
   // (or re-install the same version) regardless of whether this check succeeds or says up-to-date.
@@ -1982,31 +2018,33 @@ async function updateCheck(){
     var ct=(r.headers.get('content-type')||'');
     if(ct.indexOf('application/json')<0){
       // Old worker that doesn't have the update-check endpoint yet → returns an HTML page, not JSON.
-      if(msg){ msg.className='msg warn'; msg.textContent='⚠️ '+(lang==='fa'?'این ورکر هنوز نسخهٔ قدیمی است (قابلیت بررسی ندارد). با توکن زیر همین حالا به آخرین نسخه به‌روزرسانی کن.':'This worker is still an older version (no update-check endpoint). Use the token below to update to the latest now.'); }
+      updMsgOldWorker();
       return;
     }
     var j=await r.json();
+    try{ if(typeof j.hasCfToken!=='undefined') setUpdConnected(!!j.hasCfToken); }catch(e){}
     var cur=j.current||'?', latest=j.latest||'?';
     if(j.updateAvailable){
-      if(msg){ msg.className='msg warn'; msg.textContent='⬆ '+(lang==='fa'?('نسخهٔ جدید موجود است — فعلی '+cur+' ← جدید '+latest):('Update available — current '+cur+' → latest '+latest)); }
+      if(msg){ msg.className='msg warn'; msg.textContent='⬆ '+(lang==='fa'?('نسخهٔ جدید موجود است — فعلی '+cur+' ← جدید '+latest):('Update available — current '+cur+' → latest '+latest))+(j.hasCfToken?(lang==='fa'?' — فقط Update now را بزن':' — just press Update now'):''); }
     } else if(j.latest){
-      if(msg){ msg.className='msg ok'; msg.textContent='✓ '+(lang==='fa'?('روی آخرین نسخه هستی ('+cur+'). می‌توانی برای نصب دوباره از توکن زیر استفاده کنی.'):('You are on the latest version ('+cur+'). You can still re-install with the token below.')); }
+      if(msg){ msg.className='msg ok'; msg.textContent='✓ '+(lang==='fa'?('روی آخرین نسخه هستی ('+cur+').'+(j.hasCfToken?' برای نصب دوباره فقط Update now را بزن.':' می‌توانی برای نصب دوباره از توکن زیر استفاده کنی.')):('You are on the latest version ('+cur+').'+(j.hasCfToken?' Press Update now to re-install.':' You can still re-install with the token below.'))); }
     } else {
-      if(msg){ msg.className='msg bad'; msg.textContent='⚠️ '+(lang==='fa'?'بررسی نسخه ممکن نشد. ':'Could not check for updates. ')+(j.error||''); }
+      if(msg){ msg.className='msg warn'; msg.textContent='⚠️ '+(lang==='fa'?'سرور بروزرسانی در دسترس نیست — هنوز version.json روی IRNova/Nova-Proxy منتشر نشده؟':'Couldn\'t reach the update server — is version.json published on IRNova/Nova-Proxy?'); }
     }
   }catch(e){ if(msg){ msg.className='msg warn'; msg.textContent='⚠️ '+(lang==='fa'?('بررسی نسخه ممکن نشد ('+e.message+'). با توکن زیر می‌توانی به‌روزرسانی کنی.'):('Version check failed ('+e.message+'). You can still update with the token below.')); } }
 }
 async function updateNow(extra){
   var msg=document.getElementById('upd-msg'); if(!LIVE) return previewToast();
   var token=((document.getElementById('upd-token')||{}).value||'').trim();
-  if(!token){ if(msg){ msg.className='msg bad'; msg.textContent=(lang==='fa'?'ابتدا توکن را وارد کن':'Enter your token first'); } return; }
-  var body={ token: token };
+  // Empty token is fine: the worker reuses the saved Cloudflare token (set once via the usage card).
+  var body={}; if(token) body.token=token;
   var sn=((document.getElementById('upd-scriptname')||{}).value||'').trim(); if(sn) body.scriptName=sn;
   if(extra && extra.accountId) body.accountId=extra.accountId;
   if(msg){ msg.className='msg'; msg.textContent=(lang==='fa'?'در حال به‌روزرسانی…':'Updating…'); }
   try{
     var r=await fetch('admin/self-update.json',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
     var j=await r.json();
+    if(j && (j.error==='unsupportedPostPath' || j.error==='not_found')){ updMsgOldWorker(); return; }
     if(j.success){
       if(msg){ msg.className='msg ok'; msg.textContent='✅ '+(lang==='fa'?('به‌روزرسانی شروع شد'+(j.version?(' (نسخهٔ '+j.version+')'):'')+'. پنل در حال جایگزینی است — حدود ۳۰ ثانیه صبر کن و صفحه را تازه کن. سپس توکن را در Cloudflare باطل کن.'):('Update started'+(j.version?(' (v'+j.version+')'):'')+'. Your panel is being replaced — wait ~30s and refresh. Then revoke the token in Cloudflare.')); }
       var t=document.getElementById('upd-token'); if(t) t.value='';
@@ -2026,7 +2064,7 @@ async function updateNow(extra){
       if(msg){ msg.className='msg bad'; msg.textContent=(lang==='fa'?'نام اسکریپت ورکر را وارد کن (برای دامنهٔ اختصاصی لازم است).':'Enter your Worker script name (needed on a custom domain).'); }
       return;
     }
-    var emap={ no_token:(lang==='fa'?'توکن وارد نشده':'No token'), token_invalid:(lang==='fa'?'توکن نامعتبر است':'Token is invalid'), no_accounts:(lang==='fa'?'هیچ حسابی برای این توکن دیده نشد':'No accounts for this token'), cannot_read_bindings:(lang==='fa'?'نتوانستم تنظیمات فعلی ورکر را بخوانم — به‌روزرسانی برای جلوگیری از پاک شدن دیتابیس متوقف شد':'Could not read the worker\'s current bindings — update stopped to avoid wiping your database'), fetch_worker_failed:(lang==='fa'?'دریافت نسخهٔ جدید ناموفق بود':'Failed to download the new version'), bad_worker_source:(lang==='fa'?'فایل ورکر دریافت‌شده معتبر نبود':'Downloaded worker file was invalid'), upload_failed:(lang==='fa'?'آپلود ناموفق بود':'Upload failed') };
+    var emap={ no_token:(lang==='fa'?'اول کلودفلر را وصل کن (کارت «مصرف ورکر») یا توکن را اینجا بچسبان':'Connect Cloudflare first (Worker-usage card) or paste a token here'), token_invalid:(lang==='fa'?'توکن نامعتبر است':'Token is invalid'), no_accounts:(lang==='fa'?'هیچ حسابی برای این توکن دیده نشد':'No accounts for this token'), cannot_read_bindings:(lang==='fa'?'نتوانستم تنظیمات فعلی ورکر را بخوانم — به‌روزرسانی برای جلوگیری از پاک شدن دیتابیس متوقف شد':'Could not read the worker\'s current bindings — update stopped to avoid wiping your database'), fetch_worker_failed:(lang==='fa'?'دریافت نسخهٔ جدید ناموفق بود':'Failed to download the new version'), bad_worker_source:(lang==='fa'?'فایل ورکر دریافت‌شده معتبر نبود':'Downloaded worker file was invalid'), upload_failed:(lang==='fa'?'آپلود ناموفق بود':'Upload failed') };
     var em=emap[j.error]||(j.error||'error');
     if(msg){ msg.className='msg bad'; msg.textContent='✗ '+em+(j.detail?(' — '+j.detail):''); }
   }catch(e){ if(msg){ msg.className='msg bad'; msg.textContent='⚠️ '+e.message; } }
@@ -2105,6 +2143,7 @@ function applyLang(l){
   document.documentElement.lang = l;
   document.documentElement.dir = rtl ? 'rtl' : 'ltr';
   $$('[data-i18n]').forEach(el=>{ const k = el.getAttribute('data-i18n'); el.textContent = t(k); });
+  $$('[data-i18n-ph]').forEach(el=>{ const k = el.getAttribute('data-i18n-ph'); el.setAttribute('placeholder', t(k)); });
   $$('#lang-seg button').forEach(b=>b.classList.toggle('on', b.dataset.lang===l));
   syncPageHeader();
   renderAll(); /* dynamic content re-rendered in the new language */
@@ -2191,10 +2230,14 @@ function pxApplyMode(){
 }
 function pxLoad(){
   var c=STATE.config||{}; var chain=(c.chainProxy||'').trim();
-  var m=/^(socks5|http|https|turn|sstp):\/\/(.+)$/i.exec(chain);
   var setv=function(id,v){ var e=document.getElementById(id); if(e) e.value=v||''; };
-  if(m){ document.getElementById('px-mode').value=m[1].toLowerCase(); setv('px-addr', m[2]); setv('px-proxyip', ((c.proxy||{}).PROXYIP)||''); }
-  else { document.getElementById('px-mode').value='proxyip'; setv('px-proxyip', ((c.proxy||{}).PROXYIP)||''); setv('px-addr',''); }
+  var lines=chain?chain.split(/[\n,]+/).map(function(s){return s.trim();}).filter(Boolean):[];
+  if(lines.length){
+    var first=/^(socks5|http|https|turn|sstp):\/\//i.exec(lines[0]);
+    document.getElementById('px-mode').value=first?first[1].toLowerCase():'socks5';
+    setv('px-addr', lines.join('\n')); setv('px-proxyip', ((c.proxy||{}).PROXYIP)||'');
+  } else { document.getElementById('px-mode').value='proxyip'; setv('px-proxyip', ((c.proxy||{}).PROXYIP)||''); setv('px-addr',''); }
+  setv('px-rotate', c.socks5RotateEvery||''); setv('px-rotcount', c.socks5RotateCount||3);
   pxApplyMode();
 }
 async function pxSave(){
@@ -2202,14 +2245,20 @@ async function pxSave(){
   var c=STATE.config; var m=document.getElementById('px-mode').value;
   c.proxy=c.proxy||{};
   if(m==='proxyip'){ c.proxy.PROXYIP=(document.getElementById('px-proxyip').value||'').trim(); c.chainProxy=''; }
-  else { var a=(document.getElementById('px-addr').value||'').trim(); c.chainProxy=a?(m+'://'+a):''; }
+  else {
+    var raw=(document.getElementById('px-addr').value||'').trim();
+    var entries=raw.split(/[\n,]+/).map(function(s){return s.trim();}).filter(Boolean)
+      .map(function(s){ return /^(socks5|http|https|turn|sstp):\/\//i.test(s) ? s : (m+'://'+s); });
+    c.chainProxy=entries.join('\n');
+  }
+  c.socks5RotateEvery=((document.getElementById('px-rotate')||{}).value||''); c.socks5RotateCount=Math.max(1, Math.floor(Number((document.getElementById('px-rotcount')||{}).value)||3));
   var _ok=await API.post('config.json', c); flashSaved('px-save', _ok);
   if(_ok){ toast(lang==='fa'?'ذخیره شد ✓ — برای اعمال، اشتراک را دوباره بگیرید و در برنامه وصل شوید':'Saved ✓ — re-fetch your subscription and reconnect in the app to apply'); } else { toast(savedMsg(false),1); }
 }
 async function pxVerify(){
   if(!LIVE) return previewToast();
   var msg=document.getElementById('px-msg'); var m=document.getElementById('px-mode').value;
-  var val=(m==='proxyip')?(document.getElementById('px-proxyip').value||'').trim():(document.getElementById('px-addr').value||'').trim();
+  var val=(m==='proxyip')?(document.getElementById('px-proxyip').value||'').trim():(((document.getElementById('px-addr').value||'').trim().split(/[\n,]+/)[0]||'').trim().replace(/^(socks5|http|https|turn|sstp):\/\//i,''));
   if(!val){ msg.className='msg bad'; msg.textContent=(lang==='fa'?'یک پروکسی وارد کنید':'Enter a proxy first'); return; }
   if(m==='proxyip'){ msg.className='msg ok'; msg.textContent=(lang==='fa'?'✓ PROXYIP نیازی به تست جداگانه ندارد — موقع دریافت اشتراک و اتصال خودکار بررسی می‌شود. فقط ذخیره کنید.':'✓ PROXYIP needs no separate test — it is checked automatically when you fetch the subscription and connect. Just hit Save.'); return; }
   msg.className='msg'; msg.textContent=(lang==='fa'?'در حال بررسی…':'Probing…');
@@ -2462,7 +2511,7 @@ function syncFormValues(){
   const og=c.optimizedSubGeneration||{}; set('f2-subname', og.SUBNAME||''); set('f2-subint', og.SUBUpdateTime||3);
   const scc=c.subConverterConfig||{}; set('f2-subapi', (!scc.SUBAPI||/novaproxy/i.test(scc.SUBAPI))?'https://SUBAPI.cmliussss.net':scc.SUBAPI); set('f2-subcfg', scc.SUBCONFIG||''); on('t2-subemoji', !!scc.SUBEMOJI);
   // Custom + preset routing rules (network)
-  set('n2-customrules', n.customRules||'');
+  set('n2-customrules', n.customRules||''); set('n2-monthlycap', n.monthlyCapGB||0);
   const bc=n.bypassCountries||[]; on('t2-bp-cn', bc.includes('cn')); on('t2-bp-ru', bc.includes('ru'));
   const bk=n.blockCategories||[]; on('t2-bk-malware', bk.includes('malware')); on('t2-bk-phishing', bk.includes('phishing')); on('t2-bk-crypto', bk.includes('cryptominers'));
   // Disguise (secret admin/login/sub paths)
@@ -2645,7 +2694,7 @@ async function saveNetwork(){
   n.enableFakeDNS=isOn('t2-fakedns'); n.fakeDNSIP=(g('d2-fakeip')||'').trim()||'198.51.100.1'; n.logLevel=g('d2-loglevel');
   n.backendMode=isOn('t2-backend'); n.backendUrl=(g('be-url')||'').trim();
   // custom + preset rules
-  n.customRules=g('n2-customrules')||'';
+  n.customRules=g('n2-customrules')||''; n.monthlyCapGB=Math.max(0,Math.floor(Number(g('n2-monthlycap'))||0));
   n.bypassCountries=[['cn','t2-bp-cn'],['ru','t2-bp-ru']].filter(([,id])=>isOn(id)).map(([c])=>c);
   const cats=[]; if(Array.isArray(n.blockCategories) && n.blockCategories.includes('quic')) cats.push('quic'); // keep QUIC (set by the policy card)
   [['malware','t2-bk-malware'],['phishing','t2-bk-phishing'],['cryptominers','t2-bk-crypto']].forEach(([c,id])=>{ if(isOn(id)) cats.push(c); });
@@ -2876,6 +2925,7 @@ document.addEventListener('click', (e)=>{
   if(e.target.closest('#upd-check')){ updateCheck(); return; }
   if(e.target.closest('#upd-now')){ updateNow(); return; }
   { var _ua=e.target.closest('.upd-acct'); if(_ua){ updateNow({ accountId: _ua.getAttribute('data-acct') }); return; } }
+  { var _ca=e.target.closest('.cf-acct'); if(_ca){ cfConnect({ accountId: _ca.getAttribute('data-acct') }); return; } }
   if(e.target.closest('#t2-kill')){ toggleKill(); return; }
   if(e.target.closest('#doh-copy')){ copy(location.origin+'/dns-query'); return; }
   if(e.target.closest('#doh-test')){ dohTest(); return; }
@@ -2955,16 +3005,49 @@ let _updVer='';
 // Update banner: shows ONLY when the running worker is older than the latest published version.
 // The "Update" button takes the user straight to Settings → Update panel (in-panel self-update),
 // not to a raw GitHub URL. Dismiss is remembered per-version so it doesn't nag.
+function setUpdConnected(connected){
+  var c=document.getElementById('upd-connected'), a=document.getElementById('upd-token-area');
+  if(c) c.style.display=connected?'flex':'none';
+  if(a) a.style.display=connected?'none':'';
+  var ut=document.getElementById('upd-usetoken');
+  if(ut && !ut._wired){ ut._wired=1; ut.onclick=function(ev){ if(ev) ev.preventDefault(); if(a) a.style.display=''; if(c) c.style.display='none'; var t=document.getElementById('upd-token'); if(t) t.focus(); }; }
+}
+function showCfBar(show){
+  var bar=document.getElementById('cf-connect-bar'); if(!bar) return;
+  if(!show){ bar.style.display='none'; return; }
+  var dm=''; try{ dm=localStorage.getItem('nova-cf-dismiss')||''; }catch(e){} if(dm==='1'){ bar.style.display='none'; return; }
+  var txt=document.getElementById('cf-bar-txt');
+  if(txt) txt.textContent=(lang==='fa')
+    ?'برای «به‌روزرسانی خودکار» و نمایش «مصرف ورکر»، یک‌بار توکن Cloudflare را وصل کن — کمتر از یک دقیقه.'
+    :'Connect a Cloudflare token once to unlock auto-updates and live Worker usage — takes under a minute.';
+  var go=document.getElementById('cf-bar-go');
+  if(go){ go.textContent=(lang==='fa')?'اتصال توکن':'Connect token';
+    go.onclick=function(ev){ if(ev) ev.preventDefault();
+      try{ showView('notifications'); }catch(e){}
+      setTimeout(function(){ try{ var el=document.getElementById('cf-token'); var card=el?el.closest('.card'):null; (card||el||{scrollIntoView:function(){}}).scrollIntoView({behavior:'smooth',block:'center'}); if(el){ el.focus(); el.style.transition='box-shadow .2s'; el.style.boxShadow='0 0 0 3px color-mix(in srgb,var(--ac) 45%,transparent)'; setTimeout(function(){ try{ el.style.boxShadow=''; }catch(e){} },1600); } }catch(e){} },140);
+    };
+  }
+  var x=document.getElementById('cf-bar-x'); if(x) x.onclick=function(){ bar.style.display='none'; try{ localStorage.setItem('nova-cf-dismiss','1'); }catch(e){} };
+  bar.style.display='flex';
+}
 async function checkUpdate(){ try{
  if(!LIVE) return;
- // Use the worker's own update-check endpoint (compares running version vs GitHub). Old workers
- // without this endpoint return HTML, not JSON — in that case stay silent (no banner).
+ // Primary: the worker's update-check endpoint (knows the exact running version). Fallback: if the
+ // worker is older / can't reach GitHub, compare the running version to the latest published
+ // version fetched straight from IRNova/Nova-Proxy (raw.githubusercontent.com allows CORS here).
  let j=null;
  try{
    const r=await fetch('admin/update-check.json',{cache:'no-store'});
-   if((r.headers.get('content-type')||'').indexOf('application/json')<0) return;
-   j=await r.json();
- }catch(e){ return; }
+   if((r.headers.get('content-type')||'').indexOf('application/json')>=0) j=await r.json();
+ }catch(e){}
+ // Cloudflare-connect banner: when the worker reports no saved token, prompt the one-time connect.
+ try{ if(j && typeof j.hasCfToken!=='undefined'){ showCfBar(!j.hasCfToken); setUpdConnected(!!j.hasCfToken); } }catch(e){}
+ if(!j || !j.latest){
+   let cur='';
+   try{ const sr=await API.get('system.json'); cur=_vnorm(sr&&sr.version); }catch(e){}
+   if(!cur){ const meta=document.querySelector('meta[name="nova-panel-version"]'); cur=_vnorm(meta&&meta.getAttribute('content')); }
+   try{ const gr=await fetch(WORKER_VERSION_JSON,{cache:'no-store'}); if(gr.ok){ const gj=await gr.json(); j={ latest:_vnorm(gj&&gj.version), notes:(gj&&gj.notes)||'', updateAvailable:!!(gj&&gj.version&&cur&&_vgt(_vnorm(gj.version),cur)) }; } }catch(e){}
+ }
  if(!j || !j.updateAvailable || !j.latest) return;
  const verStr=String(j.latest);
  let dm=''; try{ dm=localStorage.getItem('nova-upd-dismiss')||''; }catch(e){} if(dm===verStr) return;
