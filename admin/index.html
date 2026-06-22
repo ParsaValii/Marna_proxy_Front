@@ -1742,7 +1742,7 @@ function ensureUserFields(arr){ const seen={}; (arr||[]).forEach(u=>{ if(u && u.
   });
 }
 function novaSubSeg(){ try{ return (window.__novaPaths&&window.__novaPaths.sub)||'sub'; }catch(e){ return 'sub'; } }
-function userSubLink(u){ return location.origin+'/'+novaSubSeg()+'?sub='+encodeURIComponent(u.username||'')+'&key='+(u.key||'')+'&b64'; }
+function userSubLink(u){ return location.origin+'/'+novaSubSeg()+'?sub='+encodeURIComponent(u.username||'')+'&key='+(u.key||''); }
 function renderUsers(){
   const box=document.getElementById('users-body2'); if(!box) return;
   const arr=STATE.users||[], usage=STATE.usage||{};
