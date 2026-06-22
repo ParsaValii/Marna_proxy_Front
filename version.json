@@ -1,6 +1,6 @@
 {
-  "version": "3.8.0",
-  "released": "2026-06-21",
-  "notes": "One-click in-app updates: connect a single Cloudflare API token once (Account Analytics: Read + Workers Scripts: Edit) and the panel shows live Worker usage AND self-updates with one click — no token re-entry, no manual redeploy; the Update panel now reflects \"Cloudflare connected\" and an older worker is told to deploy v3.8.0 once. Also in 3.8.0: Disguise mode (move panel/login/subscription to secret paths; protocol strings encoded out of the build); per-ISP clean-IP pool (per-carrier files auto-served by operator); request-count quota backstop; multi-SOCKS5 with client failover + static/pinned exit IP + daily/weekly auto-rotation; Clash/FlClash (mihomo) import fix; KV-budget fix (D1 is now primary — clears the 'KV request ended' error); monthly bandwidth cap + auto-pause; Telegram bot back-buttons + live usage; full Farsi/English localization. WebSocket stays the default transport (XHTTP opt-in for Xray-core apps; gRPC retired).",
+  "version": "3.8.1",
+  "released": "2026-06-22",
+  "notes": "Panel aligned with Worker 3.8.1. Adds a Worker version + update indicator on the Worker-requests card — it shows your running version and whether you're on the latest, with a one-click route to the Update panel when a newer version exists. The TLS toggle (Settings -> Security) is now wired to generate non-TLS configs when turned off. Carries everything from 3.8.0: one-click in-app updates, live Worker usage via a single Cloudflare token, connection-aware Update panel, and full Farsi/English localization.",
   "worker_url": "https://raw.githubusercontent.com/IRNova/Nova-Proxy/main/worker.js"
 }
