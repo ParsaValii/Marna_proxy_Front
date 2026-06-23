@@ -1,6 +1,6 @@
 {
-  "version": "3.8.2",
-  "released": "2026-06-22",
-  "notes": "Per-user config dashboard (user/index.html): opening a subscription link in a browser shows a friendly page — per-app QR + copy + one-tap 'Add to app' (Hiddify, v2rayNG, FlClash/Clash Meta, sing-box/NekoBox, Karing, Streisand) + copy-subscription, bilingual Farsi/English with light/dark; apps still get their config directly. Plus Smart IP — per-operator clean IPs auto-served from a central GitHub pool. Carries the 3.8.1 worker features (real-time quota cutoff, optional non-TLS mode, version/update indicator) and everything from 3.8.0.",
+  "version": "3.8.3",
+  "released": "2026-06-23",
+  "notes": "Adds Speed limit controls to the admin panel: a global per-connection cap (Settings -> Network -> Speed limit, KB/s; 0 = unlimited) and an optional per-user limit on the Users page that overrides the global. Pairs with worker 3.8.3, which enforces the cap in both directions and fixes domestic .ir routing. Re-upload admin/index.html + version.json. No config/KV/D1 changes; carries everything from 3.8.2.",
   "worker_url": "https://raw.githubusercontent.com/IRNova/Nova-Proxy/main/worker.js"
 }
