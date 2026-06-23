@@ -779,6 +779,15 @@ html[data-theme=dark] .qr-ph{border-color:#fff}
           </div>
         </div>
 
+        <!-- Speed limit (per connection, fairness) -->
+        <div class="card">
+          <div class="card-h"><h3>Speed limit · محدودیت سرعت</h3></div>
+          <div class="card-pad">
+            <p style="font-size:12px;color:var(--mu);margin-bottom:11px">Caps throughput per connection — up to this rate in each direction (download and upload). A fairness backstop so one user can't saturate the worker. 0 = unlimited. A per-user limit (on the Users page) overrides this. · سرعت هر اتصال را محدود می‌کند (در هر جهت: دانلود و آپلود). صفر = بدون محدودیت. محدودیت تعیین‌شده برای هر کاربر بر این مقدار اولویت دارد.</p>
+            <div class="fg" style="margin-bottom:0;max-width:260px"><label>KB/s per connection (0 = off)</label><input class="inp" id="n2-speedlimit" type="number" min="0" step="64" inputmode="numeric" placeholder="0"></div>
+          </div>
+        </div>
+
         <!-- Preset rules -->
         <div class="card" style="margin-top:14px">
           <div class="card-h"><h3 data-i18n="preset_h">Preset rules</h3></div>
@@ -1796,6 +1805,7 @@ function renderUsers(){
           <div class="uf"><label>${t('col_daily')} (GB)</label><input class="inp" type="number" min="0" data-udq="${i}" value="${dq?Math.round(dq/1073741824):0}"></div>
           <div class="uf"><label title="${lang==='fa'?'سقف تعداد درخواست (۰ = نامحدود). پشتیبانِ سهمیه وقتی شمارش بایت قابل‌اتکا نیست (حالت backend).':'Max request count (0 = unlimited). A quota backstop for when byte counting is unreliable (backend mode).'}">${lang==='fa'?'سقف درخواست':'Req limit'}</label><input class="inp" type="number" min="0" data-ur="${i}" value="${rl||0}"></div>
           <div class="uf"><label title="${lang==='fa'?'سقف درخواست روزانه (۰ = نامحدود).':'Daily request limit (0 = unlimited).'}">${lang==='fa'?'درخواست روزانه':'Daily reqs'}</label><input class="inp" type="number" min="0" data-udr="${i}" value="${drl||0}"></div>
+          <div class="uf"><label title="${lang==='fa'?'محدودیت سرعت این کاربر (KB/s، ۰ = استفاده از مقدار سراسری/نامحدود). در هر جهت (دانلود و آپلود) اعمال می‌شود.':'Speed limit for this user (KB/s, 0 = use global/unlimited). Applied per direction (download and upload).'}">${lang==='fa'?'محدودیت سرعت':'Speed (KB/s)'}</label><input class="inp" type="number" min="0" step="64" data-usp="${i}" value="${u.speedLimitKBps||0}"></div>
           <div class="uf"><label>${t('col_expiry')}</label><input class="inp" type="date" data-ux="${i}" value="${u.expiry?String(u.expiry).slice(0,10):''}"></div>
         </div>
         <div style="display:flex;justify-content:flex-end;margin-top:10px"><button class="btn primary sm" data-usave="${i}">${lang==='fa'?'💾 ذخیره این کاربر':'💾 Save this user'}</button></div>
@@ -1811,6 +1821,7 @@ function collectUsers(){ const box=document.getElementById('users-body2'); if(!b
   box.querySelectorAll('[data-udq]').forEach(el=>{ const u=arr[+el.dataset.udq]; if(u){ const g=Number(el.value)||0; u.dailyQuotaBytes=g>0?Math.round(g*1073741824):0; } });
   box.querySelectorAll('[data-ur]').forEach(el=>{ const u=arr[+el.dataset.ur]; if(u){ const n=Math.max(0,Math.floor(Number(el.value)||0)); u.reqLimit=n>0?n:0; } });
   box.querySelectorAll('[data-udr]').forEach(el=>{ const u=arr[+el.dataset.udr]; if(u){ const n=Math.max(0,Math.floor(Number(el.value)||0)); u.dailyReqLimit=n>0?n:0; } });
+  box.querySelectorAll('[data-usp]').forEach(el=>{ const u=arr[+el.dataset.usp]; if(u){ const n=Math.max(0,Math.floor(Number(el.value)||0)); u.speedLimitKBps=n>0?n:0; } });
   box.querySelectorAll('[data-ux]').forEach(el=>{ const u=arr[+el.dataset.ux]; if(u) u.expiry=el.value||''; });
   box.querySelectorAll('[data-ue]').forEach(el=>{ const u=arr[+el.dataset.ue]; if(u) u.enabled=el.classList.contains('on'); });
 }
@@ -2537,7 +2548,7 @@ function syncFormValues(){
   const og=c.optimizedSubGeneration||{}; set('f2-subname', og.SUBNAME||''); set('f2-subint', og.SUBUpdateTime||3);
   const scc=c.subConverterConfig||{}; set('f2-subapi', (!scc.SUBAPI||/novaproxy/i.test(scc.SUBAPI))?'https://SUBAPI.cmliussss.net':scc.SUBAPI); set('f2-subcfg', scc.SUBCONFIG||''); on('t2-subemoji', !!scc.SUBEMOJI);
   // Custom + preset routing rules (network)
-  set('n2-customrules', n.customRules||''); set('n2-monthlycap', n.monthlyCapGB||0);
+  set('n2-customrules', n.customRules||''); set('n2-monthlycap', n.monthlyCapGB||0); set('n2-speedlimit', n.speedLimitKBps||0);
   const bc=n.bypassCountries||[]; on('t2-bp-cn', bc.includes('cn')); on('t2-bp-ru', bc.includes('ru'));
   const bk=n.blockCategories||[]; on('t2-bk-malware', bk.includes('malware')); on('t2-bk-phishing', bk.includes('phishing')); on('t2-bk-crypto', bk.includes('cryptominers'));
   // Disguise (secret admin/login/sub paths)
@@ -2720,7 +2731,7 @@ async function saveNetwork(){
   n.enableFakeDNS=isOn('t2-fakedns'); n.fakeDNSIP=(g('d2-fakeip')||'').trim()||'198.51.100.1'; n.logLevel=g('d2-loglevel');
   n.backendMode=isOn('t2-backend'); n.backendUrl=(g('be-url')||'').trim();
   // custom + preset rules
-  n.customRules=g('n2-customrules')||''; n.monthlyCapGB=Math.max(0,Math.floor(Number(g('n2-monthlycap'))||0));
+  n.customRules=g('n2-customrules')||''; n.monthlyCapGB=Math.max(0,Math.floor(Number(g('n2-monthlycap'))||0)); n.speedLimitKBps=Math.max(0,Math.floor(Number(g('n2-speedlimit'))||0));
   n.bypassCountries=[['cn','t2-bp-cn'],['ru','t2-bp-ru']].filter(([,id])=>isOn(id)).map(([c])=>c);
   const cats=[]; if(Array.isArray(n.blockCategories) && n.blockCategories.includes('quic')) cats.push('quic'); // keep QUIC (set by the policy card)
   [['malware','t2-bk-malware'],['phishing','t2-bk-phishing'],['cryptominers','t2-bk-crypto']].forEach(([c,id])=>{ if(isOn(id)) cats.push(c); });
