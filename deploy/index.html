@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="noindex, nofollow" />
-<title>Marna Proxy — استقرار با یک کلیک</title>
+<title>Marna Proxy — استقرار خودکار</title>
 <link rel="icon" type="image/svg+xml" href="../logo-mark.svg" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -17,7 +17,7 @@ body { font-family: 'Vazirmatn','Inter',system-ui,Tahoma,sans-serif; background:
 .brand .lg { width: 48px; height: 48px; border-radius: 12px; background: var(--c2); border: 1px solid var(--bd); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; }
 .brand h1 { font-size: 24px; font-weight: 800; }
 .brand h1 span { background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-.intro { text-align: center; color: var(--mu); margin-bottom: 24px; font-size: 15px; line-height: 1.8; }
+.intro { text-align: center; color: var(--mu); margin-bottom: 20px; font-size: 15px; line-height: 1.8; }
 .token-banner { background: var(--grad); border-radius: 16px; padding: 20px 24px; text-align: center; margin-bottom: 20px; box-shadow: var(--shadow); }
 .token-banner a { display: inline-flex; align-items: center; gap: 8px; background: #fff; color: #000; font-weight: 700; font-size: 14px; padding: 12px 24px; border-radius: 10px; text-decoration: none; transition: .15s; }
 .token-banner a:hover { transform: scale(1.02); box-shadow: 0 0 20px rgba(255,255,255,.15); }
@@ -37,19 +37,15 @@ body { font-family: 'Vazirmatn','Inter',system-ui,Tahoma,sans-serif; background:
 .btn.p:hover { filter: brightness(1.1); color: #000; }
 .btn:disabled, .btn.p:disabled { opacity: .45; cursor: not-allowed; filter: none; border-color: var(--bd2); color: var(--mu); }
 .hidden { display: none; }
-.log { background: #000; border: 1px solid var(--bd); border-radius: 12px; padding: 16px; font-family: ui-monospace,monospace; font-size: 12px; line-height: 1.7; max-height: 300px; overflow-y: auto; color: var(--tx2); margin-top: 14px; white-space: pre-wrap; word-break: break-all; direction: ltr; text-align: left; }
-.log .ok { color: var(--ok); }
-.log .err { color: var(--dg); }
-.log .wn { color: var(--wn); }
-.log .h { color: var(--ac); }
-.result { text-align: center; padding: 20px; }
-.result .url { font-size: 18px; font-weight: 700; color: var(--ok); word-break: break-all; direction: ltr; }
-.result .next { margin-top: 16px; color: var(--tx2); font-size: 13px; line-height: 1.8; }
-.result .next a { color: var(--ac); }
 .perm-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 8px; }
 .perm-table th, .perm-table td { padding: 6px 8px; border-bottom: 1px solid var(--bd); text-align: right; }
 .perm-table th { color: var(--mu); font-size: 10.5px; letter-spacing: .3px; }
 .perm-table code { background: var(--c2); border: 1px solid var(--bd); border-radius: 4px; padding: 2px 6px; font-size: 11px; color: var(--ac); direction: ltr; display: inline-block; }
+pre { background: #000; border: 1px solid var(--bd); border-radius: 12px; padding: 16px; font-family: ui-monospace,monospace; font-size: 12px; line-height: 1.7; color: var(--ok); overflow-x: auto; white-space: pre-wrap; word-break: break-all; direction: ltr; text-align: left; position: relative; }
+pre .copy-btn { position: absolute; top: 8px; left: 8px; padding: 4px 10px; font-size: 11px; border-radius: 6px; cursor: pointer; background: var(--c2); color: var(--tx2); border: 1px solid var(--bd); }
+pre .copy-btn:hover { color: var(--ac); border-color: var(--ac); }
+.url-block { font-size: 18px; font-weight: 700; color: var(--ok); word-break: break-all; direction: ltr; text-align: center; padding: 16px; }
+.note { font-size: 12px; color: var(--wn); line-height: 1.8; margin-top: 12px; }
 </style>
 </head>
 <body>
@@ -61,199 +57,130 @@ body { font-family: 'Vazirmatn','Inter',system-ui,Tahoma,sans-serif; background:
   <h1>Marna <span>Proxy</span></h1>
 </div>
 
-<p class="intro">استقرار خودکار روی کلادفلر — پایگاه داده D1، فضای KV و اسکریپت Worker<br>همه چیز با یک کلیک ساخته و متصل می‌شود</p>
+<p class="intro">استقرار خودکار روی کلادفلر با <b>Wrangler CLI</b><br>D1، KV و Worker — همه با اجرای یک دستور ساخته می‌شوند</p>
 
 <div class="token-banner">
-  <a id="tokenLink" href="https://dash.cloudflare.com/profile/api-tokens?permissionGroupKeys=%5B%7B%22key%22%3A%22workers_scripts%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22workers_kv_storage%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22d1%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22account_settings%22%2C%22type%22%3A%22read%22%7D%5D&accountId=*&zoneId=all&name=Marna%20Installer" target="_blank" rel="noopener">&#x1F511; ساخت توکن API در کلادفلر</a>
-  <p>با کلیک روی این دکمه، صفحه ساخت توکن در کلادفلر باز می‌شود — دسترسی‌های مورد نیاز از قبل انتخاب شده‌اند. توکن ساخته شده را کپی کرده و در فیلد زیر بچسبانید.</p>
+  <a href="https://dash.cloudflare.com/profile/api-tokens?permissionGroupKeys=%5B%7B%22key%22%3A%22workers_scripts%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22workers_kv_storage%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22d1%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22account_settings%22%2C%22type%22%3A%22read%22%7D%5D&accountId=*&zoneId=all&name=Marna%20Installer" target="_blank" rel="noopener">&#x1F511; گام ۱: ساخت توکن API در کلادفلر (کلیک کنید)</a>
+  <p>دسترسی‌های لازم از قبل انتخاب شده — فقط نام توکن را تأیید و ایجاد کنید، سپس کپی کنید</p>
 </div>
 
 <div class="card" id="step1">
-  <h3><span class="step-num">۱</span> توکن API کلادفلر</h3>
+  <h3><span class="step-num">۱</span> اطلاعات استقرار</h3>
   <div class="field">
-    <label>توکن API</label>
-    <input id="token" type="password" autocomplete="off" placeholder="توکن API کلادفلر را اینجا بچسبانید..." />
-    <div class="hint">از دکمه «ساخت توکن API در کلادفلر» بالا استفاده کنید. دسترسی‌های لازم خودکار انتخاب می‌شوند. می‌توانید از <a href="https://dash.cloudflare.com/profile/api-tokens" target="_blank">Global API Key</a> هم استفاده کنید.</div>
+    <label>توکن API کلادفلر</label>
+    <input id="token" type="password" autocomplete="off" placeholder="توکن را از مرحله قبل کپی کنید و اینجا بچسبانید..." />
+    <div class="hint">با دکمه بنفش بالا توکن را بسازید. دسترسی‌ها: Workers Scripts (Edit)، KV (Edit)، D1 (Edit)، Account Settings (Read)</div>
   </div>
-  <details style="margin-bottom:12px">
-    <summary style="cursor:pointer;color:var(--mu);font-size:12px;font-weight:600">&#x1F4CB; دسترسی‌های مورد نیاز (با دکمه بالا خودکار انتخاب می‌شوند)</summary>
-    <table class="perm-table" style="margin-top:8px">
-      <tr><th>منبع</th><th>سطح دسترسی</th></tr>
-      <tr><td><code>Account | Workers Scripts</code></td><td>ویرایش</td></tr>
-      <tr><td><code>Account | Workers KV Storage</code></td><td>ویرایش</td></tr>
-      <tr><td><code>Account | D1</code></td><td>ویرایش</td></tr>
-      <tr><td><code>Account | Account Settings</code></td><td>خواندن</td></tr>
-    </table>
-  </details>
   <div class="field">
-    <label>نام Worker <span style="color:var(--mu);font-weight:400">(اختیاری، پیش‌فرض: marna-proxy)</span></label>
+    <label>نام Worker <span style="color:var(--mu);font-weight:400">(پیش‌فرض: marna-proxy)</span></label>
     <input id="workerName" placeholder="marna-proxy" />
   </div>
-  <button class="btn p" id="deployBtn" onclick="startDeploy()">&#x1F680; استقرار روی کلادفلر</button>
+  <button class="btn p" id="deployBtn" onclick="showDeploy()">&#x2B07; دریافت فایل‌ها و دستور استقرار</button>
 </div>
 
 <div class="card hidden" id="step2">
-  <h3><span class="step-num">۲</span> در حال استقرار...</h3>
-  <div class="log" id="log">در انتظار شروع...</div>
+  <h3><span class="step-num">۲</span> دانلود و اجرا</h3>
+
+  <p style="color:var(--tx2);font-size:13px;margin-bottom:16px;line-height:1.8">
+    <b>مرحله ۱:</b> دو فایل زیر را دانلود کنید و در <b>یک پوشه خالی</b> کنار هم قرار دهید:
+  </p>
+
+  <div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap">
+    <a href="../worker.js" download="worker.js" class="btn p" style="font-size:13px;text-decoration:none">&#x2B07; worker.js (v3.8.3)</a>
+    <button class="btn" onclick="downloadWranglerJson()" style="font-size:13px">&#x2B07; wrangler.jsonc</button>
+  </div>
+
+  <p style="color:var(--tx2);font-size:13px;margin-bottom:12px;line-height:1.8">
+    <b>مرحله ۲:</b> ترمینال (CMD یا PowerShell) را در همان پوشه باز کنید و دستور زیر را اجرا کنید:
+  </p>
+  <pre id="cmdBlock"><span class="copy-btn" onclick="copyCmd()">&#x1F4CB; کپی</span>set CLOUDFLARE_API_TOKEN=<span id="tokPlaceholder">TOKEN</span>
+npx wrangler deploy</pre>
+
+  <p style="color:var(--tx2);font-size:13px;margin:12px 0 16px;line-height:1.8">
+    Wrangler خودکار D1 را می‌سازد، KV را می‌سازد، Worker را با هر دو Bind می‌کند و آپلود می‌کند.
+  </p>
+
+  <p class="note">
+    &#x26A0; اگر PowerShell استفاده می‌کنید، به جای <code>set</code> از <code>$env:CLOUDFLARE_API_TOKEN="TOKEN"</code> استفاده کنید.
+  </p>
 </div>
 
 <div class="card hidden" id="step3">
-  <h3><span class="step-num">&#x2714;</span> استقرار با موفقیت انجام شد!</h3>
-  <div class="result" id="result"></div>
+  <h3><span class="step-num">&#x2714;</span> استقرار کامل شد!</h3>
+  <p style="text-align:center;color:var(--tx2);margin-bottom:12px">پروکسی شما در این آدرس در دسترس است:</p>
+  <div class="url-block" id="finalUrl"></div>
+  <p style="text-align:center;color:var(--tx2);margin-top:16px;line-height:2">
+    حالا <a id="loginLink" href="#" target="_blank" style="color:var(--ac)">صفحه لاگین</a> را باز کنید و رمز مدیریت را تنظیم کنید.
+  </p>
 </div>
 </div>
 
 <script>
-var API_BASE = 'https://api.cloudflare.com/client/v4';
-
 function $(id) { return document.getElementById(id); }
-function log(msg, cls) { var l = $('log'); l.innerHTML += '<span class="'+(cls||'')+'">'+msg+'</span>\n'; l.scrollTop = l.scrollHeight; }
 
-async function apiCall(token, method, path, body) {
-  var opts = { method: method, headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' } };
-  if (body) opts.body = JSON.stringify(body);
-  var r = await fetch(API_BASE + path, opts);
-  var j = await r.json();
-  if (!j.success) throw new Error(j.errors ? j.errors.map(function(e){return e.message}).join(', ') : 'HTTP ' + r.status);
-  return j.result;
+function buildWranglerContent(name) {
+  return '{\n' +
+    '  "$schema": "https://raw.githubusercontent.com/cloudflare/workers-sdk/main/packages/wrangler/config-schema.json",\n' +
+    '  "name": "' + name + '",\n' +
+    '  "main": "worker.js",\n' +
+    '  "compatibility_date": "2024-01-01",\n' +
+    '  "kv_namespaces": [\n' +
+    '    { "binding": "KV", "namespace_id": "" }\n' +
+    '  ],\n' +
+    '  "d1_databases": [\n' +
+    '    { "binding": "DB", "database_name": "marna-db", "database_id": "" }\n' +
+    '  ]\n' +
+    '}\n';
 }
 
-async function uploadWorker(token, accountId, name, script, kvId, d1Id, d1Name) {
-  var bindings = [];
-  // D1 must be bound FIRST, then KV — order matters for the worker
-  if (d1Id) bindings.push({ type: 'd1', name: 'DB', id: d1Id, database_name: d1Name || 'marna-db' });
-  if (kvId) bindings.push({ type: 'kv_namespace', name: 'KV', namespace_id: kvId });
-
-  var metadata = { main_module: name, bindings: bindings, compatibility_date: '2024-01-01' };
-  var form = new FormData();
-  form.append('script', new Blob([script], { type: 'application/javascript+module' }), 'worker.js');
-  form.append('metadata', JSON.stringify(metadata));
-
-  var r = await fetch(API_BASE + '/accounts/' + accountId + '/workers/scripts/' + name, {
-    method: 'PUT',
-    headers: { 'Authorization': 'Bearer ' + token },
-    body: form,
-  });
-  var j = await r.json();
-  if (!j.success) throw new Error(j.errors ? j.errors.map(function(e){return e.message}).join(', ') : 'HTTP ' + r.status);
-  return j.result;
+function downloadWranglerJson() {
+  var name = $('workerName').value.trim() || 'marna-proxy';
+  var content = buildWranglerContent(name);
+  var blob = new Blob([content], { type: 'application/json' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'wrangler.jsonc';
+  a.click();
+  URL.revokeObjectURL(a.href);
 }
 
-async function enableWorkersDev(token, accountId, name) {
-  try {
-    await apiCall(token, 'PUT', '/accounts/' + accountId + '/workers/scripts/' + name + '/subdomain', { enabled: true });
-  } catch(e) {
-    log('WARN: Could not enable workers.dev: ' + e.message, 'wn');
-  }
-}
-
-async function startDeploy() {
+function showDeploy() {
   var token = $('token').value.trim();
-  var workerName = $('workerName').value.trim() || 'marna-proxy';
+  var name = $('workerName').value.trim() || 'marna-proxy';
+  if (!token) { alert('لطفاً ابتدا توکن API را وارد کنید.'); return; }
 
-  if (!token) { alert('لطفاً توکن API کلادفلر را وارد کنید.'); return; }
-
-  $('deployBtn').disabled = true;
+  $('tokPlaceholder').textContent = token;
+  $('cmdBlock').querySelector('.copy-btn').textContent = 'کپی';
   $('step2').classList.remove('hidden');
-  $('step3').classList.add('hidden');
-  $('log').innerHTML = '';
-  log('=== &#x2705; استقرار Marna Proxy ===', 'h');
-  log('نام Worker: ' + workerName);
-  log('&#x1F4E6; نسخه: 3.8.3 (سفارشی‌سازی شده)', 'ok');
-  log('');
+  $('step3').classList.remove('hidden');
+  $('deployBtn').disabled = true;
+  $('deployBtn').textContent = 'دستور آماده شد';
 
-  try {
-    log('&#x27A1; گام ۱: دریافت اطلاعات حساب کاربری');
-    var accounts = await apiCall(token, 'GET', '/accounts?page=1&per_page=1');
-    if (!accounts || accounts.length === 0) throw new Error('هیچ اکانتی پیدا نشد. توکن API را بررسی کنید.');
-    var accountId = accounts[0].id;
-    log('&#x2714; اکانت: ' + accounts[0].name + ' (' + accountId + ')', 'ok');
-    log('');
+  // Show result URL
+  var url = 'https://' + name + '.YOUR-ACCOUNT.workers.dev/login';
+  $('finalUrl').textContent = url;
+  $('loginLink').href = url;
 
-    log('&#x27A1; گام ۲: ساخت پایگاه داده D1', 'h');
-    log('    &#x2139; D1 حافظه اصلی نسخه ۳.۱ به بعد است — ظرفیت نوشتن ۱۰۰ برابر KV', 'wn');
-    var d1Id;
-    try {
-      var d1 = await apiCall(token, 'POST', '/accounts/' + accountId + '/d1/database', { name: 'Marna-DB' });
-      d1Id = d1.uuid;
-      log('&#x2714; پایگاه داده D1 ساخته شد: ' + d1Id, 'ok');
-    } catch(e) {
-      if (e.message.indexOf('already') > -1 || e.message.indexOf('duplicate') > -1) {
-        log('&#x26A0; پایگاه داده D1 از قبل وجود دارد، ادامه...', 'wn');
-      } else { throw e; }
-    }
-    log('');
-
-    log('&#x27A1; گام ۳: ساخت فضای KV', 'h');
-    log('    &#x2139; KV برای مهاجرت یک‌باره به D1 و کلیدهای جامانده استفاده می‌شود', 'wn');
-    var kvId;
-    try {
-      var kv = await apiCall(token, 'POST', '/accounts/' + accountId + '/storage/kv/namespaces', { title: 'Marna-KV' });
-      kvId = kv.id;
-      log('&#x2714; فضای KV ساخته شد: ' + kvId, 'ok');
-    } catch(e) {
-      if (e.message.indexOf('already') > -1) {
-        log('&#x26A0; فضای KV از قبل وجود دارد، ادامه...', 'wn');
-      } else { throw e; }
-    }
-    log('');
-
-    log('&#x27A1; گام ۴: بارگذاری worker.js', 'h');
-    var script;
-    try {
-      var r = await fetch('../worker.js');
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      script = await r.text();
-      log('&#x2714; worker.js بارگذاری شد: ' + Math.round(script.length/1024) + ' کیلوبایت (نسخه ۳.۸.۳)', 'ok');
-    } catch(e) {
-      log('&#x274C; خطا در بارگذاری worker.js: ' + e.message, 'err');
-      log('&#x26A0; مطمئن شوید worker.js در ریشه ریپازیتوری در کنار پوشه deploy قرار دارد', 'wn');
-      throw e;
-    }
-    log('');
-
-    log('&#x27A1; گام ۵: استقرار Worker با اتصال D1 + KV', 'h');
-    log('    &#x2139; ترتیب اتصال: ابتدا D1 سپس KV به Worker بایند می‌شود', 'wn');
-    await uploadWorker(token, accountId, workerName, script, kvId, d1Id, 'Marna-DB');
-    log('&#x2714; اسکریپت Worker با اتصال D1 + KV آپلود شد', 'ok');
-    log('');
-
-    log('&#x27A1; گام ۶: فعال‌سازی workers.dev', 'h');
-    await enableWorkersDev(token, accountId, workerName);
-
-    var workersDevUrl = 'https://' + workerName + '.' + accounts[0].name + '.workers.dev';
-    log('');
-    log('=== &#x1F389; استقرار با موفقیت انجام شد! ===', 'ok');
-    log('');
-    log('&#x1F310; پروکسی شما در آدرس زیر در دسترس است:', 'h');
-    log('  ' + workersDevUrl, 'ok');
-    log('');
-    log('&#x1F449; مراحل بعدی:', 'h');
-    log('  ۱. آدرس ' + workersDevUrl + '/login را باز کنید', 'wn');
-    log('  ۲. رمز مدیریت را تنظیم کنید', 'wn');
-    log('  ۳. لینک اشتراک خود را دریافت کنید', 'wn');
-
-    $('step3').classList.remove('hidden');
-    $('result').innerHTML =
-      '<div class="url">' + workersDevUrl + '</div>' +
-      '<div class="next">' +
-        '<b>&#x1F449; مرحله بعد:</b> <a href="' + workersDevUrl + '/login" target="_blank">' + workersDevUrl + '/login</a> را باز کنید<br>' +
-        'رمز مدیریت را تنظیم کرده و لینک اشتراک خود را دریافت کنید.<br><br>' +
-        '<small style="color:var(--mu)">&#x1F5C4; D1: ' + (d1Id || 'N/A') + ' &nbsp;|&nbsp; &#x1F5C4; KV: ' + (kvId || 'N/A') + ' &nbsp;|&nbsp; &#x1F4E6; Worker: نسخه ۳.۸.۳</small>' +
-      '</div>';
-  } catch(e) {
-    log('');
-    log('=== &#x274C; خطا در استقرار ===', 'err');
-    log('&#x26A0; ' + e.message, 'err');
-    log('');
-    log('&#x1F50D; راهنمایی:', 'h');
-    log('  - مطمئن شوید توکن API هر ۴ دسترسی مورد نیاز را دارد', 'wn');
-    log('  - بررسی کنید که D1 و KV روی اکانت شما فعال باشند', 'wn');
-    log('  - می‌توانید از Global API Key استفاده کنید (از صفحه پروفایل کلادفلر)', 'wn');
-    log('  - روش دستی: npx wrangler deploy', 'wn');
-  }
-  $('deployBtn').disabled = false;
+  $('step2').scrollIntoView({ behavior: 'smooth' });
 }
+
+function copyCmd() {
+  var token = $('token').value.trim();
+  var name = $('workerName').value.trim() || 'marna-proxy';
+  var cmd = 'set CLOUDFLARE_API_TOKEN=' + token + '\nnpx wrangler deploy';
+  navigator.clipboard.writeText(cmd).then(function() {
+    var btn = document.querySelector('#cmdBlock .copy-btn');
+    btn.textContent = 'کپی شد!';
+    setTimeout(function() { btn.textContent = 'کپی'; }, 2000);
+  });
+}
+
+$('workerName').addEventListener('input', function() {
+  var n = this.value.trim() || 'marna-proxy';
+  var url = 'https://' + n + '.YOUR-ACCOUNT.workers.dev/login';
+  $('finalUrl').textContent = url;
+  $('loginLink').href = url;
+});
 </script>
 </body>
 </html>
