@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en" dir="ltr" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Marna Proxy — One-Click Deploy</title>
+<link rel="icon" type="image/svg+xml" href="/logo-mark.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --bg: #070809; --card: #101319; --c2: #0b0d11; --bd: #1c2027; --bd2: #262b34;
+  --tx: #e9edf4; --tx2: #aeb6c4; --mu: #6f7888; --ac: #22d3ee; --ac2: #a855f7;
+  --ok: #34d399; --dg: #f87171; --wn: #f59e0b;
+  --grad: linear-gradient(120deg, #22d3ee, #7c5cff);
+  --ring: rgba(34,211,238,.25);
+  --shadow: 0 1px 0 rgba(255,255,255,.02), 0 14px 38px rgba(0,0,0,.5);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Inter', 'Vazirmatn', system-ui, sans-serif;
+  background: radial-gradient(800px 420px at 50% -6%, color-mix(in srgb, var(--ac) 14%, transparent), transparent 60%), var(--bg);
+  color: var(--tx); min-height: 100vh; padding: 32px 16px; font-size: 14px;
+}
+.wrap { max-width: 720px; margin: 0 auto; }
+.brand { display: flex; align-items: center; gap: 11px; margin-bottom: 24px; justify-content: center; }
+.brand .lg { width: 48px; height: 48px; border-radius: 12px; background: var(--c2); border: 1px solid var(--bd); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.brand .lg img, .brand .lg svg { width: 34px; height: 34px; }
+.brand h1 { font-size: 24px; font-weight: 800; }
+.brand h1 span { background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.intro { text-align: center; color: var(--mu); margin-bottom: 28px; font-size: 15px; line-height: 1.8; }
+.card { background: var(--card); border: 1px solid var(--bd); border-radius: 16px; padding: 24px; margin-bottom: 16px; box-shadow: var(--shadow); }
+.card h3 { font-size: 16px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+.step-num { width: 28px; height: 28px; border-radius: 8px; background: var(--c2); border: 1px solid var(--bd); display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: var(--ac); flex-shrink: 0; }
+.field { margin-bottom: 14px; }
+.field label { display: block; font-size: 12px; font-weight: 600; color: var(--tx2); margin-bottom: 5px; }
+.field input, .field select { width: 100%; background: var(--c2); border: 1px solid var(--bd2); border-radius: 10px; color: var(--tx); font: inherit; font-size: 14px; padding: 11px 13px; outline: none; transition: .12s; }
+.field input:focus, .field select:focus { border-color: var(--ac); box-shadow: 0 0 0 3px var(--ring); }
+.field .hint { font-size: 11.5px; color: var(--mu); margin-top: 5px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; border: 1px solid var(--bd2); background: var(--c2); color: var(--tx); font: inherit; font-weight: 600; font-size: 13px; padding: 11px 22px; border-radius: 10px; cursor: pointer; transition: .12s; }
+.btn:hover { border-color: var(--ac); color: var(--ac); }
+.btn.p { background: var(--ac); color: #000; border: none; font-size: 15px; padding: 13px 30px; }
+.btn.p:hover { filter: brightness(1.1); color: #000; }
+.btn:disabled { opacity: .45; cursor: not-allowed; filter: none; border-color: var(--bd2); color: var(--mu); }
+.btn.p:disabled { background: var(--mu); color: var(--c2); }
+.log { background: #000; border: 1px solid var(--bd); border-radius: 12px; padding: 16px; font-family: ui-monospace, monospace; font-size: 12px; line-height: 1.7; max-height: 280px; overflow-y: auto; color: var(--tx2); margin-top: 14px; white-space: pre-wrap; word-break: break-all; }
+.log .ok { color: var(--ok); }
+.log .err { color: var(--dg); }
+.log .wn { color: var(--wn); }
+.log .h { color: var(--ac); }
+.result { text-align: center; padding: 20px; }
+.result .url { font-size: 18px; font-weight: 700; color: var(--ok); word-break: break-all; }
+.result .next { margin-top: 16px; color: var(--tx2); font-size: 13px; line-height: 1.8; }
+.perm-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 8px; }
+.perm-table th, .perm-table td { padding: 6px 8px; border-bottom: 1px solid var(--bd); text-align: left; }
+.perm-table th { color: var(--mu); font-size: 10.5px; text-transform: uppercase; letter-spacing: .3px; }
+.perm-table code { background: var(--c2); border: 1px solid var(--bd); border-radius: 4px; padding: 2px 6px; font-size: 11px; color: var(--ac); }
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="brand">
+  <span class="lg">
+    <svg viewBox="0 0 1254 1254" width="34" height="34" xmlns="http://www.w3.org/2000/svg" aria-label="Marna"><defs><linearGradient id="ng" x1="128.06" y1="1122.76" x2="1206.85" y2="43.97" gradientUnits="userSpaceOnUse"><stop offset=".04" stop-color="#9d4efb"/><stop offset="1" stop-color="#02cdf3"/></linearGradient></defs><path d="M1185.57,149.23c0-43.84-27.55-82.6-66.19-100.7-40.83-19.13-87.98-16.85-126.82,6.19-33.3,19.76-56.22,55.99-56.25,95.68l-.38,653.25.09,39.98c.03,13.51-.33,26.37-3.82,39.13-8.12,29.65-30.52,53.04-56.69,62.39-32.53,11.62-65.87,5.5-91.07-15.75-20.65-17.42-33.28-42.64-33.32-70.11l-.35-245.85.07-231.05c.04-148.83-97.26-281.46-240.38-321.81-67.49-19.02-138.62-19.66-204.99,2.42l-13.66,4.55C159.84,114.72,68.42,239.99,68.41,381.43l-.06,712.76c0,68.93,56.48,123.39,124.03,124.15,65.31.73,125.56-52.18,125.64-120.57l.88-712.63c.07-54.62,49.94-96.23,103.56-88.53,43.56,6.25,78.96,43.23,79.08,88.34l1.24,493.92c.16,62.52,24.72,123.29,59.49,174.21,43.7,63.99,108.48,111.28,182.25,133.98,91.72,28.23,190.9,16.68,273.4-31.79,36.89-21.68,68.83-50.13,94.95-83.49l16.54-23.16c31.76-44.47,56.26-119.27,56.25-174.93l-.09-724.43Z" fill="url(#ng)"/></svg>
+  </span>
+  <h1>Marna <span>Proxy</span></h1>
+</div>
+<p class="intro">One-click deploy to Cloudflare. Creates KV + D1 + Worker automatically.<br>تمام زیرساخت‌ها با یک کلیک روی کلادفلر ساخته می‌شوند.</p>
+
+<!-- Step 1: API Token -->
+<div class="card" id="step1">
+  <h3><span class="step-num">1</span> Cloudflare API Token</h3>
+  <div class="field">
+    <label>API Token</label>
+    <input id="token" type="password" autocomplete="off" placeholder="Paste your Cloudflare API token here…" />
+    <div class="hint">Create a token at <b>Cloudflare Dashboard → Profile → API Tokens</b> with the permissions below, or use the <b>Global API Key</b> from your profile.</div>
+  </div>
+  <details style="margin-bottom:12px">
+    <summary style="cursor:pointer;color:var(--mu);font-size:12px;font-weight:600">Required permissions</summary>
+    <table class="perm-table" style="margin-top:8px">
+      <tr><th>Resource</th><th>Permission</th></tr>
+      <tr><td><code>Account | Workers KV Storage</code></td><td>Edit</td></tr>
+      <tr><td><code>Account | D1</code></td><td>Edit</td></tr>
+      <tr><td><code>Account | Workers Scripts</code></td><td>Edit</td></tr>
+      <tr><td><code>Account | Account Settings</code></td><td>Read</td></tr>
+    </table>
+  </details>
+  <div class="field">
+    <label>Worker name <span style="color:var(--mu);font-weight:400">(optional)</span></label>
+    <input id="workerName" placeholder="marna-proxy" />
+  </div>
+  <button class="btn p" id="deployBtn" onclick="startDeploy()">🚀 Deploy to Cloudflare</button>
+</div>
+
+<!-- Step 2: Progress -->
+<div class="card hidden" id="step2">
+  <h3><span class="step-num">2</span> Deploying…</h3>
+  <div class="log" id="log">Waiting to start…</div>
+</div>
+
+<!-- Step 3: Result -->
+<div class="card hidden" id="step3">
+  <h3><span class="step-num">✓</span> Deploy Complete!</h3>
+  <div class="result" id="result"></div>
+</div>
+</div>
+
+<script>
+const API_BASE = 'https://api.cloudflare.com/client/v4';
+
+function $(id) { return document.getElementById(id); }
+function log(msg, cls) { const l = $('log'); l.innerHTML += `<span class="${cls||''}">${msg}</span>\n`; l.scrollTop = l.scrollHeight; }
+
+async function apiCall(token, method, path, body) {
+  const opts = { method, headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' } };
+  if (body) opts.body = JSON.stringify(body);
+  const r = await fetch(`${API_BASE}${path}`, opts);
+  const j = await r.json();
+  if (!j.success) throw new Error(j.errors?.map(e => e.message).join(', ') || `HTTP ${r.status}`);
+  return j.result;
+}
+
+async function uploadWorker(token, accountId, name, script, kvId, d1Id, d1Name) {
+  const bindings = [];
+  if (kvId) bindings.push({ type: 'kv_namespace', name: 'KV', namespace_id: kvId });
+  if (d1Id) bindings.push({ type: 'd1', name: 'DB', id: d1Id, database_name: d1Name || 'marna-db' });
+
+  const metadata = {
+    main_module: name,
+    bindings: bindings,
+    compatibility_date: '2024-01-01'
+  };
+
+  const form = new FormData();
+  const scriptBlob = new Blob([script], { type: 'application/javascript+module' });
+  form.append('script', scriptBlob, 'worker.js');
+  form.append('metadata', JSON.stringify(metadata));
+
+  const r = await fetch(`${API_BASE}/accounts/${accountId}/workers/scripts/${name}`, {
+    method: 'PUT',
+    headers: { 'Authorization': `Bearer ${token}` },
+    body: form,
+  });
+  const j = await r.json();
+  if (!j.success) throw new Error(j.errors?.map(e => e.message).join(', ') || `HTTP ${r.status}`);
+  return j.result;
+}
+
+async function enableWorkersDev(token, accountId, name) {
+  try {
+    await apiCall(token, 'PUT', `/accounts/${accountId}/workers/scripts/${name}/subdomain`, { enabled: true });
+  } catch(e) {
+    log(`⚠ Could not enable workers.dev: ${e.message}`, 'wn');
+  }
+}
+
+async function startDeploy() {
+  const token = $('token').value.trim();
+  const workerName = $('workerName').value.trim() || 'marna-proxy';
+
+  if (!token) { alert('Please enter your Cloudflare API token.'); return; }
+
+  $('deployBtn').disabled = true;
+  $('step2').classList.remove('hidden');
+  $('step3').classList.add('hidden');
+  $('log').innerHTML = '';
+  log('Starting deployment…', 'h');
+  log('Worker name: ' + workerName);
+  log('');
+
+  try {
+    // 1. Get account ID
+    log('→ Getting account info…');
+    const accounts = await apiCall(token, 'GET', '/accounts?page=1&per_page=1');
+    if (!accounts || accounts.length === 0) throw new Error('No accounts found. Check your API token.');
+    const accountId = accounts[0].id;
+    log('✓ Account: ' + accounts[0].name + ' (' + accountId + ')', 'ok');
+
+    // 2. Create KV namespace
+    log('→ Creating KV namespace…');
+    let kvId;
+    try {
+      const kv = await apiCall(token, 'POST', `/accounts/${accountId}/storage/kv/namespaces`, { title: 'Marna-KV' });
+      kvId = kv.id;
+      log('✓ KV namespace created: ' + kvId, 'ok');
+    } catch(e) {
+      if (e.message.includes('already')) {
+        log('⚠ KV namespace may already exist, continuing…', 'wn');
+      } else { throw e; }
+    }
+
+    // 3. Create D1 database
+    log('→ Creating D1 database…');
+    let d1Id;
+    try {
+      const d1 = await apiCall(token, 'POST', `/accounts/${accountId}/d1/database`, { name: 'Marna-DB' });
+      d1Id = d1.uuid;
+      log('✓ D1 database created: ' + d1Id, 'ok');
+    } catch(e) {
+      if (e.message.includes('already') || e.message.includes('duplicate')) {
+        log('⚠ D1 database may already exist, continuing…', 'wn');
+      } else { throw e; }
+    }
+
+    // 4. Fetch and upload worker script
+    log('→ Fetching worker.js…');
+    let script;
+    try {
+      const r = await fetch('../worker.js');
+      if (r.ok) {
+        script = await r.text();
+        log('✓ worker.js loaded (' + Math.round(script.length/1024) + ' KB)', 'ok');
+      } else { throw new Error('worker.js not found at /worker.js'); }
+    } catch(e) {
+      log('⚠ Could not fetch worker.js from GitHub Pages. You will need to upload it manually.', 'wn');
+      log('   Place worker.js next to this file, or use Wrangler CLI:', 'wn');
+      log('   npx wrangler deploy', 'wn');
+      throw e;
+    }
+
+    // 5. Deploy worker with bindings
+    log('→ Deploying worker with KV + D1 bindings…');
+    await uploadWorker(token, accountId, workerName, script, kvId, d1Id, 'Marna-DB');
+    log('✓ Worker deployed!', 'ok');
+
+    // 6. Enable workers.dev
+    log('→ Enabling workers.dev subdomain…');
+    await enableWorkersDev(token, accountId, workerName);
+
+    const workersDevUrl = `https://${workerName}.${accounts[0].name}.workers.dev`;
+    log('');
+    log('✅ DEPLOY COMPLETE!', 'ok');
+    log('');
+    log('Your proxy is live at:', 'h');
+    log('  ' + workersDevUrl, 'ok');
+    log('');
+    log('Next steps:', 'h');
+    log('  1. Open ' + workersDevUrl + '/login', 'wn');
+    log('  2. Set your admin password', 'wn');
+    log('  3. Get your subscription link', 'wn');
+
+    // Show result
+    $('step3').classList.remove('hidden');
+    $('result').innerHTML = `
+      <div class="url">${workersDevUrl}</div>
+      <div class="next">
+        <b>Next:</b> Open <a href="${workersDevUrl}/login" target="_blank" style="color:var(--ac)">${workersDevUrl}/login</a><br>
+        Set your admin password and get your subscription link.<br><br>
+        <small style="color:var(--mu)">KV: ${kvId || 'N/A'} &nbsp;|&nbsp; D1: ${d1Id || 'N/A'}</small>
+      </div>
+    `;
+  } catch(e) {
+    log('');
+    log('❌ DEPLOY FAILED: ' + e.message, 'err');
+    log('');
+    log('Troubleshooting:', 'h');
+    log('  • Make sure your API token has all required permissions', 'wn');
+    log('  • Check that KV and D1 are enabled on your account', 'wn');
+    log('  • Try using the Global API Key instead of a token', 'wn');
+    log('  • Manual deploy: npx wrangler deploy', 'wn');
+  }
+  $('deployBtn').disabled = false;
+}
+</script>
+</body>
+</html>
