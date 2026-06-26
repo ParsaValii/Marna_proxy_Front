@@ -90,9 +90,35 @@ body { font-family: 'Vazirmatn','Inter',system-ui,Tahoma,sans-serif; background:
 
 <script>
 var CF_API = 'https://api.cloudflare.com/client/v4';
+var USE_PROXY = true;
+var CORS_PROXIES = [
+  'https://corsproxy.io/?',
+  'https://cors-anywhere.herokuapp.com/',
+];
 
 function $(id) { return document.getElementById(id); }
 function log(msg, cls) { var l = $('log'); l.innerHTML += '<span class="'+(cls||'')+'">'+msg+'</span>\n'; l.scrollTop = l.scrollHeight; }
+
+async function cfCall(url, opts, tryProxy) {
+  if (!tryProxy) {
+    var r = await fetch(url, opts);
+    if (r.ok) return r;
+    if (r.status === 0 || r.type === 'opaque') throw new Error('CORS_BLOCKED');
+    return r;
+  }
+
+  // Try via CORS proxy
+  var lastErr;
+  for (var i = 0; i < CORS_PROXIES.length; i++) {
+    try {
+      var proxyUrl = CORS_PROXIES[i] + encodeURIComponent(url);
+      var r = await fetch(proxyUrl, opts);
+      if (r.ok) { log('  (via ' + CORS_PROXIES[i].split('/')[2] + ')', 'wn'); return r; }
+      lastErr = new Error('Proxy HTTP ' + r.status);
+    } catch(e) { lastErr = e; }
+  }
+  throw lastErr || new Error('All proxies failed');
+}
 
 async function cfApi(token, method, path, body) {
   var url = CF_API + path;
@@ -103,10 +129,19 @@ async function cfApi(token, method, path, body) {
     opts.body = JSON.stringify(body);
   }
 
-  var r = await fetch(url, opts);
+  // Try direct first, then proxy
+  var r;
+  try {
+    r = await cfCall(url, opts, false);
+  } catch(e) {
+    if (e.message === 'CORS_BLOCKED') {
+      log('  CORS blocked, trying proxy...', 'wn');
+      try { r = await cfCall(url, opts, true); } catch(e2) { throw e; }
+    } else { throw e; }
+  }
+
   if (!r.ok) {
     var t = ''; try { t = await r.text(); } catch(e) {}
-    if (r.status === 0) throw new Error('CORS_BLOCKED');
     throw new Error('HTTP ' + r.status + (t ? ': ' + t.substring(0, 150) : ''));
   }
   var j = await r.json();
@@ -174,15 +209,30 @@ async function startDeploy() {
     if (kvId) bindings.push({ type: 'kv_namespace', name: 'KV', namespace_id: kvId });
     var metadata = { main_module: name, bindings: bindings, compatibility_date: '2024-01-01' };
 
-    var form = new FormData();
-    form.append('script', new Blob([script], { type: 'application/javascript+module' }), 'worker.js');
-    form.append('metadata', JSON.stringify(metadata));
+    // Try direct upload first, then via proxy
+    var upUrl = CF_API + '/accounts/' + accountId + '/workers/scripts/' + name;
+    var upRes;
+    try {
+      upRes = await fetch(upUrl, { method: 'PUT', headers: { 'Authorization': 'Bearer ' + token },
+        body: 'worker.js=' + encodeURIComponent(script) + '&metadata=' + encodeURIComponent(JSON.stringify(metadata)) });
+      // If that fails with 400 (bad body format), try FormData via proxy
+      if (!upRes.ok && upRes.status !== 400) {}
+    } catch(e) {}
 
-    var upRes = await fetch(CF_API + '/accounts/' + accountId + '/workers/scripts/' + name, {
-      method: 'PUT',
-      headers: { 'Authorization': 'Bearer ' + token },
-      body: form,
-    });
+    if (!upRes || !upRes.ok) {
+      log('  Trying via proxy...', 'wn');
+      // Use JSON-based approach via proxy for the worker script
+      var proxyUrl = CORS_PROXIES[0] + encodeURIComponent(upUrl);
+      upRes = await fetch(proxyUrl, {
+        method: 'PUT',
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'Content-Type': 'application/javascript+module',
+        },
+        body: script,
+      });
+    }
+
     if (!upRes.ok) {
       var t = ''; try { t = await upRes.text(); } catch(e) {}
       if (upRes.status === 0) throw new Error('CORS_BLOCKED');
