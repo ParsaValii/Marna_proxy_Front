@@ -1,17 +1,17 @@
 <!doctype html>
-<html lang="en" dir="ltr" data-theme="dark">
+<html lang="fa" dir="rtl" data-theme="dark">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="noindex, nofollow" />
-<title>Marna Proxy — One-Click Deploy</title>
+<title>Marna Proxy — استقرار با یک کلیک</title>
 <link rel="icon" type="image/svg+xml" href="../logo-mark.svg" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 <style>
 :root { --bg: #070809; --card: #101319; --c2: #0b0d11; --bd: #1c2027; --bd2: #262b34; --tx: #e9edf4; --tx2: #aeb6c4; --mu: #6f7888; --ac: #22d3ee; --ac2: #a855f7; --ok: #34d399; --dg: #f87171; --wn: #f59e0b; --grad: linear-gradient(120deg, #22d3ee, #7c5cff); --ring: rgba(34,211,238,.25); --shadow: 0 1px 0 rgba(255,255,255,.02), 0 14px 38px rgba(0,0,0,.5); }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Inter','Vazirmatn',system-ui,sans-serif; background: radial-gradient(800px 420px at 50% -6%, color-mix(in srgb, var(--ac) 14%, transparent), transparent 60%), var(--bg); color: var(--tx); min-height: 100vh; padding: 32px 16px; font-size: 14px; }
+body { font-family: 'Vazirmatn','Inter',system-ui,Tahoma,sans-serif; background: radial-gradient(800px 420px at 50% -6%, color-mix(in srgb, var(--ac) 14%, transparent), transparent 60%), var(--bg); color: var(--tx); min-height: 100vh; padding: 32px 16px; font-size: 14px; }
 .wrap { max-width: 720px; margin: 0 auto; }
 .brand { display: flex; align-items: center; gap: 11px; margin-bottom: 20px; justify-content: center; }
 .brand .lg { width: 48px; height: 48px; border-radius: 12px; background: var(--c2); border: 1px solid var(--bd); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; }
@@ -26,10 +26,10 @@ body { font-family: 'Inter','Vazirmatn',system-ui,sans-serif; background: radial
 .card h3 { font-size: 16px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
 .step-num { width: 28px; height: 28px; border-radius: 8px; background: var(--c2); border: 1px solid var(--bd); display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: var(--ac); flex-shrink: 0; }
 .field { margin-bottom: 14px; }
-.field label { display: block; font-size: 12px; font-weight: 600; color: var(--tx2); margin-bottom: 5px; }
-.field input { width: 100%; background: var(--c2); border: 1px solid var(--bd2); border-radius: 10px; color: var(--tx); font: inherit; font-size: 14px; padding: 11px 13px; outline: none; transition: .12s; }
+.field label { display: block; font-size: 12px; font-weight: 600; color: var(--tx2); margin-bottom: 5px; text-align: right; }
+.field input { width: 100%; background: var(--c2); border: 1px solid var(--bd2); border-radius: 10px; color: var(--tx); font: inherit; font-size: 14px; padding: 11px 13px; outline: none; transition: .12s; direction: ltr; text-align: left; }
 .field input:focus { border-color: var(--ac); box-shadow: 0 0 0 3px var(--ring); }
-.field .hint { font-size: 11.5px; color: var(--mu); margin-top: 5px; }
+.field .hint { font-size: 11.5px; color: var(--mu); margin-top: 5px; text-align: right; }
 .field .hint a { color: var(--ac); }
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; border: 1px solid var(--bd2); background: var(--c2); color: var(--tx); font: inherit; font-weight: 600; font-size: 13px; padding: 11px 22px; border-radius: 10px; cursor: pointer; transition: .12s; }
 .btn:hover { border-color: var(--ac); color: var(--ac); }
@@ -37,19 +37,19 @@ body { font-family: 'Inter','Vazirmatn',system-ui,sans-serif; background: radial
 .btn.p:hover { filter: brightness(1.1); color: #000; }
 .btn:disabled, .btn.p:disabled { opacity: .45; cursor: not-allowed; filter: none; border-color: var(--bd2); color: var(--mu); }
 .hidden { display: none; }
-.log { background: #000; border: 1px solid var(--bd); border-radius: 12px; padding: 16px; font-family: ui-monospace,monospace; font-size: 12px; line-height: 1.7; max-height: 300px; overflow-y: auto; color: var(--tx2); margin-top: 14px; white-space: pre-wrap; word-break: break-all; }
+.log { background: #000; border: 1px solid var(--bd); border-radius: 12px; padding: 16px; font-family: ui-monospace,monospace; font-size: 12px; line-height: 1.7; max-height: 300px; overflow-y: auto; color: var(--tx2); margin-top: 14px; white-space: pre-wrap; word-break: break-all; direction: ltr; text-align: left; }
 .log .ok { color: var(--ok); }
 .log .err { color: var(--dg); }
 .log .wn { color: var(--wn); }
 .log .h { color: var(--ac); }
 .result { text-align: center; padding: 20px; }
-.result .url { font-size: 18px; font-weight: 700; color: var(--ok); word-break: break-all; }
+.result .url { font-size: 18px; font-weight: 700; color: var(--ok); word-break: break-all; direction: ltr; }
 .result .next { margin-top: 16px; color: var(--tx2); font-size: 13px; line-height: 1.8; }
 .result .next a { color: var(--ac); }
 .perm-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 8px; }
-.perm-table th, .perm-table td { padding: 6px 8px; border-bottom: 1px solid var(--bd); text-align: left; }
-.perm-table th { color: var(--mu); font-size: 10.5px; text-transform: uppercase; letter-spacing: .3px; }
-.perm-table code { background: var(--c2); border: 1px solid var(--bd); border-radius: 4px; padding: 2px 6px; font-size: 11px; color: var(--ac); }
+.perm-table th, .perm-table td { padding: 6px 8px; border-bottom: 1px solid var(--bd); text-align: right; }
+.perm-table th { color: var(--mu); font-size: 10.5px; letter-spacing: .3px; }
+.perm-table code { background: var(--c2); border: 1px solid var(--bd); border-radius: 4px; padding: 2px 6px; font-size: 11px; color: var(--ac); direction: ltr; display: inline-block; }
 </style>
 </head>
 <body>
@@ -61,44 +61,44 @@ body { font-family: 'Inter','Vazirmatn',system-ui,sans-serif; background: radial
   <h1>Marna <span>Proxy</span></h1>
 </div>
 
-<p class="intro">One-click deploy to Cloudflare. D1 database + KV storage + Worker script.<br>تمام زیرساخت‌ها با یک کلیک روی کلادفلر ساخته می‌شوند — پایگاه داده D1، فضای KV و اسکریپت Worker</p>
+<p class="intro">استقرار خودکار روی کلادفلر — پایگاه داده D1، فضای KV و اسکریپت Worker<br>همه چیز با یک کلیک ساخته و متصل می‌شود</p>
 
 <div class="token-banner">
-  <a href="https://dash.cloudflare.com/profile/api-tokens" target="_blank" rel="noopener">&#x1F511; Create API Token on Cloudflare</a>
-  <p>Opens Cloudflare Dashboard in a new tab. Create a token with the permissions shown below, then paste it here.<br>ابتدا توکن API را در کلادفلر بسازید (دکمه بالا) سپس اینجا بچسبانید</p>
+  <a id="tokenLink" href="https://dash.cloudflare.com/profile/api-tokens?permissionGroupKeys=%5B%7B%22key%22%3A%22workers_scripts%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22workers_kv_storage%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22d1%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22account_settings%22%2C%22type%22%3A%22read%22%7D%5D&accountId=*&zoneId=all&name=Marna%20Installer" target="_blank" rel="noopener">&#x1F511; ساخت توکن API در کلادفلر</a>
+  <p>با کلیک روی این دکمه، صفحه ساخت توکن در کلادفلر باز می‌شود — دسترسی‌های مورد نیاز از قبل انتخاب شده‌اند. توکن ساخته شده را کپی کرده و در فیلد زیر بچسبانید.</p>
 </div>
 
 <div class="card" id="step1">
-  <h3><span class="step-num">1</span> Cloudflare API Token</h3>
+  <h3><span class="step-num">۱</span> توکن API کلادفلر</h3>
   <div class="field">
-    <label>API Token</label>
-    <input id="token" type="password" autocomplete="off" placeholder="Paste your Cloudflare API token here..." />
-    <div class="hint">Token must have these permissions. Click <b>Create API Token</b> above, or use your <a href="https://dash.cloudflare.com/profile/api-tokens" target="_blank">Global API Key</a>.</div>
+    <label>توکن API</label>
+    <input id="token" type="password" autocomplete="off" placeholder="توکن API کلادفلر را اینجا بچسبانید..." />
+    <div class="hint">از دکمه «ساخت توکن API در کلادفلر» بالا استفاده کنید. دسترسی‌های لازم خودکار انتخاب می‌شوند. می‌توانید از <a href="https://dash.cloudflare.com/profile/api-tokens" target="_blank">Global API Key</a> هم استفاده کنید.</div>
   </div>
   <details style="margin-bottom:12px">
-    <summary style="cursor:pointer;color:var(--mu);font-size:12px;font-weight:600">Required permissions (select all 4)</summary>
+    <summary style="cursor:pointer;color:var(--mu);font-size:12px;font-weight:600">&#x1F4CB; دسترسی‌های مورد نیاز (با دکمه بالا خودکار انتخاب می‌شوند)</summary>
     <table class="perm-table" style="margin-top:8px">
-      <tr><th>Resource</th><th>Permission</th></tr>
-      <tr><td><code>Account | D1</code></td><td>Edit</td></tr>
-      <tr><td><code>Account | Workers KV Storage</code></td><td>Edit</td></tr>
-      <tr><td><code>Account | Workers Scripts</code></td><td>Edit</td></tr>
-      <tr><td><code>Account | Account Settings</code></td><td>Read</td></tr>
+      <tr><th>منبع</th><th>سطح دسترسی</th></tr>
+      <tr><td><code>Account | Workers Scripts</code></td><td>ویرایش</td></tr>
+      <tr><td><code>Account | Workers KV Storage</code></td><td>ویرایش</td></tr>
+      <tr><td><code>Account | D1</code></td><td>ویرایش</td></tr>
+      <tr><td><code>Account | Account Settings</code></td><td>خواندن</td></tr>
     </table>
   </details>
   <div class="field">
-    <label>Worker name <span style="color:var(--mu);font-weight:400">(optional, default: marna-proxy)</span></label>
+    <label>نام Worker <span style="color:var(--mu);font-weight:400">(اختیاری، پیش‌فرض: marna-proxy)</span></label>
     <input id="workerName" placeholder="marna-proxy" />
   </div>
-  <button class="btn p" id="deployBtn" onclick="startDeploy()">Deploy to Cloudflare</button>
+  <button class="btn p" id="deployBtn" onclick="startDeploy()">&#x1F680; استقرار روی کلادفلر</button>
 </div>
 
 <div class="card hidden" id="step2">
-  <h3><span class="step-num">2</span> Deploying...</h3>
-  <div class="log" id="log">Waiting to start...</div>
+  <h3><span class="step-num">۲</span> در حال استقرار...</h3>
+  <div class="log" id="log">در انتظار شروع...</div>
 </div>
 
 <div class="card hidden" id="step3">
-  <h3><span class="step-num">OK</span> Deploy Complete!</h3>
+  <h3><span class="step-num">&#x2714;</span> استقرار با موفقیت انجام شد!</h3>
   <div class="result" id="result"></div>
 </div>
 </div>
@@ -120,6 +120,7 @@ async function apiCall(token, method, path, body) {
 
 async function uploadWorker(token, accountId, name, script, kvId, d1Id, d1Name) {
   var bindings = [];
+  // D1 must be bound FIRST, then KV — order matters for the worker
   if (d1Id) bindings.push({ type: 'd1', name: 'DB', id: d1Id, database_name: d1Name || 'marna-db' });
   if (kvId) bindings.push({ type: 'kv_namespace', name: 'KV', namespace_id: kvId });
 
@@ -142,7 +143,7 @@ async function enableWorkersDev(token, accountId, name) {
   try {
     await apiCall(token, 'PUT', '/accounts/' + accountId + '/workers/scripts/' + name + '/subdomain', { enabled: true });
   } catch(e) {
-    log('WARN Could not enable workers.dev: ' + e.message, 'wn');
+    log('WARN: Could not enable workers.dev: ' + e.message, 'wn');
   }
 }
 
@@ -150,103 +151,106 @@ async function startDeploy() {
   var token = $('token').value.trim();
   var workerName = $('workerName').value.trim() || 'marna-proxy';
 
-  if (!token) { alert('Please enter your Cloudflare API token.'); return; }
+  if (!token) { alert('لطفاً توکن API کلادفلر را وارد کنید.'); return; }
 
   $('deployBtn').disabled = true;
   $('step2').classList.remove('hidden');
   $('step3').classList.add('hidden');
   $('log').innerHTML = '';
-  log('=== Marna Proxy Deploy ===', 'h');
-  log('Worker name: ' + workerName);
-  log('Worker version: 3.8.3 (patched)', 'ok');
+  log('=== &#x2705; استقرار Marna Proxy ===', 'h');
+  log('نام Worker: ' + workerName);
+  log('&#x1F4E6; نسخه: 3.8.3 (سفارشی‌سازی شده)', 'ok');
   log('');
 
   try {
-    log('>>> Step 1: Account Info');
+    log('&#x27A1; گام ۱: دریافت اطلاعات حساب کاربری');
     var accounts = await apiCall(token, 'GET', '/accounts?page=1&per_page=1');
-    if (!accounts || accounts.length === 0) throw new Error('No accounts found. Check your API token.');
+    if (!accounts || accounts.length === 0) throw new Error('هیچ اکانتی پیدا نشد. توکن API را بررسی کنید.');
     var accountId = accounts[0].id;
-    log('Account: ' + accounts[0].name + ' (' + accountId + ')', 'ok');
+    log('&#x2714; اکانت: ' + accounts[0].name + ' (' + accountId + ')', 'ok');
     log('');
 
-    log('>>> Step 2: D1 Database', 'h');
+    log('&#x27A1; گام ۲: ساخت پایگاه داده D1', 'h');
+    log('    &#x2139; D1 حافظه اصلی نسخه ۳.۱ به بعد است — ظرفیت نوشتن ۱۰۰ برابر KV', 'wn');
     var d1Id;
     try {
       var d1 = await apiCall(token, 'POST', '/accounts/' + accountId + '/d1/database', { name: 'Marna-DB' });
       d1Id = d1.uuid;
-      log('D1 database created: ' + d1Id, 'ok');
+      log('&#x2714; پایگاه داده D1 ساخته شد: ' + d1Id, 'ok');
     } catch(e) {
       if (e.message.indexOf('already') > -1 || e.message.indexOf('duplicate') > -1) {
-        log('D1 database may already exist, continuing...', 'wn');
+        log('&#x26A0; پایگاه داده D1 از قبل وجود دارد، ادامه...', 'wn');
       } else { throw e; }
     }
     log('');
 
-    log('>>> Step 3: KV Namespace', 'h');
+    log('&#x27A1; گام ۳: ساخت فضای KV', 'h');
+    log('    &#x2139; KV برای مهاجرت یک‌باره به D1 و کلیدهای جامانده استفاده می‌شود', 'wn');
     var kvId;
     try {
       var kv = await apiCall(token, 'POST', '/accounts/' + accountId + '/storage/kv/namespaces', { title: 'Marna-KV' });
       kvId = kv.id;
-      log('KV namespace created: ' + kvId, 'ok');
+      log('&#x2714; فضای KV ساخته شد: ' + kvId, 'ok');
     } catch(e) {
       if (e.message.indexOf('already') > -1) {
-        log('KV namespace may already exist, continuing...', 'wn');
+        log('&#x26A0; فضای KV از قبل وجود دارد، ادامه...', 'wn');
       } else { throw e; }
     }
     log('');
 
-    log('>>> Step 4: Loading worker.js', 'h');
+    log('&#x27A1; گام ۴: بارگذاری worker.js', 'h');
     var script;
     try {
       var r = await fetch('../worker.js');
       if (!r.ok) throw new Error('HTTP ' + r.status);
       script = await r.text();
-      log('worker.js loaded: ' + Math.round(script.length/1024) + ' KB (v3.8.3 patched)', 'ok');
+      log('&#x2714; worker.js بارگذاری شد: ' + Math.round(script.length/1024) + ' کیلوبایت (نسخه ۳.۸.۳)', 'ok');
     } catch(e) {
-      log('ERROR: Could not fetch worker.js: ' + e.message, 'err');
-      log('Make sure worker.js is in the repo root alongside the deploy folder.', 'wn');
+      log('&#x274C; خطا در بارگذاری worker.js: ' + e.message, 'err');
+      log('&#x26A0; مطمئن شوید worker.js در ریشه ریپازیتوری در کنار پوشه deploy قرار دارد', 'wn');
       throw e;
     }
     log('');
 
-    log('>>> Step 5: Deploy Worker with D1 + KV bindings', 'h');
+    log('&#x27A1; گام ۵: استقرار Worker با اتصال D1 + KV', 'h');
+    log('    &#x2139; ترتیب اتصال: ابتدا D1 سپس KV به Worker بایند می‌شود', 'wn');
     await uploadWorker(token, accountId, workerName, script, kvId, d1Id, 'Marna-DB');
-    log('Worker script uploaded with D1 + KV bindings', 'ok');
+    log('&#x2714; اسکریپت Worker با اتصال D1 + KV آپلود شد', 'ok');
     log('');
 
-    log('>>> Step 6: Enable workers.dev', 'h');
+    log('&#x27A1; گام ۶: فعال‌سازی workers.dev', 'h');
     await enableWorkersDev(token, accountId, workerName);
 
     var workersDevUrl = 'https://' + workerName + '.' + accounts[0].name + '.workers.dev';
     log('');
-    log('=== DEPLOY COMPLETE ===', 'ok');
+    log('=== &#x1F389; استقرار با موفقیت انجام شد! ===', 'ok');
     log('');
-    log('Your proxy is live at:', 'h');
+    log('&#x1F310; پروکسی شما در آدرس زیر در دسترس است:', 'h');
     log('  ' + workersDevUrl, 'ok');
     log('');
-    log('Next steps:', 'h');
-    log('  1. Open ' + workersDevUrl + '/login', 'wn');
-    log('  2. Set your admin password', 'wn');
-    log('  3. Get your subscription link', 'wn');
+    log('&#x1F449; مراحل بعدی:', 'h');
+    log('  ۱. آدرس ' + workersDevUrl + '/login را باز کنید', 'wn');
+    log('  ۲. رمز مدیریت را تنظیم کنید', 'wn');
+    log('  ۳. لینک اشتراک خود را دریافت کنید', 'wn');
 
     $('step3').classList.remove('hidden');
     $('result').innerHTML =
       '<div class="url">' + workersDevUrl + '</div>' +
       '<div class="next">' +
-        '<b>Next:</b> Open <a href="' + workersDevUrl + '/login" target="_blank">' + workersDevUrl + '/login</a><br>' +
-        'Set your admin password and get your subscription link.<br><br>' +
-        '<small style="color:var(--mu)">DB D1: ' + (d1Id || 'N/A') + ' &nbsp;|&nbsp; KV: ' + (kvId || 'N/A') + ' &nbsp;|&nbsp; Worker: v3.8.3</small>' +
+        '<b>&#x1F449; مرحله بعد:</b> <a href="' + workersDevUrl + '/login" target="_blank">' + workersDevUrl + '/login</a> را باز کنید<br>' +
+        'رمز مدیریت را تنظیم کرده و لینک اشتراک خود را دریافت کنید.<br><br>' +
+        '<small style="color:var(--mu)">&#x1F5C4; D1: ' + (d1Id || 'N/A') + ' &nbsp;|&nbsp; &#x1F5C4; KV: ' + (kvId || 'N/A') + ' &nbsp;|&nbsp; &#x1F4E6; Worker: نسخه ۳.۸.۳</small>' +
       '</div>';
   } catch(e) {
     log('');
-    log('=== DEPLOY FAILED ===', 'err');
-    log('Error: ' + e.message, 'err');
+    log('=== &#x274C; خطا در استقرار ===', 'err');
+    log('&#x26A0; ' + e.message, 'err');
     log('');
-    log('Troubleshooting:', 'h');
-    log('  - Make sure your API token has ALL 4 required permissions', 'wn');
-    log('  - Check that D1 and KV are enabled on your Cloudflare account', 'wn');
-    log('  - Try using your Global API Key (from Cloudflare Profile page)', 'wn');
-    log('  - Manual deploy: npx wrangler deploy', 'wn');
+    log('&#x1F50D; راهنمایی:', 'h');
+    log('  - مطمئن شوید توکن API هر ۴ دسترسی مورد نیاز را دارد', 'wn');
+    log('  - بررسی کنید که D1 و KV روی اکانت شما فعال باشند', 'wn');
+    log('  - می‌توانید از Global API Key استفاده کنید (از صفحه پروفایل کلادفلر)', 'wn');
+    log('  - روش دستی: npx wrangler deploy', 'wn');
   }
   $('deployBtn').disabled = false;
 }
