@@ -1,0 +1,6 @@
+{
+  "version": "3.8.3",
+  "released": "2026-06-23",
+  "notes": "Adds Speed limit controls to the admin panel: a global per-connection cap (Settings -> Network -> Speed limit, KB/s; 0 = unlimited) and an optional per-user limit on the Users page that overrides the global. Pairs with worker 3.8.3, which enforces the cap in both directions and fixes domestic .ir routing. Re-upload admin/index.html + version.json. No config/KV/D1 changes; carries everything from 3.8.2.",
+  "worker_url": "https://raw.githubusercontent.com/IRMarna/Marna-Proxy/main/worker.js"
+}

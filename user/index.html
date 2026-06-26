@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="fa" dir="rtl" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Marna Proxy — configs</title>
+<meta name="nova-userhub-version" content="3.8.2" />
+<link rel="icon" type="image/svg+xml" href="https://nova-panel.github.io/logo-mark.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<script>
+  (function(){ try{
+    var l = localStorage.getItem('nova-user-lang') || 'fa';
+    document.documentElement.lang = l; document.documentElement.dir = l==='fa'?'rtl':'ltr';
+    var th = localStorage.getItem('nova-theme'); document.documentElement.dataset.theme = th==='light'?'light':'dark';
+  }catch(e){} })();
+</script>
+<style>
+  :root{
+    --bg:#070809; --panel:#0c0e12; --card:#101319; --card2:#0b0d11;
+    --bd:#1c2027; --bd2:#262b34; --tx:#e9edf4; --tx2:#aeb6c4; --mu:#6f7888;
+    --ac:#22d3ee; --ac2:#a855f7; --ok:#34d399; --wn:#f5b042; --dg:#f87171;
+    --grad:linear-gradient(120deg,#22d3ee,#7c5cff);
+    --radius:12px; --r-sm:9px; --r-lg:16px;
+    --ac-soft:color-mix(in srgb,var(--ac) 14%,transparent);
+    --ac-line:color-mix(in srgb,var(--ac) 38%,transparent);
+  }
+  html[data-theme=light]{
+    --bg:#f4f6fb; --panel:#ffffff; --card:#ffffff; --card2:#f7f9fc;
+    --bd:#e6eaf1; --bd2:#dde2eb; --tx:#101622; --tx2:#3a465c; --mu:#5f6a7d;
+    --ac:#0ea5c4; --ac2:#7c3aed; --grad:linear-gradient(120deg,#0891b2,#7c3aed); --ok:#047857; --wn:#b45309; --dg:#dc2626;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--bg);color:var(--tx);min-height:100vh;font-size:14px;font-family:'Inter','Vazirmatn',system-ui,-apple-system,Segoe UI,Tahoma,sans-serif;-webkit-font-smoothing:antialiased}
+  html[dir=rtl] body{font-family:'Vazirmatn','Inter',system-ui,Tahoma,sans-serif}
+  .wrap{max-width:980px;margin:0 auto;padding:24px 18px 64px}
+  .topbar{display:flex;align-items:center;gap:14px;margin-bottom:6px}
+  .brand{display:flex;align-items:center;gap:11px}
+  .brand .mark{width:42px;height:42px;flex:0 0 42px;display:flex;align-items:center;justify-content:center;background:var(--card2);border:1px solid var(--bd);border-radius:11px;overflow:hidden}
+  .brand .mark img{width:31px;height:31px;object-fit:contain;display:block}
+  .brand .name{font-size:17px;font-weight:800;color:var(--tx);letter-spacing:.2px}
+  .brand .env{display:flex;align-items:center;gap:6px;font-size:10.5px;color:var(--mu);font-weight:600;margin-top:2px}
+  .brand .env .d{width:6px;height:6px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 3px color-mix(in srgb,var(--ok) 22%,transparent)}
+  .controls{margin-inline-start:auto;display:flex;gap:8px}
+  .segmented{display:flex;border:1px solid var(--bd);background:var(--card);border-radius:var(--r-sm);padding:3px;height:36px}
+  .segmented button{border:none;background:transparent;color:var(--mu);font:inherit;font-size:12px;font-weight:700;padding:0 11px;border-radius:6px;transition:.12s;cursor:pointer;line-height:1}
+  .segmented button.on{background:var(--ac);color:#04121a}
+  html[data-theme=light] .segmented button.on{color:#fff}
+  .subtitle{color:var(--tx2);font-size:13.5px;line-height:1.75;margin:4px 0 18px}
+  .subtitle b{color:var(--ac);font-weight:700}
+  .usage{background:var(--card);border:1px solid var(--bd);border-radius:var(--radius);padding:15px 16px;margin-bottom:16px}
+  .usage[hidden]{display:none}
+  .usage-top{display:flex;gap:22px;flex-wrap:wrap;align-items:flex-end;margin-bottom:11px}
+  .ustat{display:flex;flex-direction:column;gap:3px}
+  .ustat .lbl{font-size:10px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--mu)}
+  .ustat .val{font-size:16px;font-weight:700;color:var(--tx);line-height:1}
+  .ustat .val.warn{color:var(--wn)} .ustat .val.dg{color:var(--dg)}
+  .bar{height:8px;border-radius:999px;background:var(--card2);border:1px solid var(--bd);overflow:hidden}
+  .bar-fill{height:100%;border-radius:999px;background:var(--grad);width:0;transition:width .45s ease}
+  .bar-fill.warn{background:var(--wn)} .bar-fill.dg{background:var(--dg)}
+  .usplit{margin-top:9px;font-size:12px;color:var(--tx2);display:flex;gap:16px;flex-wrap:wrap}
+  .usplit .ar{color:var(--ac);font-weight:700}
+  .sublink{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--bd);border-radius:var(--radius);padding:11px 14px;margin-bottom:22px}
+  .sublink code{flex:1;min-width:0;font-family:ui-monospace,'SF Mono',monospace;font-size:11.5px;color:var(--tx2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;direction:ltr;text-align:left}
+  .appgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:12px}
+  .appcard{border:1px solid var(--bd);border-radius:12px;padding:14px;background:var(--card2);display:flex;flex-direction:column;gap:13px}
+  .appcard.rec{border-color:var(--ac-line)}
+  .appcard-h{display:flex;align-items:center;gap:10px}
+  .appcard-h .ic{width:32px;height:32px;flex:0 0 32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#fff}
+  .appcard-h .nm{font-size:14px;font-weight:700;color:var(--tx)}
+  .appcard-h .rec-badge{margin-inline-start:auto;display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:700;color:var(--ac);background:var(--ac-soft);border:1px solid var(--ac-line);border-radius:999px;padding:2px 8px}
+  .appcard-qr{display:flex;justify-content:center}
+  .appcard-qr .qbox{background:#fff;border-radius:10px;padding:9px;width:140px;height:140px;display:flex;align-items:center;justify-content:center}
+  .appcard-qr canvas,.appcard-qr img{display:block;width:122px;height:122px}
+  .qmiss{font-size:11px;color:#555;text-align:center}
+  .scanhint{font-size:11px;color:var(--mu);text-align:center;margin-top:-4px}
+  .appcard-acts{display:flex;flex-direction:column;gap:7px}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:38px;padding:0 14px;border-radius:var(--r-sm);font:inherit;font-size:13px;font-weight:600;border:1px solid transparent;transition:.13s;cursor:pointer;text-decoration:none}
+  .btn.primary{background:var(--ac);color:#04121a;border-color:var(--ac);width:100%}
+  html[data-theme=light] .btn.primary{color:#fff}
+  .btn.primary:hover{filter:brightness(1.07)}
+  .btn.ghost{background:var(--card);color:var(--tx);border-color:var(--bd2)}
+  .btn.ghost:hover{border-color:var(--ac);color:var(--ac)}
+  .btn.sm{height:32px;padding:0 12px;font-size:12px}
+  .foot{margin-top:30px;text-align:center;color:var(--mu);font-size:12px}
+  .toast{position:fixed;inset-inline:0;bottom:22px;margin:auto;width:max-content;max-width:90%;background:var(--ac);color:#04121a;font-weight:700;padding:9px 18px;border-radius:999px;font-size:13px;opacity:0;transform:translateY(8px);transition:.2s;pointer-events:none;z-index:20}
+  html[data-theme=light] .toast{color:#fff}
+  .toast.show{opacity:1;transform:none}
+  @media(max-width:520px){.topbar{flex-wrap:wrap}.controls{margin-inline-start:0;width:100%}}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="topbar">
+      <div class="brand">
+        <div class="mark"><img src="https://nova-panel.github.io/logo-mark.svg" alt="Marna Proxy" /></div>
+        <div>
+          <div class="name">Marna Proxy</div>
+          <div class="env"><span class="d"></span><span id="brandsub">configs</span></div>
+        </div>
+      </div>
+      <div class="controls">
+        <div class="segmented" id="lang"><button data-l="en">EN</button><button data-l="fa">فا</button></div>
+        <div class="segmented" id="theme"><button data-t="light">☀</button><button data-t="dark">☾</button></div>
+      </div>
+    </header>
+
+    <p class="subtitle" id="subtitle"></p>
+
+    <section class="usage" id="usage" hidden>
+      <div class="usage-top">
+        <div class="ustat"><span class="lbl" id="ul-used">Used</span><span class="val" id="u-used">—</span></div>
+        <div class="ustat"><span class="lbl" id="ul-total">Total</span><span class="val" id="u-total">—</span></div>
+        <div class="ustat"><span class="lbl" id="ul-exp">Expires</span><span class="val" id="u-exp">—</span></div>
+      </div>
+      <div class="bar" id="u-bar-wrap"><div class="bar-fill" id="u-bar"></div></div>
+      <div class="usplit" id="u-split"></div>
+    </section>
+
+    <div class="sublink">
+      <button class="btn ghost sm" id="copyraw"></button>
+      <code id="rawsub">…</code>
+    </div>
+
+    <div class="appgrid" id="grid"></div>
+
+    <footer class="foot" id="foot"></footer>
+  </div>
+  <div class="toast" id="toast"></div>
+
+  <script src="https://nova-panel.github.io/qrcode.min.js"></script>
+  <script>
+  (function(){
+    var I18N = {
+      en: { brandsub:'configs', subtitle:'Pick your app, scan the QR or tap Add. Same servers in every app.', sub_user:'Configs for ', copy:'Copy', copied:'Copied', copyraw:'Copy subscription link', add:'Add to app', scanhint:'or scan this in your app', qmiss:'QR unavailable', foot:'Powered by Marna Proxy', used:'Used', total:'Limit', expires:'Expires', unlimited:'Unlimited', noexpiry:'No expiry', expired:'Expired', days:'d left', today:'today', up:'Up', down:'Down', remaining:'left' },
+      fa: { brandsub:'کانفیگ‌ها', subtitle:'اپ خود را انتخاب کن، QR را اسکن کن یا روی «افزودن» بزن. سرورها در همه‌ی اپ‌ها یکی است.', sub_user:'کانفیگ‌های ', copy:'کپی', copied:'کپی شد', copyraw:'کپی لینک اشتراک', add:'افزودن به اپ', scanhint:'یا این را در اپ خود اسکن کن', qmiss:'QR در دسترس نیست', foot:'قدرت‌گرفته از Marna Proxy', used:'مصرف‌شده', total:'حجم کل', expires:'انقضا', unlimited:'نامحدود', noexpiry:'بدون انقضا', expired:'منقضی شده', days:'روز مانده', today:'امروز', up:'آپلود', down:'دانلود', remaining:'باقی‌مانده' }
+    };
+    var lang = (function(){ try{ return localStorage.getItem('nova-user-lang')||'fa'; }catch(e){ return 'fa'; } })();
+    var theme = document.documentElement.dataset.theme==='light' ? 'light' : 'dark';
+    var USAGE = null;
+
+    function subFor(fmt){
+      var u = new URL(location.href);
+      ['b64','base64','clash','sb','singbox','surge','quanx','loon','target','page','hub','raw'].forEach(function(p){ u.searchParams.delete(p); });
+      var s = u.toString();
+      if (!fmt) return s;
+      return s + (s.indexOf('?')>-1 ? '&' : '?') + (fmt==='b64' ? 'b64' : fmt);
+    }
+    function uname(){ try{ var u=new URL(location.href); return u.searchParams.get('u')||u.searchParams.get('sub')||''; }catch(e){ return ''; } }
+
+    var CLIENTS = [
+      { name:'Hiddify',   color:'#7c5cff', rec:true,  fmt:'b64',     deep:function(u){ return 'hiddify://import/'+u; } },
+      { name:'v2rayNG',   color:'#2563eb', rec:false, fmt:'b64',     deep:function(u){ return 'v2rayng://install-config?url='+encodeURIComponent(u); } },
+      { name:'Streisand', color:'#0ea5e9', rec:false, fmt:'b64',     deep:function(u){ return 'streisand://import/'+u; } },
+      { name:'FlClash',   color:'#06b6d4', rec:true,  fmt:'clash',   deep:function(u){ return 'clash://install-config?url='+encodeURIComponent(u); } },
+      { name:'Clash Meta',color:'#10b981', rec:false, fmt:'clash',   deep:function(u){ return 'clash://install-config?url='+encodeURIComponent(u); } },
+      { name:'Karing',    color:'#16a34a', rec:false, fmt:'clash',   deep:function(u){ return 'karing://install-config?url='+encodeURIComponent(u)+'&name=Marna'; } },
+      { name:'sing-box',  color:'#64748b', rec:false, fmt:'singbox', deep:function(u){ return 'sing-box://import-remote-profile?url='+encodeURIComponent(u); } },
+      { name:'NekoBox',   color:'#f59e0b', rec:false, fmt:'singbox', deep:function(u){ return 'sing-box://import-remote-profile?url='+encodeURIComponent(u); } }
+    ];
+
+    function toast(msg){ var t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(function(){ t.classList.remove('show'); },1400); }
+    function copy(text){ try{ navigator.clipboard.writeText(text); }catch(e){ var ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy');}catch(_){} document.body.removeChild(ta); } toast(I18N[lang].copied); }
+    function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+    function fmtBytes(n){ n=Number(n)||0; if(n<=0) return '0 GB'; var u=['B','KB','MB','GB','TB','PB']; var i=Math.floor(Math.log(n)/Math.log(1024)); i=Math.max(0,Math.min(i,u.length-1)); var v=n/Math.pow(1024,i); return (v>=100?v.toFixed(0):v>=10?v.toFixed(1):v.toFixed(2))+' '+u[i]; }
+
+    async function loadUsage(){
+      try{
+        var r = await fetch(subFor('b64'), { cache:'no-store' });
+        var h = r.headers.get('Subscription-Userinfo'); if(!h) return;
+        var d={}; h.split(';').forEach(function(p){ var kv=p.trim().split('='); if(kv.length===2) d[kv[0].trim()]=Number(kv[1]); });
+        var up=d.upload||0, down=d.download||0, total=d.total||0, expire=d.expire||0;
+        USAGE = { up:up, down:down, total:total, expire:expire, used:up+down,
+                  unlim: !total || total>=1099511627776000,
+                  noexp: !expire || expire>=4102300000 };
+        renderUsage();
+      }catch(e){}
+    }
+
+    function renderUsage(){
+      if(!USAGE) return;
+      var t=I18N[lang], el=document.getElementById('usage');
+      document.getElementById('ul-used').textContent=t.used;
+      document.getElementById('ul-total').textContent=t.total;
+      document.getElementById('ul-exp').textContent=t.expires;
+      document.getElementById('u-used').textContent=fmtBytes(USAGE.used);
+      var totalEl=document.getElementById('u-total'), bar=document.getElementById('u-bar'), barWrap=document.getElementById('u-bar-wrap');
+      if(USAGE.unlim){ totalEl.textContent=t.unlimited; barWrap.style.display='none'; }
+      else{
+        totalEl.textContent=fmtBytes(USAGE.total);
+        barWrap.style.display='';
+        var pct=Math.max(0,Math.min(100, USAGE.used/USAGE.total*100));
+        bar.style.width=pct.toFixed(1)+'%';
+        bar.className='bar-fill'+(pct>=90?' dg':pct>=75?' warn':'');
+        document.getElementById('u-used').className='val'+(pct>=90?' dg':pct>=75?' warn':'');
+      }
+      var expEl=document.getElementById('u-exp');
+      if(USAGE.noexp){ expEl.textContent=t.noexpiry; expEl.className='val'; }
+      else{
+        var ms=USAGE.expire*1000, days=Math.ceil((ms-Date.now())/86400000);
+        if(days<0){ expEl.textContent=t.expired; expEl.className='val dg'; }
+        else if(days===0){ expEl.textContent=t.today; expEl.className='val warn'; }
+        else{ expEl.textContent=days+' '+t.days; expEl.className='val'+(days<=3?' warn':''); }
+      }
+      var split=document.getElementById('u-split');
+      split.innerHTML='<span><span class="ar">↑</span> '+t.up+': '+fmtBytes(USAGE.up)+'</span><span><span class="ar">↓</span> '+t.down+': '+fmtBytes(USAGE.down)+'</span>'+
+        (USAGE.unlim?'':'<span>'+t.remaining+': '+fmtBytes(Math.max(0,USAGE.total-USAGE.used))+'</span>');
+      el.hidden=false;
+    }
+
+    function render(){
+      var t = I18N[lang];
+      document.documentElement.lang = lang; document.documentElement.dir = lang==='fa'?'rtl':'ltr';
+      document.getElementById('brandsub').textContent = t.brandsub;
+      var who = uname();
+      document.getElementById('subtitle').innerHTML = (who ? (t.sub_user+'<b>'+esc(who)+'</b> — ') : '') + t.subtitle;
+      document.getElementById('foot').textContent = t.foot;
+      var rawUrl = subFor('b64');
+      document.getElementById('rawsub').textContent = rawUrl;
+      var cr = document.getElementById('copyraw'); cr.textContent = t.copyraw; cr.onclick=function(){ copy(rawUrl); };
+
+      var grid = document.getElementById('grid'); grid.innerHTML='';
+      CLIENTS.forEach(function(c){
+        var sub = subFor(c.fmt);
+        var card = document.createElement('div'); card.className='appcard'+(c.rec?' rec':'');
+        card.innerHTML =
+          '<div class="appcard-h"><span class="ic" style="background:'+c.color+'">'+c.name[0].toUpperCase()+'</span><span class="nm">'+c.name+'</span>'+(c.rec?'<span class="rec-badge">★</span>':'')+'</div>'+
+          '<div class="appcard-qr"><div class="qbox"></div></div>'+
+          '<div class="scanhint">'+t.scanhint+'</div>'+
+          '<div class="appcard-acts"><a class="btn primary" href="'+c.deep(sub)+'">+ '+t.add+'</a><button class="btn ghost sm" data-copy="'+esc(sub)+'">'+t.copy+'</button></div>';
+        grid.appendChild(card);
+        var qbox = card.querySelector('.qbox');
+        try {
+          if (window.QRCode) { new QRCode(qbox, { text: sub, width:122, height:122, correctLevel: QRCode.CorrectLevel.M }); }
+          else { qbox.innerHTML = '<span class="qmiss">'+t.qmiss+'</span>'; }
+        } catch(e){ qbox.innerHTML = '<span class="qmiss">'+t.qmiss+'</span>'; }
+      });
+      grid.querySelectorAll('[data-copy]').forEach(function(b){ b.onclick=function(){ copy(b.getAttribute('data-copy')); }; });
+      document.querySelectorAll('#lang button').forEach(function(b){ b.classList.toggle('on', b.dataset.l===lang); });
+      document.querySelectorAll('#theme button').forEach(function(b){ b.classList.toggle('on', b.dataset.t===theme); });
+      renderUsage();
+    }
+
+    document.getElementById('lang').onclick=function(e){ var b=e.target.closest('button'); if(!b) return; lang=b.dataset.l; try{ localStorage.setItem('nova-user-lang',lang); }catch(_){} render(); };
+    document.getElementById('theme').onclick=function(e){ var b=e.target.closest('button'); if(!b) return; theme=b.dataset.t; document.documentElement.dataset.theme=theme; try{ localStorage.setItem('nova-theme',theme); }catch(_){} render(); };
+
+    if (!window.QRCode) { var tries=0; var iv=setInterval(function(){ if(window.QRCode || ++tries>25){ clearInterval(iv); render(); } }, 140); }
+    render();
+    loadUsage();
+  })();
+  </script>
+</body>
+</html>
