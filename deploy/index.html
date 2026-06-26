@@ -45,10 +45,6 @@ body { font-family: 'Vazirmatn','Inter',system-ui,Tahoma,sans-serif; background:
 .result .url { font-size: 18px; font-weight: 700; color: var(--ok); word-break: break-all; direction: ltr; }
 .result .next { margin-top: 16px; color: var(--tx2); font-size: 13px; line-height: 1.8; }
 .result .next a { color: var(--ac); }
-.perm-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 8px; }
-.perm-table th, .perm-table td { padding: 6px 8px; border-bottom: 1px solid var(--bd); text-align: right; }
-.perm-table th { color: var(--mu); font-size: 10.5px; letter-spacing: .3px; }
-.perm-table code { background: var(--c2); border: 1px solid var(--bd); border-radius: 4px; padding: 2px 6px; font-size: 11px; color: var(--ac); direction: ltr; display: inline-block; }
 </style>
 </head>
 <body>
@@ -60,11 +56,11 @@ body { font-family: 'Vazirmatn','Inter',system-ui,Tahoma,sans-serif; background:
   <h1>Marna <span>Proxy</span></h1>
 </div>
 
-<p class="intro">استقرار خودکار روی کلادفلر — بدون دانلود فایل، بدون ترمینال<br>D1، KV و Worker — همه از طریق همین صفحه</p>
+<p class="intro">استقرار خودکار روی کلادفلر — بدون دانلود فایل، بدون ترمینال<br>همه چیز از طریق همین صفحه — D1، KV و Worker</p>
 
 <div class="token-banner">
-  <a href="https://dash.cloudflare.com/profile/api-tokens?permissionGroupKeys=%5B%7B%22key%22%3A%22workers_scripts%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22workers_kv_storage%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22d1%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22account_settings%22%2C%22type%22%3A%22read%22%7D%5D&accountId=*&zoneId=all&name=Marna%20Installer" target="_blank" rel="noopener">&#x1F511; گام ۱: ساخت توکن API در کلادفلر (کلیک کنید)</a>
-  <p>دسترسی‌های لازم از قبل انتخاب شده‌اند. توکن را بسازید، کپی کنید و در فیلد زیر بچسبانید.</p>
+  <a href="https://dash.cloudflare.com/profile/api-tokens?permissionGroupKeys=%5B%7B%22key%22%3A%22workers_scripts%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22workers_kv_storage%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22d1%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22account_settings%22%2C%22type%22%3A%22read%22%7D%5D&accountId=*&zoneId=all&name=Marna%20Installer" target="_blank" rel="noopener">گام ۱: ساخت توکن API در کلادفلر (کلیک کنید)</a>
+  <p>دسترسی‌های لازم از قبل انتخاب شده‌اند — فقط تأیید و کپی کنید</p>
 </div>
 
 <div class="card" id="step1">
@@ -72,14 +68,13 @@ body { font-family: 'Vazirmatn','Inter',system-ui,Tahoma,sans-serif; background:
   <div class="field">
     <label>توکن API کلادفلر</label>
     <input id="token" type="password" autocomplete="off" placeholder="توکن را اینجا بچسبانید..." />
-    <div class="hint">با دکمه بنفش بالا توکن را بسازید. دسترسی‌ها: Workers Scripts (Edit)، KV (Edit)، D1 (Edit)، Account Settings (Read)</div>
+    <div class="hint">با دکمه بنفش بالا توکن را بسازید. دسترسی‌ها: Workers Scripts, KV, D1 (Edit) + Account Settings (Read)</div>
   </div>
   <div class="field">
     <label>نام Worker <span style="color:var(--mu);font-weight:400">(پیش‌فرض: marna-proxy)</span></label>
     <input id="workerName" placeholder="marna-proxy" />
   </div>
-  <button class="btn p" id="deployBtn" onclick="startDeploy()">&#x1F680; استقرار خودکار روی کلادفلر</button>
-  <p style="font-size:11px;color:var(--mu);margin-top:10px;text-align:center">D1 ساخته می‌شود ← KV ساخته می‌شود ← Worker آپلود می‌شود ← workers.dev فعال می‌شود</p>
+  <button class="btn p" id="deployBtn" onclick="startDeploy()">استقرار خودکار روی کلادفلر</button>
 </div>
 
 <div class="card hidden" id="step2">
@@ -88,236 +83,150 @@ body { font-family: 'Vazirmatn','Inter',system-ui,Tahoma,sans-serif; background:
 </div>
 
 <div class="card hidden" id="step3">
-  <h3><span class="step-num">&#x2714;</span> استقرار با موفقیت انجام شد!</h3>
+  <h3><span class="step-num">✓</span> استقرار با موفقیت انجام شد!</h3>
   <div class="result" id="result"></div>
-</div>
-
-<div class="card hidden" id="step4">
-  <h3><span class="step-num">&#x26A0;</span> استقرار با خطا مواجه شد</h3>
-  <p style="color:var(--tx2);font-size:13px;margin-bottom:16px;line-height:1.8">
-    احتمالاً مرورگر دسترسی مستقیم به API کلادفلر را مسدود کرده (CORS). دو راه حل وجود دارد:
-  </p>
-  <p style="color:var(--tx2);font-size:13px;margin-bottom:12px;line-height:1.8">
-    <b>راه حل سریع:</b> یک بار <a href="https://cors-anywhere.herokuapp.com/corsdemo" target="_blank" style="color:var(--ac)">این صفحه را باز کنید</a> و دکمه «Request temporary access» را بزنید. سپس به این صفحه برگردید و دوباره Deploy را بزنید.
-  </p>
-  <p style="color:var(--mu);font-size:12px">اگر باز هم کار نکرد، از روش Wrangler CLI استفاده کنید (دستور زیر را در ترمینال اجرا کنید):</p>
-  <pre id="fallbackCmd" style="margin-top:12px"><span class="copy-btn" onclick="copyFallback()" style="position:absolute;top:8px;left:8px;padding:4px 10px;font-size:11px;border-radius:6px;cursor:pointer;background:var(--c2);color:var(--tx2);border:1px solid var(--bd)">کپی</span>set CLOUDFLARE_API_TOKEN=TOKEN_HERE
-npx wrangler deploy</pre>
 </div>
 </div>
 
 <script>
-var CLOUDFLARE_API = 'https://api.cloudflare.com/client/v4';
-var CORS_PROXY = 'https://corsproxy.io/?';
+var CF_API = 'https://api.cloudflare.com/client/v4';
 
 function $(id) { return document.getElementById(id); }
 function log(msg, cls) { var l = $('log'); l.innerHTML += '<span class="'+(cls||'')+'">'+msg+'</span>\n'; l.scrollTop = l.scrollHeight; }
-function urlencode(s) { return encodeURIComponent(s); }
 
-async function cfFetch(token, method, path, body, useProxy) {
-  var url = CLOUDFLARE_API + path;
-  var fetchUrl = useProxy ? CORS_PROXY + urlencode(url) : url;
-  var opts = {
-    method: useProxy ? 'GET' : method,
-    headers: {},
-  };
-
-  if (useProxy) {
-    // corsproxy.io forwards headers differently - we can't set custom headers
-    // so we need a different approach for auth
-    opts.headers['X-Corsproxy-Url'] = url;
-    opts.headers['X-Corsproxy-Method'] = method;
-    if (token) opts.headers['X-Corsproxy-Authorization'] = 'Bearer ' + token;
-    if (body) {
-      opts.headers['X-Corsproxy-Content-Type'] = 'application/json';
-      opts.method = 'POST';
-      opts.body = JSON.stringify(body);
-    }
-  } else {
-    opts.method = method;
-    if (token) opts.headers['Authorization'] = 'Bearer ' + token;
-    if (body) {
-      opts.headers['Content-Type'] = 'application/json';
-      opts.body = JSON.stringify(body);
-    }
+async function cfApi(token, method, path, body) {
+  var url = CF_API + path;
+  var opts = { method: method, headers: {} };
+  if (token) opts.headers['Authorization'] = 'Bearer ' + token;
+  if (body) {
+    opts.headers['Content-Type'] = 'application/json';
+    opts.body = JSON.stringify(body);
   }
 
-  var r = await fetch(fetchUrl, opts);
+  var r = await fetch(url, opts);
   if (!r.ok) {
-    var txt = '';
-    try { txt = await r.text(); } catch(e) {}
-    throw new Error((useProxy ? 'Proxy ' : '') + 'HTTP ' + r.status + (txt ? ': ' + txt.substring(0, 200) : ''));
+    var t = ''; try { t = await r.text(); } catch(e) {}
+    if (r.status === 0) throw new Error('CORS_BLOCKED');
+    throw new Error('HTTP ' + r.status + (t ? ': ' + t.substring(0, 150) : ''));
   }
   var j = await r.json();
-  if (!j.success) {
-    throw new Error(j.errors ? j.errors.map(function(e){return e.message}).join(', ') : 'API error');
-  }
+  if (!j.success) throw new Error(j.errors ? j.errors.map(function(e){return e.message}).join(', ') : 'API error');
   return j.result;
-}
-
-async function tryFetch(token, method, path, body) {
-  // Try direct first
-  try {
-    return await cfFetch(token, method, path, body, false);
-  } catch(e) {
-    log('  Direct call failed, trying CORS proxy...', 'wn');
-    try {
-      return await cfFetch(token, method, path, body, true);
-    } catch(e2) {
-      throw e; // throw original error
-    }
-  }
-}
-
-async function uploadWorkerViaProxy(token, accountId, name, script, kvId, d1Id) {
-  // For worker upload, we need to send the script as raw JS text, not JSON
-  var url = CLOUDFLARE_API + '/accounts/' + accountId + '/workers/scripts/' + name;
-  var metadata = {
-    main_module: name,
-    bindings: [],
-    compatibility_date: '2024-01-01',
-  };
-  if (d1Id) metadata.bindings.push({ type: 'd1', name: 'DB', id: d1Id, database_name: 'marna-db' });
-  if (kvId) metadata.bindings.push({ type: 'kv_namespace', name: 'KV', namespace_id: kvId });
-
-  var form = new FormData();
-  form.append('script', new Blob([script], { type: 'application/javascript+module' }), 'worker.js');
-  form.append('metadata', JSON.stringify(metadata));
-
-  // Try direct
-  try {
-    var r = await fetch(url, {
-      method: 'PUT',
-      headers: { 'Authorization': 'Bearer ' + token },
-      body: form,
-    });
-    if (!r.ok) {
-      var t = ''; try { t = await r.text(); } catch(e) {}
-      throw new Error('HTTP ' + r.status + (t ? ': ' + t.substring(0, 200) : ''));
-    }
-    var j = await r.json();
-    if (!j.success) throw new Error(j.errors ? j.errors.map(function(e){return e.message}).join(', ') : 'Upload failed');
-    return j.result;
-  } catch(e) {
-    log('  Upload failed: ' + e.message, 'err');
-    throw e;
-  }
 }
 
 async function startDeploy() {
   var token = $('token').value.trim();
-  var workerName = $('workerName').value.trim() || 'marna-proxy';
+  var name = $('workerName').value.trim() || 'marna-proxy';
   if (!token) { alert('لطفاً توکن API را وارد کنید.'); return; }
 
   $('deployBtn').disabled = true;
-  $('step1').classList.add('hidden');
   $('step2').classList.remove('hidden');
   $('step3').classList.add('hidden');
-  $('step4').classList.add('hidden');
   $('log').innerHTML = '';
-
   log('=== استقرار Marna Proxy ===', 'h');
-  log('نام Worker: ' + workerName);
-  log('نسخه: 3.8.3 (سفارشی‌سازی شده)', 'ok');
+  log('Worker: ' + name + ' | نسخه: 3.8.3', 'ok');
   log('');
 
   var accountId, d1Id, kvId;
 
   try {
-    // Step 1: Account
-    log('گام ۱: دریافت اطلاعات حساب...', 'h');
-    var accounts = await tryFetch(token, 'GET', '/accounts?page=1&per_page=1');
-    if (!accounts || !accounts.length) throw new Error('هیچ اکانتی پیدا نشد');
+    // 1. Account
+    log('دریافت اطلاعات حساب...', 'h');
+    var accounts = await cfApi(token, 'GET', '/accounts?page=1&per_page=1');
+    if (!accounts || !accounts.length) throw new Error('اکانتی پیدا نشد');
     accountId = accounts[0].id;
-    log('✓ اکانت: ' + accounts[0].name, 'ok');
-    log('');
+    log('✓ ' + accounts[0].name, 'ok');
 
-    // Step 2: Create D1
-    log('گام ۲: ساخت پایگاه داده D1...', 'h');
+    // 2. D1
+    log('\nساخت D1...', 'h');
     try {
-      var d1 = await tryFetch(token, 'POST', '/accounts/' + accountId + '/d1/database', { name: 'Marna-DB' });
+      var d1 = await cfApi(token, 'POST', '/accounts/' + accountId + '/d1/database', { name: 'Marna-DB' });
       d1Id = d1.uuid;
-      log('✓ D1 ساخته شد: ' + d1Id, 'ok');
+      log('✓ D1: ' + d1Id, 'ok');
     } catch(e) {
-      if (e.message.indexOf('already') > -1 || e.message.indexOf('duplicate') > -1) {
-        log('⚠ D1 از قبل وجود دارد', 'wn');
-      } else { throw e; }
+      if (e.message.indexOf('already') > -1 || e.message.indexOf('duplicate') > -1) log('⚠ D1 از قبل موجود است', 'wn');
+      else throw e;
     }
-    log('');
 
-    // Step 3: Create KV
-    log('گام ۳: ساخت فضای KV...', 'h');
+    // 3. KV
+    log('\nساخت KV...', 'h');
     try {
-      var kv = await tryFetch(token, 'POST', '/accounts/' + accountId + '/storage/kv/namespaces', { title: 'Marna-KV' });
+      var kv = await cfApi(token, 'POST', '/accounts/' + accountId + '/storage/kv/namespaces', { title: 'Marna-KV' });
       kvId = kv.id;
-      log('✓ KV ساخته شد: ' + kvId, 'ok');
+      log('✓ KV: ' + kvId, 'ok');
     } catch(e) {
-      if (e.message.indexOf('already') > -1) {
-        log('⚠ KV از قبل وجود دارد', 'wn');
-      } else { throw e; }
+      if (e.message.indexOf('already') > -1) log('⚠ KV از قبل موجود است', 'wn');
+      else throw e;
     }
-    log('');
 
-    // Step 4: Load worker.js
-    log('گام ۴: بارگذاری worker.js...', 'h');
-    var scriptResp = await fetch('../worker.js');
-    if (!scriptResp.ok) throw new Error('worker.js پیدا نشد (HTTP ' + scriptResp.status + ')');
-    var script = await scriptResp.text();
-    log('✓ worker.js بارگذاری شد: ' + Math.round(script.length/1024) + ' کیلوبایت', 'ok');
-    log('');
+    // 4. Load worker.js
+    log('\nبارگذاری worker.js...', 'h');
+    var r = await fetch('../worker.js');
+    if (!r.ok) throw new Error('worker.js یافت نشد');
+    var script = await r.text();
+    log('✓ ' + Math.round(script.length/1024) + ' KB', 'ok');
 
-    // Step 5: Deploy worker
-    log('گام ۵: استقرار Worker با Bindings...', 'h');
-    log('  ترتیب اتصال: D1 ← سپس KV', 'wn');
-    await uploadWorkerViaProxy(token, accountId, workerName, script, kvId, d1Id);
+    // 5. Upload with bindings (D1 first, then KV)
+    log('\nآپلود Worker...', 'h');
+    log('  Bind order: D1 ← KV', 'wn');
+    var bindings = [];
+    if (d1Id) bindings.push({ type: 'd1', name: 'DB', id: d1Id, database_name: 'marna-db' });
+    if (kvId) bindings.push({ type: 'kv_namespace', name: 'KV', namespace_id: kvId });
+    var metadata = { main_module: name, bindings: bindings, compatibility_date: '2024-01-01' };
+
+    var form = new FormData();
+    form.append('script', new Blob([script], { type: 'application/javascript+module' }), 'worker.js');
+    form.append('metadata', JSON.stringify(metadata));
+
+    var upRes = await fetch(CF_API + '/accounts/' + accountId + '/workers/scripts/' + name, {
+      method: 'PUT',
+      headers: { 'Authorization': 'Bearer ' + token },
+      body: form,
+    });
+    if (!upRes.ok) {
+      var t = ''; try { t = await upRes.text(); } catch(e) {}
+      if (upRes.status === 0) throw new Error('CORS_BLOCKED');
+      throw new Error('HTTP ' + upRes.status + ': ' + t.substring(0, 200));
+    }
+    var upJson = await upRes.json();
+    if (!upJson.success) throw new Error(upJson.errors ? upJson.errors.map(function(e){return e.message}).join(', ') : 'Upload failed');
     log('✓ Worker آپلود شد', 'ok');
-    log('');
 
-    // Step 6: Enable workers.dev
-    log('گام ۶: فعال‌سازی workers.dev...', 'h');
+    // 6. Enable workers.dev
+    log('\nفعال‌سازی workers.dev...', 'h');
     try {
-      await tryFetch(token, 'PUT', '/accounts/' + accountId + '/workers/scripts/' + workerName + '/subdomain', { enabled: true });
-      log('✓ workers.dev فعال شد', 'ok');
+      await cfApi(token, 'PUT', '/accounts/' + accountId + '/workers/scripts/' + name + '/subdomain', { enabled: true });
+      log('✓ فعال شد', 'ok');
     } catch(e) {
-      log('⚠ خطا در فعال‌سازی workers.dev: ' + e.message, 'wn');
+      log('⚠ ' + e.message, 'wn');
     }
 
-    var devUrl = 'https://' + workerName + '.' + accounts[0].name + '.workers.dev';
-    log('');
-    log('=== استقرار با موفقیت انجام شد! ===', 'ok');
-    log('آدرس: ' + devUrl, 'ok');
-    log('');
-    log('مراحل بعدی:', 'h');
-    log('  ۱. ' + devUrl + '/login را باز کنید', 'wn');
-    log('  ۲. رمز مدیریت را تنظیم کنید', 'wn');
-    log('  ۳. لینک اشتراک را دریافت کنید', 'wn');
+    // Done
+    var devUrl = 'https://' + name + '.' + accounts[0].name + '.workers.dev';
+    log('\n=== استقرار کامل شد! ===', 'ok');
+    log(devUrl, 'ok');
 
     $('step3').classList.remove('hidden');
     $('result').innerHTML =
       '<div class="url">' + devUrl + '</div>' +
-      '<div class="next">' +
-        '<b>مرحله بعد:</b> <a href="' + devUrl + '/login" target="_blank">' + devUrl + '/login</a> را باز کنید<br>' +
-        'رمز مدیریت را تنظیم کرده و لینک اشتراک را دریافت کنید.<br><br>' +
-        '<small style="color:var(--mu)">D1: ' + (d1Id || 'N/A') + ' | KV: ' + (kvId || 'N/A') + ' | Worker: v3.8.3</small>' +
-      '</div>';
+      '<div class="next"><a href="' + devUrl + '/login" target="_blank">' + devUrl + '/login</a><br>تنظیم رمز مدیریت و دریافت لینک اشتراک<br><br>' +
+      '<small style="color:var(--mu)">D1: '+(d1Id||'N/A')+' | KV: '+(kvId||'N/A')+' | v3.8.3</small></div>';
 
   } catch(e) {
-    log('');
-    log('=== خطا در استقرار ===', 'err');
-    log('پیام: ' + e.message, 'err');
-    log('');
-    $('step4').classList.remove('hidden');
-    $('fallbackCmd').textContent = 'set CLOUDFLARE_API_TOKEN=' + token + '\nnpx wrangler deploy';
-  }
-  $('deployBtn').disabled = false;
-}
+    log('\n=== خطا ===', 'err');
+    log(e.message, 'err');
 
-function copyFallback() {
-  navigator.clipboard.writeText($('fallbackCmd').textContent).then(function() {
-    var btn = document.querySelector('#step4 .copy-btn');
-    btn.textContent = 'کپی شد!';
-    setTimeout(function() { btn.textContent = 'کپی'; }, 2000);
-  });
+    if (e.message === 'CORS_BLOCKED' || e.message.indexOf('fetch') > -1 || e.message.indexOf('NetworkError') > -1) {
+      log('\nمرورگر دسترسی به API کلادفلر را مسدود کرده (CORS).', 'wn');
+      log('راه حل:', 'h');
+      log('  ۱. افزونه CORS Unblock را روی مرورگر نصب کنید', 'wn');
+      log('  ۲. یا از دستور زیر در ترمینال استفاده کنید:', 'wn');
+      log('  npx wrangler deploy --name ' + name, 'ok');
+      log('  (ابتدا CLOUDFLARE_API_TOKEN را ست کنید)', 'wn');
+    }
+  }
+
+  $('deployBtn').disabled = false;
 }
 </script>
 </body>
