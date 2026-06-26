@@ -173,40 +173,33 @@ async function startDeploy() {
     var script = await r.text();
     log('✓ ' + Math.round(script.length/1024) + ' KB', 'ok');
 
-    // 5. Upload worker script
-
-    // Upload worker script via proxy
-    log('  Uploading script...', 'wn');
+    // 5. Upload worker (multipart = ES module + D1/KV bindings)
+    log('
+آپلود Worker + D1 + KV...', 'h');
     var upUrl = CF_API + '/accounts/' + accountId + '/workers/scripts/' + name;
+    var bindings = [];
+    if (d1Id) bindings.push({ type: 'd1', name: 'DB', id: d1Id, database_name: 'marna-db' });
+    if (kvId) bindings.push({ type: 'kv_namespace', name: 'KV', namespace_id: kvId });
+    var metadata = { main_module: name, bindings: bindings, compatibility_date: '2024-01-01' };
+
+    var form = new FormData();
+    form.append('script', new Blob([script], { type: 'application/javascript+module' }), 'worker.js');
+    form.append('metadata', JSON.stringify(metadata));
+
     var upRes = await fetch(CORS_PROXY + encodeURIComponent(upUrl), {
       method: 'PUT',
-      headers: {
-        'Authorization': 'Bearer ' + token,
-        'Content-Type': 'application/javascript',
-      },
-      body: script,
+      headers: { 'Authorization': 'Bearer ' + token },
+      body: form,
     });
 
     if (!upRes.ok) {
       var t = ''; try { t = await upRes.text(); } catch(e) {}
-      throw new Error('Upload HTTP ' + upRes.status + ': ' + t.substring(0, 200));
+      throw new Error('Upload HTTP ' + upRes.status + ': ' + t.substring(0, 300));
     }
     var upJson = await upRes.json();
     if (!upJson.success) throw new Error(upJson.errors ? upJson.errors.map(function(e){return e.message}).join(', ') : 'Upload failed');
-    log('✓ Worker آپلود شد', 'ok');
-
-    // Bindings must be added manually in Cloudflare Dashboard
-    // (multipart/form-data not supported via CORS proxy)
-    log('', '');
-    log('⚠ Bindings must be added manually:', 'wn');
-    log('  1. Go to Cloudflare Dashboard > Workers & Pages > ' + name, 'wn');
-    log('  2. Settings > Bindings > Add', 'wn');
-    log('  3. D1 binding: variable=DB, database=Marna-DB', 'wn');
-    log('  4. KV binding: variable=KV, namespace=Marna-KV', 'wn');
-    if (d1Id) log('     D1 ID: ' + d1Id, 'ok');
-    if (kvId) log('     KV ID: ' + kvId, 'ok');
-
-    // 6. Enable workers.dev
+    log('✓ Worker + D1/KV آپلود شد', 'ok');
+// 6. Enable workers.dev
     log('\nفعال‌سازی workers.dev...', 'h');
     try {
       await cfApi(token, 'PUT', '/accounts/' + accountId + '/workers/scripts/' + name + '/subdomain', { enabled: true });
