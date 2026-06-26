@@ -30,22 +30,25 @@ body { font-family: 'Vazirmatn','Inter',system-ui,Tahoma,sans-serif; background:
 .field input { width: 100%; background: var(--c2); border: 1px solid var(--bd2); border-radius: 10px; color: var(--tx); font: inherit; font-size: 14px; padding: 11px 13px; outline: none; transition: .12s; direction: ltr; text-align: left; }
 .field input:focus { border-color: var(--ac); box-shadow: 0 0 0 3px var(--ring); }
 .field .hint { font-size: 11.5px; color: var(--mu); margin-top: 5px; text-align: right; }
-.field .hint a { color: var(--ac); }
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; border: 1px solid var(--bd2); background: var(--c2); color: var(--tx); font: inherit; font-weight: 600; font-size: 13px; padding: 11px 22px; border-radius: 10px; cursor: pointer; transition: .12s; }
 .btn:hover { border-color: var(--ac); color: var(--ac); }
 .btn.p { background: var(--ac); color: #000; border: none; font-size: 15px; padding: 13px 30px; }
 .btn.p:hover { filter: brightness(1.1); color: #000; }
 .btn:disabled, .btn.p:disabled { opacity: .45; cursor: not-allowed; filter: none; border-color: var(--bd2); color: var(--mu); }
 .hidden { display: none; }
+.log { background: #000; border: 1px solid var(--bd); border-radius: 12px; padding: 16px; font-family: ui-monospace,monospace; font-size: 12px; line-height: 1.7; max-height: 300px; overflow-y: auto; color: var(--tx2); margin-top: 14px; white-space: pre-wrap; word-break: break-all; direction: ltr; text-align: left; }
+.log .ok { color: var(--ok); }
+.log .err { color: var(--dg); }
+.log .wn { color: var(--wn); }
+.log .h { color: var(--ac); }
+.result { text-align: center; padding: 20px; }
+.result .url { font-size: 18px; font-weight: 700; color: var(--ok); word-break: break-all; direction: ltr; }
+.result .next { margin-top: 16px; color: var(--tx2); font-size: 13px; line-height: 1.8; }
+.result .next a { color: var(--ac); }
 .perm-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 8px; }
 .perm-table th, .perm-table td { padding: 6px 8px; border-bottom: 1px solid var(--bd); text-align: right; }
 .perm-table th { color: var(--mu); font-size: 10.5px; letter-spacing: .3px; }
 .perm-table code { background: var(--c2); border: 1px solid var(--bd); border-radius: 4px; padding: 2px 6px; font-size: 11px; color: var(--ac); direction: ltr; display: inline-block; }
-pre { background: #000; border: 1px solid var(--bd); border-radius: 12px; padding: 16px; font-family: ui-monospace,monospace; font-size: 12px; line-height: 1.7; color: var(--ok); overflow-x: auto; white-space: pre-wrap; word-break: break-all; direction: ltr; text-align: left; position: relative; }
-pre .copy-btn { position: absolute; top: 8px; left: 8px; padding: 4px 10px; font-size: 11px; border-radius: 6px; cursor: pointer; background: var(--c2); color: var(--tx2); border: 1px solid var(--bd); }
-pre .copy-btn:hover { color: var(--ac); border-color: var(--ac); }
-.url-block { font-size: 18px; font-weight: 700; color: var(--ok); word-break: break-all; direction: ltr; text-align: center; padding: 16px; }
-.note { font-size: 12px; color: var(--wn); line-height: 1.8; margin-top: 12px; }
 </style>
 </head>
 <body>
@@ -57,130 +60,265 @@ pre .copy-btn:hover { color: var(--ac); border-color: var(--ac); }
   <h1>Marna <span>Proxy</span></h1>
 </div>
 
-<p class="intro">استقرار خودکار روی کلادفلر با <b>Wrangler CLI</b><br>D1، KV و Worker — همه با اجرای یک دستور ساخته می‌شوند</p>
+<p class="intro">استقرار خودکار روی کلادفلر — بدون دانلود فایل، بدون ترمینال<br>D1، KV و Worker — همه از طریق همین صفحه</p>
 
 <div class="token-banner">
   <a href="https://dash.cloudflare.com/profile/api-tokens?permissionGroupKeys=%5B%7B%22key%22%3A%22workers_scripts%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22workers_kv_storage%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22d1%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22account_settings%22%2C%22type%22%3A%22read%22%7D%5D&accountId=*&zoneId=all&name=Marna%20Installer" target="_blank" rel="noopener">&#x1F511; گام ۱: ساخت توکن API در کلادفلر (کلیک کنید)</a>
-  <p>دسترسی‌های لازم از قبل انتخاب شده — فقط نام توکن را تأیید و ایجاد کنید، سپس کپی کنید</p>
+  <p>دسترسی‌های لازم از قبل انتخاب شده‌اند. توکن را بسازید، کپی کنید و در فیلد زیر بچسبانید.</p>
 </div>
 
 <div class="card" id="step1">
   <h3><span class="step-num">۱</span> اطلاعات استقرار</h3>
   <div class="field">
     <label>توکن API کلادفلر</label>
-    <input id="token" type="password" autocomplete="off" placeholder="توکن را از مرحله قبل کپی کنید و اینجا بچسبانید..." />
+    <input id="token" type="password" autocomplete="off" placeholder="توکن را اینجا بچسبانید..." />
     <div class="hint">با دکمه بنفش بالا توکن را بسازید. دسترسی‌ها: Workers Scripts (Edit)، KV (Edit)، D1 (Edit)، Account Settings (Read)</div>
   </div>
   <div class="field">
     <label>نام Worker <span style="color:var(--mu);font-weight:400">(پیش‌فرض: marna-proxy)</span></label>
     <input id="workerName" placeholder="marna-proxy" />
   </div>
-  <button class="btn p" id="deployBtn" onclick="showDeploy()">&#x2B07; دریافت فایل‌ها و دستور استقرار</button>
+  <button class="btn p" id="deployBtn" onclick="startDeploy()">&#x1F680; استقرار خودکار روی کلادفلر</button>
+  <p style="font-size:11px;color:var(--mu);margin-top:10px;text-align:center">D1 ساخته می‌شود ← KV ساخته می‌شود ← Worker آپلود می‌شود ← workers.dev فعال می‌شود</p>
 </div>
 
 <div class="card hidden" id="step2">
-  <h3><span class="step-num">۲</span> دانلود و اجرا</h3>
-
-  <p style="color:var(--tx2);font-size:13px;margin-bottom:16px;line-height:1.8">
-    <b>مرحله ۱:</b> دو فایل زیر را دانلود کنید و در <b>یک پوشه خالی</b> کنار هم قرار دهید:
-  </p>
-
-  <div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap">
-    <a href="../worker.js" download="worker.js" class="btn p" style="font-size:13px;text-decoration:none">&#x2B07; worker.js (v3.8.3)</a>
-    <button class="btn" onclick="downloadWranglerJson()" style="font-size:13px">&#x2B07; wrangler.jsonc</button>
-  </div>
-
-  <p style="color:var(--tx2);font-size:13px;margin-bottom:12px;line-height:1.8">
-    <b>مرحله ۲:</b> ترمینال (CMD یا PowerShell) را در همان پوشه باز کنید و دستور زیر را اجرا کنید:
-  </p>
-  <pre id="cmdBlock"><span class="copy-btn" onclick="copyCmd()">&#x1F4CB; کپی</span>set CLOUDFLARE_API_TOKEN=<span id="tokPlaceholder">TOKEN</span>
-npx wrangler deploy</pre>
-
-  <p style="color:var(--tx2);font-size:13px;margin:12px 0 16px;line-height:1.8">
-    Wrangler خودکار D1 را می‌سازد، KV را می‌سازد، Worker را با هر دو Bind می‌کند و آپلود می‌کند.
-  </p>
-
-  <p class="note">
-    &#x26A0; اگر PowerShell استفاده می‌کنید، به جای <code>set</code> از <code>$env:CLOUDFLARE_API_TOKEN="TOKEN"</code> استفاده کنید.
-  </p>
+  <h3><span class="step-num">۲</span> در حال استقرار...</h3>
+  <div class="log" id="log">در انتظار شروع...</div>
 </div>
 
 <div class="card hidden" id="step3">
-  <h3><span class="step-num">&#x2714;</span> استقرار کامل شد!</h3>
-  <p style="text-align:center;color:var(--tx2);margin-bottom:12px">پروکسی شما در این آدرس در دسترس است:</p>
-  <div class="url-block" id="finalUrl"></div>
-  <p style="text-align:center;color:var(--tx2);margin-top:16px;line-height:2">
-    حالا <a id="loginLink" href="#" target="_blank" style="color:var(--ac)">صفحه لاگین</a> را باز کنید و رمز مدیریت را تنظیم کنید.
+  <h3><span class="step-num">&#x2714;</span> استقرار با موفقیت انجام شد!</h3>
+  <div class="result" id="result"></div>
+</div>
+
+<div class="card hidden" id="step4">
+  <h3><span class="step-num">&#x26A0;</span> استقرار با خطا مواجه شد</h3>
+  <p style="color:var(--tx2);font-size:13px;margin-bottom:16px;line-height:1.8">
+    احتمالاً مرورگر دسترسی مستقیم به API کلادفلر را مسدود کرده (CORS). دو راه حل وجود دارد:
   </p>
+  <p style="color:var(--tx2);font-size:13px;margin-bottom:12px;line-height:1.8">
+    <b>راه حل سریع:</b> یک بار <a href="https://cors-anywhere.herokuapp.com/corsdemo" target="_blank" style="color:var(--ac)">این صفحه را باز کنید</a> و دکمه «Request temporary access» را بزنید. سپس به این صفحه برگردید و دوباره Deploy را بزنید.
+  </p>
+  <p style="color:var(--mu);font-size:12px">اگر باز هم کار نکرد، از روش Wrangler CLI استفاده کنید (دستور زیر را در ترمینال اجرا کنید):</p>
+  <pre id="fallbackCmd" style="margin-top:12px"><span class="copy-btn" onclick="copyFallback()" style="position:absolute;top:8px;left:8px;padding:4px 10px;font-size:11px;border-radius:6px;cursor:pointer;background:var(--c2);color:var(--tx2);border:1px solid var(--bd)">کپی</span>set CLOUDFLARE_API_TOKEN=TOKEN_HERE
+npx wrangler deploy</pre>
 </div>
 </div>
 
 <script>
+var CLOUDFLARE_API = 'https://api.cloudflare.com/client/v4';
+var CORS_PROXY = 'https://corsproxy.io/?';
+
 function $(id) { return document.getElementById(id); }
+function log(msg, cls) { var l = $('log'); l.innerHTML += '<span class="'+(cls||'')+'">'+msg+'</span>\n'; l.scrollTop = l.scrollHeight; }
+function urlencode(s) { return encodeURIComponent(s); }
 
-function buildWranglerContent(name) {
-  return '{\n' +
-    '  "$schema": "https://raw.githubusercontent.com/cloudflare/workers-sdk/main/packages/wrangler/config-schema.json",\n' +
-    '  "name": "' + name + '",\n' +
-    '  "main": "worker.js",\n' +
-    '  "compatibility_date": "2024-01-01",\n' +
-    '  "kv_namespaces": [\n' +
-    '    { "binding": "KV", "namespace_id": "" }\n' +
-    '  ],\n' +
-    '  "d1_databases": [\n' +
-    '    { "binding": "DB", "database_name": "marna-db", "database_id": "" }\n' +
-    '  ]\n' +
-    '}\n';
+async function cfFetch(token, method, path, body, useProxy) {
+  var url = CLOUDFLARE_API + path;
+  var fetchUrl = useProxy ? CORS_PROXY + urlencode(url) : url;
+  var opts = {
+    method: useProxy ? 'GET' : method,
+    headers: {},
+  };
+
+  if (useProxy) {
+    // corsproxy.io forwards headers differently - we can't set custom headers
+    // so we need a different approach for auth
+    opts.headers['X-Corsproxy-Url'] = url;
+    opts.headers['X-Corsproxy-Method'] = method;
+    if (token) opts.headers['X-Corsproxy-Authorization'] = 'Bearer ' + token;
+    if (body) {
+      opts.headers['X-Corsproxy-Content-Type'] = 'application/json';
+      opts.method = 'POST';
+      opts.body = JSON.stringify(body);
+    }
+  } else {
+    opts.method = method;
+    if (token) opts.headers['Authorization'] = 'Bearer ' + token;
+    if (body) {
+      opts.headers['Content-Type'] = 'application/json';
+      opts.body = JSON.stringify(body);
+    }
+  }
+
+  var r = await fetch(fetchUrl, opts);
+  if (!r.ok) {
+    var txt = '';
+    try { txt = await r.text(); } catch(e) {}
+    throw new Error((useProxy ? 'Proxy ' : '') + 'HTTP ' + r.status + (txt ? ': ' + txt.substring(0, 200) : ''));
+  }
+  var j = await r.json();
+  if (!j.success) {
+    throw new Error(j.errors ? j.errors.map(function(e){return e.message}).join(', ') : 'API error');
+  }
+  return j.result;
 }
 
-function downloadWranglerJson() {
-  var name = $('workerName').value.trim() || 'marna-proxy';
-  var content = buildWranglerContent(name);
-  var blob = new Blob([content], { type: 'application/json' });
-  var a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'wrangler.jsonc';
-  a.click();
-  URL.revokeObjectURL(a.href);
+async function tryFetch(token, method, path, body) {
+  // Try direct first
+  try {
+    return await cfFetch(token, method, path, body, false);
+  } catch(e) {
+    log('  Direct call failed, trying CORS proxy...', 'wn');
+    try {
+      return await cfFetch(token, method, path, body, true);
+    } catch(e2) {
+      throw e; // throw original error
+    }
+  }
 }
 
-function showDeploy() {
+async function uploadWorkerViaProxy(token, accountId, name, script, kvId, d1Id) {
+  // For worker upload, we need to send the script as raw JS text, not JSON
+  var url = CLOUDFLARE_API + '/accounts/' + accountId + '/workers/scripts/' + name;
+  var metadata = {
+    main_module: name,
+    bindings: [],
+    compatibility_date: '2024-01-01',
+  };
+  if (d1Id) metadata.bindings.push({ type: 'd1', name: 'DB', id: d1Id, database_name: 'marna-db' });
+  if (kvId) metadata.bindings.push({ type: 'kv_namespace', name: 'KV', namespace_id: kvId });
+
+  var form = new FormData();
+  form.append('script', new Blob([script], { type: 'application/javascript+module' }), 'worker.js');
+  form.append('metadata', JSON.stringify(metadata));
+
+  // Try direct
+  try {
+    var r = await fetch(url, {
+      method: 'PUT',
+      headers: { 'Authorization': 'Bearer ' + token },
+      body: form,
+    });
+    if (!r.ok) {
+      var t = ''; try { t = await r.text(); } catch(e) {}
+      throw new Error('HTTP ' + r.status + (t ? ': ' + t.substring(0, 200) : ''));
+    }
+    var j = await r.json();
+    if (!j.success) throw new Error(j.errors ? j.errors.map(function(e){return e.message}).join(', ') : 'Upload failed');
+    return j.result;
+  } catch(e) {
+    log('  Upload failed: ' + e.message, 'err');
+    throw e;
+  }
+}
+
+async function startDeploy() {
   var token = $('token').value.trim();
-  var name = $('workerName').value.trim() || 'marna-proxy';
-  if (!token) { alert('لطفاً ابتدا توکن API را وارد کنید.'); return; }
+  var workerName = $('workerName').value.trim() || 'marna-proxy';
+  if (!token) { alert('لطفاً توکن API را وارد کنید.'); return; }
 
-  $('tokPlaceholder').textContent = token;
-  $('cmdBlock').querySelector('.copy-btn').textContent = 'کپی';
-  $('step2').classList.remove('hidden');
-  $('step3').classList.remove('hidden');
   $('deployBtn').disabled = true;
-  $('deployBtn').textContent = 'دستور آماده شد';
+  $('step1').classList.add('hidden');
+  $('step2').classList.remove('hidden');
+  $('step3').classList.add('hidden');
+  $('step4').classList.add('hidden');
+  $('log').innerHTML = '';
 
-  // Show result URL
-  var url = 'https://' + name + '.YOUR-ACCOUNT.workers.dev/login';
-  $('finalUrl').textContent = url;
-  $('loginLink').href = url;
+  log('=== استقرار Marna Proxy ===', 'h');
+  log('نام Worker: ' + workerName);
+  log('نسخه: 3.8.3 (سفارشی‌سازی شده)', 'ok');
+  log('');
 
-  $('step2').scrollIntoView({ behavior: 'smooth' });
+  var accountId, d1Id, kvId;
+
+  try {
+    // Step 1: Account
+    log('گام ۱: دریافت اطلاعات حساب...', 'h');
+    var accounts = await tryFetch(token, 'GET', '/accounts?page=1&per_page=1');
+    if (!accounts || !accounts.length) throw new Error('هیچ اکانتی پیدا نشد');
+    accountId = accounts[0].id;
+    log('✓ اکانت: ' + accounts[0].name, 'ok');
+    log('');
+
+    // Step 2: Create D1
+    log('گام ۲: ساخت پایگاه داده D1...', 'h');
+    try {
+      var d1 = await tryFetch(token, 'POST', '/accounts/' + accountId + '/d1/database', { name: 'Marna-DB' });
+      d1Id = d1.uuid;
+      log('✓ D1 ساخته شد: ' + d1Id, 'ok');
+    } catch(e) {
+      if (e.message.indexOf('already') > -1 || e.message.indexOf('duplicate') > -1) {
+        log('⚠ D1 از قبل وجود دارد', 'wn');
+      } else { throw e; }
+    }
+    log('');
+
+    // Step 3: Create KV
+    log('گام ۳: ساخت فضای KV...', 'h');
+    try {
+      var kv = await tryFetch(token, 'POST', '/accounts/' + accountId + '/storage/kv/namespaces', { title: 'Marna-KV' });
+      kvId = kv.id;
+      log('✓ KV ساخته شد: ' + kvId, 'ok');
+    } catch(e) {
+      if (e.message.indexOf('already') > -1) {
+        log('⚠ KV از قبل وجود دارد', 'wn');
+      } else { throw e; }
+    }
+    log('');
+
+    // Step 4: Load worker.js
+    log('گام ۴: بارگذاری worker.js...', 'h');
+    var scriptResp = await fetch('../worker.js');
+    if (!scriptResp.ok) throw new Error('worker.js پیدا نشد (HTTP ' + scriptResp.status + ')');
+    var script = await scriptResp.text();
+    log('✓ worker.js بارگذاری شد: ' + Math.round(script.length/1024) + ' کیلوبایت', 'ok');
+    log('');
+
+    // Step 5: Deploy worker
+    log('گام ۵: استقرار Worker با Bindings...', 'h');
+    log('  ترتیب اتصال: D1 ← سپس KV', 'wn');
+    await uploadWorkerViaProxy(token, accountId, workerName, script, kvId, d1Id);
+    log('✓ Worker آپلود شد', 'ok');
+    log('');
+
+    // Step 6: Enable workers.dev
+    log('گام ۶: فعال‌سازی workers.dev...', 'h');
+    try {
+      await tryFetch(token, 'PUT', '/accounts/' + accountId + '/workers/scripts/' + workerName + '/subdomain', { enabled: true });
+      log('✓ workers.dev فعال شد', 'ok');
+    } catch(e) {
+      log('⚠ خطا در فعال‌سازی workers.dev: ' + e.message, 'wn');
+    }
+
+    var devUrl = 'https://' + workerName + '.' + accounts[0].name + '.workers.dev';
+    log('');
+    log('=== استقرار با موفقیت انجام شد! ===', 'ok');
+    log('آدرس: ' + devUrl, 'ok');
+    log('');
+    log('مراحل بعدی:', 'h');
+    log('  ۱. ' + devUrl + '/login را باز کنید', 'wn');
+    log('  ۲. رمز مدیریت را تنظیم کنید', 'wn');
+    log('  ۳. لینک اشتراک را دریافت کنید', 'wn');
+
+    $('step3').classList.remove('hidden');
+    $('result').innerHTML =
+      '<div class="url">' + devUrl + '</div>' +
+      '<div class="next">' +
+        '<b>مرحله بعد:</b> <a href="' + devUrl + '/login" target="_blank">' + devUrl + '/login</a> را باز کنید<br>' +
+        'رمز مدیریت را تنظیم کرده و لینک اشتراک را دریافت کنید.<br><br>' +
+        '<small style="color:var(--mu)">D1: ' + (d1Id || 'N/A') + ' | KV: ' + (kvId || 'N/A') + ' | Worker: v3.8.3</small>' +
+      '</div>';
+
+  } catch(e) {
+    log('');
+    log('=== خطا در استقرار ===', 'err');
+    log('پیام: ' + e.message, 'err');
+    log('');
+    $('step4').classList.remove('hidden');
+    $('fallbackCmd').textContent = 'set CLOUDFLARE_API_TOKEN=' + token + '\nnpx wrangler deploy';
+  }
+  $('deployBtn').disabled = false;
 }
 
-function copyCmd() {
-  var token = $('token').value.trim();
-  var name = $('workerName').value.trim() || 'marna-proxy';
-  var cmd = 'set CLOUDFLARE_API_TOKEN=' + token + '\nnpx wrangler deploy';
-  navigator.clipboard.writeText(cmd).then(function() {
-    var btn = document.querySelector('#cmdBlock .copy-btn');
+function copyFallback() {
+  navigator.clipboard.writeText($('fallbackCmd').textContent).then(function() {
+    var btn = document.querySelector('#step4 .copy-btn');
     btn.textContent = 'کپی شد!';
     setTimeout(function() { btn.textContent = 'کپی'; }, 2000);
   });
 }
-
-$('workerName').addEventListener('input', function() {
-  var n = this.value.trim() || 'marna-proxy';
-  var url = 'https://' + n + '.YOUR-ACCOUNT.workers.dev/login';
-  $('finalUrl').textContent = url;
-  $('loginLink').href = url;
-});
 </script>
 </body>
 </html>
