@@ -59,78 +59,95 @@ body { font-family: 'Vazirmatn','Inter',system-ui,sans-serif; background: radial
 </div>
 
 <script>
-var P='https://corsproxy.io/?';
-var A='https://api.cloudflare.com/client/v4';
+var P = 'https://corsproxy.io/?';
+var A = 'https://api.cloudflare.com/client/v4';
 
-function $(id){return document.getElementById(id);}
-function log(m,c){var l=$('log');l.innerHTML+='<span class="'+(c||'')+'">'+m+'</span>\n';l.scrollTop=l.scrollHeight;}
+function $(id) { return document.getElementById(id); }
+function log(m, c) { var l = $('log'); l.innerHTML += '<span class="' + (c || '') + '">' + m + '</span>\n'; l.scrollTop = l.scrollHeight; }
 
-async function deploy(){
-  var token=$('token').value.trim(),name=$('name').value.trim()||'marna-proxy';
-  if(!token){alert('توکن API را وارد کنید');return;}
-  $('btn').disabled=true;$('step2').classList.remove('hidden');$('log').innerHTML='';
+function buildMultipart(script, name) {
+  var B = '----MarnaProxy' + Math.random().toString(36).substring(2, 10);
+  var meta = JSON.stringify({ main_module: name, bindings: [], compatibility_date: '2024-01-01' });
+  var parts = [];
+  parts.push('--' + B);
+  parts.push('Content-Disposition: form-data; name="script"; filename="worker.js"');
+  parts.push('Content-Type: application/javascript+module');
+  parts.push('');
+  parts.push(script);
+  parts.push('--' + B);
+  parts.push('Content-Disposition: form-data; name="metadata"');
+  parts.push('');
+  parts.push(meta);
+  parts.push('--' + B + '--');
+  return { body: parts.join('\r\n'), boundary: B };
+}
 
-  try{
-    log('گام ۱: دریافت اطلاعات حساب...','h');
-    var r1=await fetch(P+encodeURIComponent(A+'/accounts?page=1&per_page=1'),{headers:{'Authorization':'Bearer '+token}});
-    var j1=await r1.json();
-    if(!j1.success)throw new Error(j1.errors.map(function(e){return e.message}).join(', '));
-    var acc=j1.result[0];
-    log('✓ '+acc.name,'ok');
+async function deploy() {
+  var token = $('token').value.trim();
+  var name = $('name').value.trim() || 'marna-proxy';
+  if (!token) { alert('توکن API را وارد کنید'); return; }
 
-    log('\nگام ۲: بارگذاری worker.js...','h');
-    var r2=await fetch('../worker.js');
-    if(!r2.ok)throw new Error('worker.js یافت نشد (HTTP '+r2.status+')');
-    var script=await r2.text();
-    log('✓ '+Math.round(script.length/1024)+' KB — نسخه 3.8.3 سفارشی','ok');
+  $('btn').disabled = true;
+  $('step2').classList.remove('hidden');
+  $('log').innerHTML = '';
 
-    log('\nگام ۳: آپلود Worker...','h');
-    var upUrl=A+'/accounts/'+acc.id+'/workers/scripts/'+name;
-    var r3=await fetch(P+encodeURIComponent(upUrl),{
-      method:'PUT',
-      headers:{'Authorization':'Bearer '+token,'Content-Type':'application/javascript'},
-      body:script
+  try {
+    log('دریافت اطلاعات حساب...', 'h');
+    var r1 = await fetch(P + encodeURIComponent(A + '/accounts?page=1&per_page=1'), { headers: { 'Authorization': 'Bearer ' + token } });
+    var j1 = await r1.json();
+    if (!j1.success) throw new Error(j1.errors.map(function(e) { return e.message; }).join(', '));
+    var acc = j1.result[0];
+    log('OK ' + acc.name, 'ok');
+
+    log('\nبارگذاری worker.js...', 'h');
+    var r2 = await fetch('../worker.js');
+    if (!r2.ok) throw new Error('worker.js not found (HTTP ' + r2.status + ')');
+    var script = await r2.text();
+    log('OK ' + Math.round(script.length / 1024) + ' KB (v3.8.3)', 'ok');
+
+    log('\nآپلود Worker (multipart)...', 'h');
+    var mp = buildMultipart(script, name);
+    var upUrl = A + '/accounts/' + acc.id + '/workers/scripts/' + name;
+    var r3 = await fetch(P + encodeURIComponent(upUrl), {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'multipart/form-data; boundary=' + mp.boundary
+      },
+      body: mp.body
     });
 
-    if(!r3.ok){
-      var t3='';try{t3=await r3.text();}catch(e){}
-      if(t3.indexOf('export')>-1||t3.indexOf('module')>-1){
-        log('  ES module — retry with module type...','wn');
-        r3=await fetch(P+encodeURIComponent(upUrl),{
-          method:'PUT',
-          headers:{'Authorization':'Bearer '+token,'Content-Type':'application/javascript+module'},
-          body:script
-        });
-      }
+    if (!r3.ok) {
+      var t3 = ''; try { t3 = await r3.text(); } catch (e) { }
+      throw new Error('Upload HTTP ' + r3.status + ': ' + t3.substring(0, 300));
     }
+    var j3 = await r3.json();
+    if (!j3.success) throw new Error(j3.errors.map(function(e) { return e.message; }).join(', '));
+    log('OK Worker uploaded', 'ok');
 
-    if(!r3.ok){var t='';try{t=await r3.text();}catch(e){}throw new Error('آپلود ناموفق: HTTP '+r3.status+' — '+t.substring(0,200));}
-    var j3=await r3.json();
-    if(!j3.success)throw new Error(j3.errors.map(function(e){return e.message}).join(', '));
-    log('✓ Worker آپلود شد','ok');
-
-    log('\nگام ۴: فعال‌سازی workers.dev...','h');
-    var r4=await fetch(P+encodeURIComponent(A+'/accounts/'+acc.id+'/workers/scripts/'+name+'/subdomain'),{
-      method:'PUT',
-      headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},
-      body:JSON.stringify({enabled:true})
+    log('\nفعالسازی workers.dev...', 'h');
+    var r4 = await fetch(P + encodeURIComponent(A + '/accounts/' + acc.id + '/workers/scripts/' + name + '/subdomain'), {
+      method: 'PUT',
+      headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ enabled: true })
     });
-    var j4=await r4.json();
-    if(j4.success){log('✓ فعال شد','ok');}else{log('⚠ '+JSON.stringify(j4.errors||[]),'wn');}
+    var j4 = await r4.json();
+    if (j4.success) { log('OK enabled', 'ok'); }
+    else { log('WARN ' + JSON.stringify(j4.errors || []), 'wn'); }
 
-    var devUrl='https://'+name+'.'+acc.name+'.workers.dev';
-    log('\n=== انجام شد ===','ok');
-    log(devUrl,'ok');
-    log('\nمراحل بعدی:','h');
-    log('  ۱. '+devUrl+'/login را باز کنید','wn');
-    log('  ۲. D1 + KV را در داشبورد کلادفلر بسازید و Bind کنید','wn');
-    log('  ۳. رمز مدیریت را تنظیم کنید','wn');
+    var devUrl = 'https://' + name + '.' + acc.name + '.workers.dev';
+    log('\n=== DONE ===', 'ok');
+    log(devUrl, 'ok');
+    log('\nNext steps:', 'h');
+    log('  1. Open ' + devUrl + '/login', 'wn');
+    log('  2. Create D1 + KV in Cloudflare Dashboard and bind them', 'wn');
+    log('  3. Set admin password', 'wn');
 
-  }catch(e){
-    log('\n=== خطا ===','err');
-    log(e.message,'err');
+  } catch (e) {
+    log('\n=== ERROR ===', 'err');
+    log(e.message, 'err');
   }
-  $('btn').disabled=false;
+  $('btn').disabled = false;
 }
 </script>
 </body>
