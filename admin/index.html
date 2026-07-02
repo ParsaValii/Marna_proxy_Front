@@ -405,6 +405,52 @@ html[data-theme=light] .modeseg button.on{color:#fff}
 .ucard-grid .uf>label{font-size:10px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:var(--mu)}
 .ucard-grid .inp{height:36px;padding:8px 10px}
 @media(max-width:560px){ .ucard-grid{grid-template-columns:1fr} }
+/* ============================================================================
+   USER LIST TABLE — the "User List" section, styled as a table with per-row
+   progress bars and icon actions. Responsive: reflows to labelled blocks on
+   narrow screens. Reuses existing tokens only (no new brand colors).
+   ========================================================================== */
+.utbl{display:flex;flex-direction:column}
+.utr{display:grid;grid-template-columns:minmax(120px,1.5fr) 118px 108px minmax(150px,1.4fr) minmax(150px,1.4fr) auto;align-items:center;gap:14px;padding:15px 4px;border-top:1px solid var(--bd)}
+.utr.uthead{padding:9px 4px 11px}
+.utr.uthead .utc{font-size:11.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--tx2)}
+.utr.off{opacity:.55}
+.utc{min-width:0}
+.utc-name .un{font-weight:800;font-size:14.5px;color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.utc-name .ul{font-size:11px;color:var(--mu);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:ui-monospace,SFMono-Regular,monospace;margin-top:2px}
+.utc-acct{display:flex;align-items:center;gap:9px}
+.utc-acct .act-lbl,.utc-status span{font-size:13px;font-weight:600;color:var(--tx2)}
+.utc-status{display:flex;align-items:center;gap:8px}
+.dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto;background:var(--mu)}
+.dot.ok{background:var(--ok);box-shadow:0 0 0 3px color-mix(in srgb,var(--ok) 22%,transparent)}
+.dot.bad{background:var(--dg);box-shadow:0 0 0 3px color-mix(in srgb,var(--dg) 22%,transparent)}
+.dot.warn{background:var(--wn);box-shadow:0 0 0 3px color-mix(in srgb,var(--wn) 22%,transparent)}
+.utc .uv{font-size:12.5px;font-weight:700;color:var(--tx2);white-space:nowrap;font-variant-numeric:tabular-nums;direction:ltr}
+.ubar{height:8px;border-radius:6px;background:var(--bd2);overflow:hidden;margin-top:7px}
+.ubar>i{display:block;height:100%;border-radius:6px;background:var(--ok);transition:width .3s}
+.ubar.warn>i{background:var(--wn)}
+.ubar.bad>i{background:var(--dg)}
+.utc-acts{display:flex;align-items:center;gap:3px;justify-content:flex-end;flex-wrap:wrap}
+.uicon{width:34px;height:34px;flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;border-radius:9px;border:1px solid transparent;background:transparent;color:var(--tx2);cursor:pointer;transition:.15s}
+.uicon:hover{background:var(--card2);border-color:var(--bd);color:var(--tx)}
+.uicon.dg:hover{color:var(--dg);border-color:color-mix(in srgb,var(--dg) 40%,transparent)}
+.uicon svg{width:17px;height:17px;pointer-events:none}
+.utr-edit{display:none;grid-column:1 / -1;margin-top:13px;border-top:1px dashed var(--bd);padding-top:14px}
+.utr.open .utr-edit{display:block}
+.utr.open{background:color-mix(in srgb,var(--ac) 5%,transparent);border-radius:12px}
+.utitle-refresh{width:32px;height:32px;flex:0 0 auto;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--bd);background:var(--card2);color:var(--tx2);cursor:pointer;transition:.15s}
+.utitle-refresh:hover{color:var(--tx);border-color:var(--bd2)}
+.utitle-refresh svg{width:15px;height:15px}
+.utitle-refresh.spin svg{animation:uspin .7s linear infinite}
+@keyframes uspin{to{transform:rotate(360deg)}}
+@media(max-width:860px){
+  .utr.uthead{display:none}
+  .utr{grid-template-columns:1fr 1fr;gap:12px 16px;padding:15px 2px}
+  .utc-name,.utc-acts{grid-column:1 / -1}
+  .utc-acts{justify-content:flex-start;margin-top:2px}
+  .utc[data-lbl]::before{content:attr(data-lbl);display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--mu);margin-bottom:6px}
+  .utc-acts[data-lbl]::before{display:none}
+}
 .fg label{display:block;font-size:12px;color:var(--tx2);margin-bottom:7px;font-weight:500}
 select.inp{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--mu) 50%),linear-gradient(135deg,var(--mu) 50%,transparent 50%);background-position:calc(100% - 16px) 17px,calc(100% - 11px) 17px;background-size:5px 5px;background-repeat:no-repeat}
 html[dir=rtl] select.inp{background-position:16px 17px,21px 17px}
@@ -1130,11 +1176,13 @@ html[data-theme=dark] .qr-ph{border-color:#fff}
       <section class="view" id="view-users">
         <div class="card">
           <div class="card-h">
-            <h3 data-i18n="users_title">Users &amp; quotas</h3>
+            <div style="display:flex;align-items:center;gap:11px;min-width:0">
+              <h3 data-i18n="ul_title">User List</h3>
+              <button class="utitle-refresh" id="users-refresh2" type="button" title="Refresh" aria-label="Refresh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></button>
+            </div>
             <div class="right">
-              <span style="display:inline-flex;align-items:center;gap:8px;font-size:12px;color:var(--tx2)"><span data-i18n="users_multi">Multi-user</span><span class="sw" id="t2-multiuser"><span class="k"></span></span></span>
-              <button class="btn ghost sm" id="users-add2" data-i18n="users_add">+ Add user</button>
-              <button class="btn primary sm" id="users-save2" data-i18n="btn_save">Save</button>
+              <button class="btn ghost sm" id="users-save2" data-i18n="btn_save">Save</button>
+              <button class="btn primary sm" id="users-add2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-inline-end:6px;vertical-align:-3px"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg><span data-i18n="ul_add">Add New User</span></button>
             </div>
           </div>
           <div id="mu-warn" style="display:none;margin:0 16px;background:var(--card2);border:1px solid var(--bd2);border-radius:11px;padding:10px 13px;font-size:12.5px;color:var(--tx2)">💡 <span data-i18n="mu_warn">Multi-user is off, you have one shared config. Turn it on to add users and give each person their own link.</span></div>
@@ -1354,9 +1402,11 @@ const I18N = {
     notif_bot:'Bot token', notif_chat:'Chat / User IDs', notif_chat_h:'One or more (comma or new-line separated): your numeric user ID and/or a channel ID (the bot must be an admin there). Needed so you can manage the bot.',
     /* users */
     users_title:'Users & quotas', users_add:'+ Add user',
+    ul_title:'User List', ul_add:'Add New User', col_account:'Account', col_data:'Data Usage', col_dur:'Duration', col_actions:'Actions',
+    st_active:'Active', st_off:'Off', st_expired:'Expired', st_quota:'Quota full', u_extend:'Extend', u_edit:'Edit',
     col_name:'Name', col_quota:'Quota', col_used:'Used', col_expiry:'Expiry',
     u_reset:'Reset', col_daily:'Daily limit',
-    users_multi:'Multi-user', mu_warn:'Multi-user is on. Give each person their own link (Open / Copy / QR on their row), those enforce quota and expiry. Your main subscription still works as the unmetered admin config. Needs worker b15+.', set_maint:'Backup & maintenance',
+    users_multi:'Multi-user', mu_warn:'Each user gets their own link — Copy / QR / Edit on their row — which enforces their quota and expiry. Your main subscription still works too.', set_maint:'Backup & maintenance',
     twofa_secret:'Authenticator key', twofa_code:'Enter the 6-digit code', twofa_confirm:'Confirm & turn on', twofa_dcode:'Authenticator code to turn it off', btn_disable2fa:'Disable 2FA',
     backup_s:'Export all settings (config + network + users) to a file, or restore from one. The file contains secrets, so keep it safe.', backup_export:'Export', backup_import:'Import',
     warp_h:'WARP (Cloudflare WireGuard)', warp_en:'Enable WARP', warp_en_h:'add a WireGuard outbound to every config', warp_mode:'Mode', warp_ep:'Endpoint (if the default is blocked)', warp_ep_h:'If the default WARP endpoint is filtered, pick an alternative from the list (the same key works on every endpoint), then Save.', warp_amnezia:'AmneziaWG obfuscation', warp_amnezia_h:"junk packets so DPI can't fingerprint WARP", warp_acc:'WARP account', warp_register:'Register', warp_central:'From central pool', warp_lic:'WARP+ license (optional)', warp_apply:'Apply', warp_dl_lbl:'Download WARP configs (50 endpoints)', wn_mode:'Noise mode', wn_count:'Noise count', wn_size:'Noise size', wn_delay:'Noise delay',
@@ -1436,9 +1486,11 @@ const I18N = {
     notif_tg:'اعلان‌های تلگرام', notif_tg_en:'فعال‌سازی اعلان تلگرام', notif_tg_h:'پیام در هر دریافت، تغییر و ورود',
     notif_bot:'توکن ربات', notif_chat:'شناسهٔ چت / کاربر', notif_chat_h:'یک یا چند مورد (با کاما یا خط جدید): شناسهٔ عددی کاربری شما و/یا شناسهٔ کانال (ربات باید ادمین آن باشد). برای مدیریت ربات لازم است.',
     users_title:'کاربران و سهمیه‌ها', users_add:'+ افزودن کاربر',
+    ul_title:'فهرست کاربران', ul_add:'افزودن کاربر جدید', col_account:'حساب', col_data:'مصرف داده', col_dur:'مدت', col_actions:'عملیات',
+    st_active:'فعال', st_off:'خاموش', st_expired:'منقضی', st_quota:'اتمام سهمیه', u_extend:'تمدید', u_edit:'ویرایش',
     col_name:'نام', col_quota:'سهمیه', col_used:'مصرف', col_expiry:'انقضا',
     u_reset:'بازنشانی', col_daily:'سقف روزانه',
-    users_multi:'چندکاربره', mu_warn:'حالت چندکاربره روشن است. به هر نفر لینک اختصاصی خودش را بدهید (باز کردن / کپی / QR در ردیف خودش)؛ این‌ها سهمیه و انقضا را اعمال می‌کنند. اشتراک اصلی شما به‌عنوان کانفیگ ادمین (بدون محدودیت) همچنان کار می‌کند. نیازمند ورکر نسخهٔ b15 به بالا.', set_maint:'پشتیبان‌گیری و نگهداری',
+    users_multi:'چندکاربره', mu_warn:'هر کاربر لینک اختصاصی خودش را دارد (کپی / QR / ویرایش در ردیفش) که سهمیه و انقضایش را اعمال می‌کند. اشتراک اصلی شما هم کار می‌کند.', set_maint:'پشتیبان‌گیری و نگهداری',
     twofa_secret:'کلید برنامهٔ احراز', twofa_code:'کد ۶ رقمی را وارد کنید', twofa_confirm:'تأیید و روشن‌کردن', twofa_dcode:'کد برنامه برای خاموش‌کردن', btn_disable2fa:'غیرفعال‌سازی ۲FA',
     backup_s:'همهٔ تنظیمات (کانفیگ + شبکه + کاربران) را در یک فایل ذخیره یا بازیابی کنید. فایل شامل کلیدهای محرمانه است، جای امن نگه‌دارید.', backup_export:'خروجی', backup_import:'ورودی',
     warp_h:'WARP (وایرگارد کلودفلر)', warp_en:'فعال‌سازی WARP', warp_en_h:'افزودن یک خروجی WireGuard به هر کانفیگ', warp_mode:'حالت', warp_ep:'اندپوینت (اگر پیش‌فرض مسدود بود)', warp_ep_h:'اگر اندپوینت پیش‌فرض WARP فیلتر شد، یکی از موارد فهرست را انتخاب کنید (همان کلید روی همهٔ اندپوینت‌ها کار می‌کند) و ذخیره کنید.', warp_amnezia:'مبهم‌سازی AmneziaWG', warp_amnezia_h:'بسته‌های اضافی تا DPI نتواند WARP را شناسایی کند', warp_acc:'حساب WARP', warp_register:'ثبت', warp_central:'از استخر مرکزی', warp_lic:'لایسنس WARP+ (اختیاری)', warp_apply:'اعمال', warp_dl_lbl:'دانلود کانفیگ‌های WARP (۵۰ اندپوینت)', wn_mode:'حالت نویز', wn_count:'تعداد نویز', wn_size:'اندازه نویز', wn_delay:'تأخیر نویز',
@@ -1754,53 +1806,102 @@ function ensureUserFields(arr){ const seen={}; (arr||[]).forEach(u=>{ if(u && u.
 }
 function novaSubSeg(){ try{ return (window.__novaPaths&&window.__novaPaths.sub)||'sub'; }catch(e){ return 'sub'; } }
 function userSubLink(u){ return location.origin+'/'+novaSubSeg()+'?sub='+encodeURIComponent(u.username||'')+'&key='+(u.key||''); }
+// Line icons for the user table actions (stroke = currentColor, sized by .uicon svg).
+const IC_LINK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>';
+const IC_QR='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/></svg>';
+const IC_EDIT='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
+const IC_RESET='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>';
+const IC_CAL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>';
+const IC_TRASH='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
+// Duration progress: elapsed / total (parallel to Data Usage's used / quota). Total window is
+// created→expiry; if created is unknown, a 30-day window is assumed so the bar still renders.
+function uDur(u){
+  if(!u.expiry) return { txt:'∞', pct:0, none:true, expired:false };
+  const exp=Date.parse(String(u.expiry).slice(0,10)+'T23:59:59'); if(isNaN(exp)) return { txt:'∞', pct:0, none:true, expired:false };
+  const now=Date.now(); let created=u.created?Date.parse(u.created):NaN;
+  if(isNaN(created) || created>=exp) created=exp-30*86400000;
+  const total=exp-created, elapsed=Math.min(total,Math.max(0,now-created));
+  const totalD=Math.max(1,Math.round(total/86400000));
+  const elD=Math.floor(elapsed/86400000), elH=Math.floor((elapsed%86400000)/3600000);
+  return { txt:elD+'D '+elH+'H / '+totalD+'D', pct:Math.min(100,Math.round(elapsed/total*100)), none:false, expired:now>exp };
+}
 function renderUsers(){
   const box=document.getElementById('users-body2'); if(!box) return;
   const arr=STATE.users||[], usage=STATE.usage||{};
   ensureUserFields(arr);
   const cnt=document.getElementById('nav-users-count'); if(cnt) cnt.textContent=arr.length;
-  const mu=document.getElementById('t2-multiuser'); if(mu) mu.classList.toggle('on', STATE.multiUser===true);
   updateMultiUserUI();
-  if(!arr.length){ box.innerHTML='<p style="color:var(--mu);font-size:13px;padding:8px 0">'+(lang==='fa'?'هنوز کاربری نیست. یکی اضافه کنید.':'No users yet. Add one.')+'</p>'; return; }
+  if(!arr.length){ box.innerHTML='<p style="color:var(--mu);font-size:13px;padding:14px 2px">'+(lang==='fa'?'هنوز کاربری نیست. یکی اضافه کنید.':'No users yet. Add one.')+'</p>'; return; }
   const io=STATE.usageIO||{};
   const esc=(s)=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
   const reqs=STATE.reqs||{}, reqsDay=STATE.reqsDay||{};
-  box.innerHTML=arr.map((u,i)=>{
+  const actEnd = lang==='fa' ? 'left':'right';
+  const head='<div class="utr uthead">'
+    +'<div class="utc">'+t('col_name')+'</div>'
+    +'<div class="utc">'+t('col_account')+'</div>'
+    +'<div class="utc">'+t('col_status')+'</div>'
+    +'<div class="utc">'+t('col_data')+'</div>'
+    +'<div class="utc">'+t('col_dur')+'</div>'
+    +'<div class="utc" style="text-align:'+actEnd+'">'+t('col_actions')+'</div>'
+  +'</div>';
+  box.innerHTML='<div class="utbl">'+head+arr.map((u,i)=>{
     const used=usage[u.id]||0, q=u.quotaBytes||0;
     const day=(STATE.usageDay||{})[u.id]||0, dq=u.dailyQuotaBytes||0;
     const rl=u.reqLimit||0, drl=u.dailyReqLimit||0, ru=reqs[u.id]||0, rud=reqsDay[u.id]||0;
     const pct=q? Math.min(100, Math.round(used/q*100)) : 0;
-    const usedTxt=fmtBytes(used)+(q?(' / '+fmtBytes(q)):' / ∞');
+    const usedTxt=fmtBytes(used)+' / '+(q?fmtBytes(q):'∞');
+    const dataCls=q?(pct>=100?' bad':(pct>=90?' warn':'')):'';
+    const dur=uDur(u);
+    const enabled=u.enabled!==false;
+    // Live status: disabled → off; past expiry → expired; quota reached → quota; else active.
+    let stCls='ok', stTxt=t('st_active');
+    if(!enabled){ stCls='bad'; stTxt=t('st_off'); }
+    else if(dur.expired){ stCls='bad'; stTxt=t('st_expired'); }
+    else if(q && used>=q){ stCls='warn'; stTxt=t('st_quota'); }
     const uio=io[u.id]||{};
-    const ioTxt=(uio.up||uio.down)?('↑ '+fmtBytes(uio.up)+' &nbsp; ↓ '+fmtBytes(uio.down)):'';
-    const dayTxt=(day||dq)?((lang==='fa'?'امروز ':'today ')+fmtBytes(day)+(dq?(' / '+fmtBytes(dq)):'')):'';
-    // Request-count usage: shown only when a request limit is configured for this user.
-    const reqTxt=(rl||drl)?((lang==='fa'?'درخواست ':'reqs ')+ru.toLocaleString()+(rl?(' / '+rl.toLocaleString()):'')+(drl?((lang==='fa'?' · امروز ':' · today ')+rud.toLocaleString()+' / '+drl.toLocaleString()):'')):'';
     const REASON={ 'quota':(lang==='fa'?'سهمیه تمام شد':'quota reached'), 'daily-quota':(lang==='fa'?'سقف روزانه':'daily limit'), 'req-quota':(lang==='fa'?'سقف درخواست':'request limit'), 'daily-req-quota':(lang==='fa'?'سقف درخواست روزانه':'daily request limit'), 'expired':(lang==='fa'?'منقضی شد':'expired') };
-    const reasonTxt=(u.enabled===false && u.disabledReason)?(REASON[u.disabledReason]||u.disabledReason):'';
-    const expTxt=u.expiry? ((lang==='fa'?'انقضا ':'expires ')+String(u.expiry).slice(0,10)) : (lang==='fa'?'بدون انقضا':'no expiry');
+    const reasonTxt=(!enabled && u.disabledReason)?(REASON[u.disabledReason]||u.disabledReason):'';
     const link=userSubLink(u);
-    const init=(u.name||u.username||'u').slice(0,1);
-    const warn=(q && pct>=90) ? ' warn':'';
-    return `<div class="ucard${u.enabled===false?' off':''}">
-      <div class="ucard-h">
-        <div class="ucard-av">${esc(init)}</div>
-        <div class="ucard-id"><span class="un">${esc(u.name||u.username)}</span><span class="ul">@${esc(u.username)}</span></div>
-        <div class="sw${u.enabled!==false?' on':''}" data-ue="${i}" title="${t('col_status')}" style="flex:0 0 auto"><span class="k"></span></div>
-        <button class="btn ghost sm" data-ud="${i}" title="${lang==='fa'?'حذف':'Remove'}" style="color:var(--dg);flex:0 0 auto;padding:0 10px">✕</button>
+    const sub = u.username ? ('@'+esc(u.username)) : esc(String(u.tag||u.id||'').slice(0,16));
+    // Extra usage details, surfaced inside the expanded edit panel to keep the row clean.
+    const extra=[];
+    if(day||dq) extra.push((lang==='fa'?'امروز ':'today ')+fmtBytes(day)+(dq?(' / '+fmtBytes(dq)):''));
+    if(rl||drl) extra.push((lang==='fa'?'درخواست ':'reqs ')+ru.toLocaleString()+(rl?(' / '+rl.toLocaleString()):'')+(drl?((lang==='fa'?' · امروز ':' · today ')+rud.toLocaleString()+' / '+drl.toLocaleString()):''));
+    if(uio.up||uio.down) extra.push('↑ '+fmtBytes(uio.up)+' ↓ '+fmtBytes(uio.down));
+    if(u.expiry) extra.push((lang==='fa'?'انقضا ':'expires ')+String(u.expiry).slice(0,10));
+    return `<div class="utr${enabled?'':' off'}">
+      <div class="utc utc-name">
+        <div class="un">${esc(u.name||u.username||'user')}</div>
+        <div class="ul">${sub}</div>
       </div>
-      <div class="ucard-bar${warn}"><i style="width:${q?pct:0}%"></i></div>
-      <div class="ucard-meta"><span><b>${usedTxt}</b>${q?(' &middot; '+pct+'%'):''}</span>${dayTxt?('<span>'+dayTxt+'</span>'):''}${reqTxt?('<span>'+reqTxt+'</span>'):''}${ioTxt?('<span>'+ioTxt+'</span>'):''}<span>${expTxt}</span>${reasonTxt?('<span style="color:var(--dg);font-weight:700">⛔ '+reasonTxt+'</span>'):''}</div>
-      <div class="ucard-link"><code title="${esc(link)}">${esc(link)}</code></div>
-      <div class="ucard-acts">
-        <button class="btn ghost sm" data-open-user="${esc(link)}" data-islink="1" title="${t('open')}">${t('open')}</button>
-        <button class="btn ghost sm" data-copy-user="${esc(link)}" data-islink="1">${t('copy')}</button>
-        <button class="btn ghost sm" data-qr-user="${esc(link)}" data-islink="1" data-qr-uname="${esc(u.name||u.username)}">${t('qr')}</button>
-        <button class="btn ghost sm" data-ureset="${i}" title="${t('u_reset')}" style="color:var(--wn)">${t('u_reset')}</button>
+      <div class="utc utc-acct" data-lbl="${t('col_account')}">
+        <div class="sw${enabled?' on':''}" data-ue="${i}" title="${t('col_account')}"><span class="k"></span></div>
+        <span class="act-lbl">${enabled?t('st_active'):t('st_off')}</span>
       </div>
-      <details class="ucard-edit">
-        <summary>✏️ ${lang==='fa'?'ویرایش':'Edit'}</summary>
-        <div class="ucard-grid">
+      <div class="utc utc-status" data-lbl="${t('col_status')}">
+        <span class="dot ${stCls}"></span><span>${stTxt}</span>
+      </div>
+      <div class="utc utc-data" data-lbl="${t('col_data')}">
+        <div class="uv">${usedTxt}</div>
+        <div class="ubar${dataCls}"><i style="width:${q?pct:0}%"></i></div>
+      </div>
+      <div class="utc utc-dur" data-lbl="${t('col_dur')}">
+        <div class="uv">${dur.txt}</div>
+        <div class="ubar${dur.expired?' bad':''}"><i style="width:${dur.none?0:dur.pct}%"></i></div>
+      </div>
+      <div class="utc utc-acts" data-lbl="${t('col_actions')}">
+        <button class="uicon" data-copy-user="${esc(link)}" data-islink="1" title="${t('copy')}" aria-label="${t('copy')}">${IC_LINK}</button>
+        <button class="uicon" data-qr-user="${esc(link)}" data-islink="1" data-qr-uname="${esc(u.name||u.username)}" title="${t('qr')}" aria-label="${t('qr')}">${IC_QR}</button>
+        <button class="uicon" data-uedit="${i}" title="${t('u_edit')}" aria-label="${t('u_edit')}">${IC_EDIT}</button>
+        <button class="uicon" data-ureset="${i}" title="${t('u_reset')}" aria-label="${t('u_reset')}">${IC_RESET}</button>
+        <button class="uicon" data-urenew="${i}" title="${t('u_extend')}" aria-label="${t('u_extend')}">${IC_CAL}</button>
+        <button class="uicon dg" data-ud="${i}" title="${lang==='fa'?'حذف':'Remove'}" aria-label="${lang==='fa'?'حذف':'Remove'}">${IC_TRASH}</button>
+      </div>
+      <div class="utr-edit">
+        ${reasonTxt?`<div style="color:var(--dg);font-weight:700;font-size:12px;margin-bottom:9px">⛔ ${reasonTxt}</div>`:''}
+        ${extra.length?`<div class="ucard-meta" style="margin-bottom:11px">${extra.map(x=>'<span>'+x+'</span>').join('')}</div>`:''}
+        <div class="ucard-link"><code title="${esc(link)}">${esc(link)}</code><button class="btn ghost sm" data-open-user="${esc(link)}" data-islink="1" title="${t('open')}">${t('open')}</button></div>
+        <div class="ucard-grid" style="margin-top:12px">
           <div class="uf"><label>${t('col_name')}</label><input class="inp" data-un="${i}" value="${esc(u.name)}"></div>
           <div class="uf"><label>${lang==='fa'?'نام‌کاربری (لینک)':'Username (link)'}</label><input class="inp" data-uu="${i}" value="${esc(u.username)}"></div>
           <div class="uf"><label>${t('col_quota')} (GB)</label><input class="inp" type="number" min="0" data-uq="${i}" value="${q?Math.round(q/1073741824):0}"></div>
@@ -1811,9 +1912,9 @@ function renderUsers(){
           <div class="uf"><label>${t('col_expiry')}</label><input class="inp" type="date" data-ux="${i}" value="${u.expiry?String(u.expiry).slice(0,10):''}"></div>
         </div>
         <div style="display:flex;justify-content:flex-end;margin-top:10px"><button class="btn primary sm" data-usave="${i}">${lang==='fa'?'💾 ذخیره این کاربر':'💾 Save this user'}</button></div>
-      </details>
+      </div>
     </div>`;
-  }).join('');
+  }).join('')+'</div>';
 }
 function uRid(){ try{ return crypto.randomUUID().replace(/-/g,''); }catch(e){ return Math.random().toString(16).slice(2)+Math.random().toString(16).slice(2); } }
 function collectUsers(){ const box=document.getElementById('users-body2'); if(!box) return; const arr=STATE.users||[];
@@ -1846,17 +1947,21 @@ async function loadUsersFromServer(){
   }
   return { users:serverUsers, usage, usageIO, multiUser:mu };
 }
-async function addUser(){ const _sw=document.getElementById('t2-multiuser'); if(!_sw || !_sw.classList.contains('on')){ toast(lang==='fa'?'ابتدا «چندکاربره» را روشن کنید':'Turn on Multi-user first to add users'); return; } collectUsers(); STATE.users=STATE.users||[]; STATE.users.push({ id:uRid(), name:'user'+(STATE.users.length+1), username:'', tag:uRid().slice(0,10), token:uRid()+uRid().slice(0,8), key:uRid().slice(0,12), quotaBytes:50*1073741824, expiry:new Date(Date.now()+180*86400000).toISOString().slice(0,10), enabled:true, created:new Date().toISOString() }); renderUsers(); if(LIVE) await saveUsers(); }
+// Multi-user turns on automatically the moment a user exists (see updateMultiUserUI/saveUsers),
+// so adding one just creates it — active — and saves. No toggle step.
+async function addUser(){
+  collectUsers(); STATE.users=STATE.users||[];
+  STATE.users.push({ id:uRid(), name:'user'+(STATE.users.length+1), username:'', tag:uRid().slice(0,10), token:uRid()+uRid().slice(0,8), key:uRid().slice(0,12), quotaBytes:50*1073741824, expiry:new Date(Date.now()+180*86400000).toISOString().slice(0,10), enabled:true, created:new Date().toISOString() });
+  renderUsers();
+  if(LIVE) await saveUsers();
+}
+// Multi-user is now derived, not a toggle: it's ON whenever at least one user exists, and OFF
+// (a single shared config) when there are none. The info banner only appears once users exist.
 function updateMultiUserUI(){
-  const sw=document.getElementById('t2-multiuser'); const on = !!(sw && sw.classList.contains('on'));
+  const on=(STATE.users||[]).length>0; STATE.multiUser=on;
   const btn=document.getElementById('users-add2');
-  if(btn){ btn.classList.toggle('is-disabled', !on); btn.setAttribute('aria-disabled', String(!on)); btn.title = on ? '' : (lang==='fa'?'برای افزودن کاربر، «چندکاربره» را روشن کنید':'Turn on Multi-user to add users'); }
-  const warn=document.getElementById('mu-warn'); const wt=warn && warn.querySelector('span');
-  if(warn){ warn.style.display='block';
-    if(wt) wt.textContent = on
-      ? (lang==='fa'?'حالت چندکاربره روشن است. هر نفر لینک اختصاصی خودش را دارد (باز کردن / کپی / QR). اشتراک اصلی شما هم کار می‌کند.':'Multi-user is on. Each person gets their own link (Open / Copy / QR). Your main subscription still works too.')
-      : (lang==='fa'?'حالت چندکاربره خاموش است؛ یک کانفیگ مشترک دارید. برای افزودن کاربر و دادن لینک اختصاصی به هر نفر، آن را روشن کنید.':'Multi-user is off, you have one shared config. Turn it on to add users and give each person their own link.');
-  }
+  if(btn){ btn.classList.remove('is-disabled'); btn.removeAttribute('aria-disabled'); btn.title=''; }
+  const warn=document.getElementById('mu-warn'); if(warn) warn.style.display = on ? 'block' : 'none';
 }
 async function deleteUser(i){ collectUsers(); (STATE.users||[]).splice(i,1); renderUsers(); if(LIVE) await saveUsers(); }
 async function saveOneUser(i, btn){ collectUsers();
@@ -1873,11 +1978,21 @@ async function resetUser(i){ const u=(STATE.users||[])[i]; if(!u) return;
     else toast(lang==='fa'?'بازنشانی ناموفق':'Reset failed',1);
   }catch(e){ toast(lang==='fa'?'بازنشانی ناموفق':'Reset failed',1); }
 }
+// Extend a user's expiry from the calendar icon. Adds N days on top of the current expiry (or
+// from today if already expired / none), then saves. Keeps the panel's usual save flow.
+async function renewUser(i){ const u=(STATE.users||[])[i]; if(!u) return; collectUsers();
+  const v=prompt(lang==='fa'?'تمدید برای چند روز؟':'Extend by how many days?', '30');
+  if(v===null) return; const d=Math.max(1, Math.floor(Number(v)||0)); if(!d) return;
+  const cur=u.expiry?Date.parse(String(u.expiry).slice(0,10)+'T23:59:59'):NaN;
+  const base=(!isNaN(cur) && cur>Date.now())?cur:Date.now();
+  u.expiry=new Date(base+d*86400000).toISOString().slice(0,10);
+  if(u.enabled===false && (u.disabledReason==='expired')){ u.enabled=true; delete u.disabledReason; }
+  renderUsers(); if(LIVE) await saveUsers(); toast((lang==='fa'?'تمدید شد تا ':'Extended to ')+u.expiry);
+}
 async function saveUsers(){ collectUsers();
-  // Multi-user is explicit (the toggle only). It is NOT auto-enabled by adding users, because
-  // turning it on makes the worker reject the default/dashboard config (it has no per-user tag),
-  // which looked like "all configs stopped working".
-  const mu=document.getElementById('t2-multiuser').classList.contains('on'); STATE.multiUser=mu;
+  // Multi-user is derived from whether any users exist: with ≥1 user, per-user links enforce
+  // quota/expiry; with none, the worker serves the single shared config. No manual toggle.
+  const mu=(STATE.users||[]).length>0; STATE.multiUser=mu;
   if(!LIVE){ writeUsersCache(mu, STATE.users); renderUsers(); return previewToast(); }
   try{ const r=await fetch('/admin/users.json',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({multiUser:mu, users:STATE.users})});
     if(r.redirected || /\/login/.test(r.url)){ toast(lang==='fa'?'نشست منقضی شد — دوباره وارد شوید':'Session expired — sign in again'); return false; }
@@ -2980,6 +3095,10 @@ document.addEventListener('click', (e)=>{
   // stage-2 actions: users CRUD, password, 2FA, backup
   if(e.target.closest('#users-add2')){ addUser(); return; }
   if(e.target.closest('#users-save2')){ saveUsers(); return; }
+  if(e.target.closest('#users-refresh2')){ (async()=>{ const b=e.target.closest('#users-refresh2'); if(b) b.classList.add('spin'); const us=await loadUsersFromServer(); STATE.users=us.users; STATE.usage=us.usage; STATE.usageIO=us.usageIO; STATE.multiUser=us.multiUser; renderUsers(); if(b) b.classList.remove('spin'); toast(t('refresh')+' ✓'); })(); return; }
+  const uet=e.target.closest('[data-ue]'); if(uet){ uet.classList.toggle('on'); collectUsers(); if(LIVE) saveUsers(); else renderUsers(); return; }
+  const ued=e.target.closest('[data-uedit]'); if(ued){ const row=ued.closest('.utr'); if(row) row.classList.toggle('open'); return; }
+  const urn=e.target.closest('[data-urenew]'); if(urn){ renewUser(+urn.dataset.urenew); return; }
   const ud=e.target.closest('[data-ud]'); if(ud){ deleteUser(+ud.dataset.ud); return; }
   const urs=e.target.closest('[data-ureset]'); if(urs){ resetUser(+urs.dataset.ureset); return; }
   const usv=e.target.closest('[data-usave]'); if(usv){ saveOneUser(+usv.dataset.usave, usv); return; }
