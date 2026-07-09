@@ -3377,7 +3377,7 @@ document.addEventListener('click', (e)=>{
   if(e.target.closest('#doh-test')){ dohTest(); return; }
   // stage-2 actions: users CRUD, password, 2FA, backup
   const chlp=e.target.closest('[data-callhelp]'); if(chlp){ goCallHelp(chlp.dataset.callhelp); return; }
-  if(e.target.closest('[data-open-radar]')){ showRadar(''); return; }
+  if(e.target.closest('[data-open-radar]')){ showRadar(((STATE.config||{}).optimizedSubGeneration||{}).TOKEN||''); return; }
   if(e.target.closest('[data-radar-jump]')){ goRadarCard(); setTimeout(function(){ try{ var _sb=document.getElementById('ci-speedtest'); if(_sb) _sb.click(); }catch(_e){} }, 650); return; }
   if(e.target.closest('[data-kpi-cta]')){ if(e.target.closest('[data-kpi-cta]').dataset.kpiCta==='connect-token') goConnectToken(); return; }
   if(e.target.closest('#users-add2')){ addUser(); return; }
