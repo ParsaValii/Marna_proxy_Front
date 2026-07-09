@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Nova Proxy configs</title>
+<title>Marna Proxy configs</title>
 <meta name="nova-userhub-version" content="3.8.2" />
 <link rel="icon" type="image/svg+xml" href="/logo-mark.svg" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -50,7 +50,7 @@
   html[data-theme=light] .segmented button.on{color:#fff}
   .subtitle{color:var(--tx2);font-size:13.5px;line-height:1.75;margin:4px 0 18px}
   .subtitle b{color:var(--ac);font-weight:700}
-  .freebar{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--ac-soft);border:1px solid var(--ac-line);color:var(--ac);font-weight:700;font-size:13px;line-height:1.5;border-radius:var(--radius);padding:11px 14px;margin:0 0 18px;text-align:center}
+
   .usage{background:var(--card);border:1px solid var(--bd);border-radius:var(--radius);padding:15px 16px;margin-bottom:16px}
   .usage[hidden]{display:none}
   .usage-top{display:flex;gap:22px;flex-wrap:wrap;align-items:flex-end;margin-bottom:11px}
@@ -124,9 +124,9 @@
   <div class="wrap">
     <header class="topbar">
       <div class="brand">
-        <div class="mark"><img src="/logo-mark.svg" alt="Nova Proxy" /></div>
+        <div class="mark"><img src="/logo-mark.svg" alt="Marna Proxy" /></div>
         <div>
-          <div class="name" role="heading" aria-level="1">Nova Proxy</div>
+          <div class="name" role="heading" aria-level="1">Marna Proxy</div>
           <div class="env"><span class="d"></span><span id="brandsub">configs</span></div>
         </div>
       </div>
@@ -138,7 +138,7 @@
 
     <p class="subtitle" id="subtitle"></p>
 
-    <div class="freebar" id="freebar"></div>
+
 
     <section class="usage" id="usage" hidden>
       <div class="usage-top">
@@ -186,8 +186,8 @@
   <script>
   (function(){
     var I18N = {
-      en: { brandsub:'configs', free_h:'🎁 Nova is a free service, never pay anyone for it', subtitle:'Pick your app, scan the QR or tap Add. Same servers in every app.', sub_user:'Configs for ', copy:'Copy', copied:'Copied', copyraw:'Copy subscription link', add:'Add to app', scanhint:'or scan this in your app', qmiss:'QR unavailable', foot:'Powered by Nova Proxy', used:'Used', total:'Limit', expires:'Expires', unlimited:'Unlimited', noexpiry:'No expiry', expired:'Expired', days:'d left', today:'today', up:'Up', down:'Down', remaining:'left', radar_ports:'Ports to scan', radar_title:'📡 Nova Radar', radar_sub:'Slow or not connecting? Find the fastest clean IP for your network.', radar_run:'Run scan', radar_prep:'Preparing…', radar_testing:'Testing… ', radar_alive:' alive', radar_done:'Fastest IPs found', radar_none:'No responsive IP found. Try again.', radar_lat:'Latency', radar_copycfg:'📋 Copy best-IP config', radar_notmpl:'Best IPs found. Replace the IP in your current config with one of these.', radar_apply:'📥 Apply these to my config', radar_applying:'Applying…', radar_applied:'✅ Applied. Re-add or refresh your config in your app to use them.', radar_applyerr:'Could not apply, please try again' },
-      fa: { brandsub:'کانفیگ‌ها', free_h:'🎁 نوا یک سرویس رایگان است، برای آن به کسی پول ندهید', subtitle:'اپ خود را انتخاب کن، QR را اسکن کن یا روی «افزودن» بزن. سرورها در همه‌ی اپ‌ها یکی است.', sub_user:'کانفیگ‌های ', copy:'کپی', copied:'کپی شد', copyraw:'کپی لینک اشتراک', add:'افزودن به اپ', scanhint:'یا این را در اپ خود اسکن کن', qmiss:'QR در دسترس نیست', foot:'قدرت‌گرفته از Nova Proxy', used:'مصرف‌شده', total:'حجم کل', expires:'انقضا', unlimited:'نامحدود', noexpiry:'بدون انقضا', expired:'منقضی شده', days:'روز مانده', today:'امروز', up:'آپلود', down:'دانلود', remaining:'باقی‌مانده', radar_ports:'پورت‌ها برای اسکن', radar_title:'📡 رادار نوا', radar_sub:'کند است یا وصل نمی‌شود؟ سریع‌ترین آی‌پی تمیز شبکه‌تان را پیدا کنید.', radar_run:'اسکن', radar_prep:'در حال آماده‌سازی…', radar_testing:'در حال تست… ', radar_alive:' سالم', radar_done:'سریع‌ترین آی‌پی‌ها پیدا شد', radar_none:'آی‌پی سالمی پیدا نشد. دوباره تلاش کنید.', radar_lat:'تأخیر', radar_copycfg:'📋 کپی کانفیگ بهترین آی‌پی', radar_notmpl:'بهترین آی‌پی‌ها پیدا شد. آی‌پی کانفیگ فعلی‌تان را با یکی از این‌ها جایگزین کنید.', radar_apply:'📥 اعمال به کانفیگ من', radar_applying:'در حال اعمال…', radar_applied:'✅ اعمال شد. برای استفاده، کانفیگ را در اپ خود دوباره اضافه یا بروزرسانی کنید.', radar_applyerr:'اعمال نشد، دوباره تلاش کنید' }
+      en: { brandsub:'configs', subtitle:'Pick your app, scan the QR or tap Add. Same servers in every app.', sub_user:'Configs for ', copy:'Copy', copied:'Copied', copyraw:'Copy subscription link', add:'Add to app', scanhint:'or scan this in your app', qmiss:'QR unavailable', foot:'Powered by Marna Proxy', used:'Used', total:'Limit', expires:'Expires', unlimited:'Unlimited', noexpiry:'No expiry', expired:'Expired', days:'d left', today:'today', up:'Up', down:'Down', remaining:'left', radar_ports:'Ports to scan', radar_title:'📡 Marna Radar', radar_sub:'Slow or not connecting? Find the fastest clean IP for your network.', radar_run:'Run scan', radar_prep:'Preparing…', radar_testing:'Testing… ', radar_alive:' alive', radar_done:'Fastest IPs found', radar_none:'No responsive IP found. Try again.', radar_lat:'Latency', radar_copycfg:'📋 Copy best-IP config', radar_notmpl:'Best IPs found. Replace the IP in your current config with one of these.', radar_apply:'📥 Apply these to my config', radar_applying:'Applying…', radar_applied:'✅ Applied. Re-add or refresh your config in your app to use them.', radar_applyerr:'Could not apply, please try again' },
+      fa: { brandsub:'کانفیگ‌ها', subtitle:'اپ خود را انتخاب کن، QR را اسکن کن یا روی «افزودن» بزن. سرورها در همه‌ی اپ‌ها یکی است.', sub_user:'کانفیگ‌های ', copy:'کپی', copied:'کپی شد', copyraw:'کپی لینک اشتراک', add:'افزودن به اپ', scanhint:'یا این را در اپ خود اسکن کن', qmiss:'QR در دسترس نیست', foot:'قدرت‌گرفته از Marna Proxy', used:'مصرف‌شده', total:'حجم کل', expires:'انقضا', unlimited:'نامحدود', noexpiry:'بدون انقضا', expired:'منقضی شده', days:'روز مانده', today:'امروز', up:'آپلود', down:'دانلود', remaining:'باقی‌مانده', radar_ports:'پورت‌ها برای اسکن', radar_title:'📡 رادار مارنا', radar_sub:'کند است یا وصل نمی‌شود؟ سریع‌ترین آی‌پی تمیز شبکه‌تان را پیدا کنید.', radar_run:'اسکن', radar_prep:'در حال آماده‌سازی…', radar_testing:'در حال تست… ', radar_alive:' سالم', radar_done:'سریع‌ترین آی‌پی‌ها پیدا شد', radar_none:'آی‌پی سالمی پیدا نشد. دوباره تلاش کنید.', radar_lat:'تأخیر', radar_copycfg:'📋 کپی کانفیگ بهترین آی‌پی', radar_notmpl:'بهترین آی‌پی‌ها پیدا شد. آی‌پی کانفیگ فعلی‌تان را با یکی از این‌ها جایگزین کنید.', radar_apply:'📥 اعمال به کانفیگ من', radar_applying:'در حال اعمال…', radar_applied:'✅ اعمال شد. برای استفاده، کانفیگ را در اپ خود دوباره اضافه یا بروزرسانی کنید.', radar_applyerr:'اعمال نشد، دوباره تلاش کنید' }
     };
     var lang = (function(){ try{ return localStorage.getItem('nova-user-lang')||'fa'; }catch(e){ return 'fa'; } })();
     var theme = document.documentElement.dataset.theme==='light' ? 'light' : 'dark';
@@ -208,7 +208,7 @@
       { name:'Streisand', color:'#0ea5e9', rec:false, fmt:'b64',     deep:function(u){ return 'streisand://import/'+u; } },
       { name:'FlClash',   color:'#06b6d4', rec:true,  fmt:'clash',   deep:function(u){ return 'clash://install-config?url='+encodeURIComponent(u); } },
       { name:'Clash Meta',color:'#10b981', rec:false, fmt:'clash',   deep:function(u){ return 'clash://install-config?url='+encodeURIComponent(u); } },
-      { name:'Karing',    color:'#16a34a', rec:false, fmt:'clash',   deep:function(u){ return 'karing://install-config?url='+encodeURIComponent(u)+'&name=Nova'; } },
+      { name:'Karing',    color:'#16a34a', rec:false, fmt:'clash',   deep:function(u){ return 'karing://install-config?url='+encodeURIComponent(u)+'&name=Marna'; } },
       { name:'sing-box',  color:'#64748b', rec:false, fmt:'singbox', deep:function(u){ return 'sing-box://import-remote-profile?url='+encodeURIComponent(u); } },
       { name:'NekoBox',   color:'#f59e0b', rec:false, fmt:'singbox', deep:function(u){ return 'sing-box://import-remote-profile?url='+encodeURIComponent(u); } }
     ];
@@ -273,8 +273,8 @@
       document.getElementById('brandsub').textContent = t.brandsub;
       var who = uname();
       document.getElementById('subtitle').innerHTML = (who ? (t.sub_user+'<b>'+esc(who)+'</b>, ') : '') + t.subtitle;
-      document.getElementById('freebar').textContent = t.free_h;
-      document.getElementById('foot').innerHTML = '<div>'+esc(t.foot)+'</div><div class="fsocial"><a href="https://t.me/irnova_proxy" target="_blank" rel="noopener" aria-label="Telegram" title="Telegram"><svg class="tg" viewBox="0 0 24 24" fill="currentColor"><path d="M21.94 4.6 18.9 19.2c-.23 1.01-.83 1.26-1.68.78l-4.64-3.42-2.24 2.16c-.25.25-.46.46-.94.46l.33-4.73 8.6-7.77c.37-.33-.08-.52-.58-.19l-10.63 6.7-4.58-1.43c-1-.31-1.01-1 .21-1.48l17.9-6.9c.83-.31 1.56.19 1.29 1.45z"/></svg></a><a href="https://instagram.com/irnova_proxy" target="_blank" rel="noopener" aria-label="Instagram" title="Instagram"><svg class="ig" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c2.717 0 3.056.01 4.122.06 1.065.05 1.79.217 2.428.465.66.254 1.216.598 1.772 1.153.509.5.902 1.105 1.153 1.772.247.637.415 1.363.465 2.428.047 1.066.06 1.405.06 4.122 0 2.717-.01 3.056-.06 4.122-.05 1.065-.218 1.79-.465 2.428a4.883 4.883 0 0 1-1.153 1.772c-.5.508-1.105.902-1.772 1.153-.637.247-1.363.415-2.428.465-1.066.047-1.405.06-4.122.06-2.717 0-3.056-.01-4.122-.06-1.065-.05-1.79-.218-2.428-.465a4.89 4.89 0 0 1-1.772-1.153 4.904 4.904 0 0 1-1.153-1.772c-.248-.637-.415-1.363-.465-2.428C2.013 15.056 2 14.717 2 12c0-2.717.01-3.056.06-4.122.05-1.066.217-1.79.465-2.428a4.88 4.88 0 0 1 1.153-1.772A4.897 4.897 0 0 1 5.45 2.525c.638-.248 1.362-.415 2.428-.465C8.944 2.013 9.283 2 12 2zm0 5a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm6.5-.25a1.25 1.25 0 1 0-2.5 0 1.25 1.25 0 0 0 2.5 0zM12 9a3 3 0 1 1 0 6 3 3 0 0 1 0-6z"/></svg></a></div>';
+
+      document.getElementById('foot').innerHTML = '<div>'+esc(t.foot)+'</div>';
       var rawUrl = subFor('b64');
       document.getElementById('rawsub').textContent = rawUrl;
       var cr = document.getElementById('copyraw'); cr.textContent = t.copyraw; cr.onclick=function(){ copy(rawUrl); };
@@ -310,7 +310,7 @@
     function pingIp(ip,port,timeout){ return new Promise(function(res){ var t0=performance.now(),done=false,img=new Image(); function fin(ok){ if(done)return; done=true; img.onerror=img.onload=null; res(ok?Math.round(performance.now()-t0):null); } var timer=setTimeout(function(){fin(false);},timeout); img.onerror=function(){clearTimeout(timer);fin(true);}; img.onload=function(){clearTimeout(timer);fin(true);}; img.src='https://'+(port==443?ip:ip+':'+port)+'/cdn-cgi/trace?'+Math.random(); }); }
     var RTMPL=null, RBEST=[];
     async function radarTemplate(){ try{ var r=await fetch(subFor('b64')+'&_t='+Date.now()); var txt=await r.text(); var data=txt; try{ var dec=atob(txt.replace(/\s+/g,'')); if(dec.indexOf('://')>0) data=dec; }catch(e){} var lines=data.split(/[\r\n]+/),v=null; for(var i=0;i<lines.length;i++){ if(lines[i].trim().indexOf('vless://')===0){ v=lines[i].trim(); break; } } if(!v)return; var m=v.match(/^vless:\/\/([^@]+)@([^:]+):(\d+)\?([^#]*)/); if(!m)return; RTMPL={uuid:m[1],port:m[3],query:m[4]}; var pc=document.getElementById('radar-ports'); if(pc){ var tp=String(m[3]); if(!pc.querySelector('[data-port="'+tp+'"]')){ var nb=document.createElement('button'); nb.type='button'; nb.className='rpchip'; nb.setAttribute('data-port',tp); nb.textContent=tp; pc.insertBefore(nb,pc.firstChild); } var tc=pc.querySelector('[data-port="'+tp+'"]'); if(tc) tc.classList.add('on'); radarSyncChips(); } }catch(e){} }
-    function radarCfg(ip,port){ if(!RTMPL)return null; port=port||443; return 'vless://'+RTMPL.uuid+'@'+ip+':'+port+'?'+RTMPL.query+'#'+encodeURIComponent('Nova ⚡ '+ip+':'+port); }
+    function radarCfg(ip,port){ if(!RTMPL)return null; port=port||443; return 'vless://'+RTMPL.uuid+'@'+ip+':'+port+'?'+RTMPL.query+'#'+encodeURIComponent('Marna ⚡ '+ip+':'+port); }
     async function radarRun(){
       var t=I18N[lang]; var btn=document.getElementById('radar-run'),msg=document.getElementById('radar-msg'),bar=document.getElementById('radar-bar'),fill=document.getElementById('radar-fill');
       btn.disabled=true; bar.style.display='block'; fill.style.width='0%'; document.getElementById('radar-out').style.display='none'; document.getElementById('radar-results').innerHTML='';

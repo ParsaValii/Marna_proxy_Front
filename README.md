@@ -1,6 +1,6 @@
-# Nova Version 4
+# Marna Version 4
 
-Complete v4.0.0 build of the Nova Proxy panel: readable source, obfuscated build, and the frontend.
+Complete v4.0.0 build of the Marna Proxy panel: readable source, obfuscated build, and the frontend.
 
 ## What's in here
 

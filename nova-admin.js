@@ -1,15 +1,15 @@
-// Nova Proxy admin dashboard, bilingual (EN/FA) + light/dark, talks to the worker's /admin APIs.
+// Marna Proxy admin dashboard, bilingual (EN/FA) + light/dark, talks to the worker's /admin APIs.
 // PANEL_VERSION = the version of these dashboard files (public/). Bump it whenever you change
-// the panel, so after uploading you can confirm in the sidebar (under "Nova Proxy") that the
+// the panel, so after uploading you can confirm in the sidebar (under "Marna Proxy") that the
 // new files are live. The Worker has its own version (shown next to it as "w…").
 const PANEL_VERSION = '1.0.0';
 const $ = (s) => document.getElementById(s);
 let cfg = null;
-try { const _t = document.querySelector('.brand .tag'); if (_t) { _t.textContent = 'Panel v' + PANEL_VERSION; _t.title = 'Nova dashboard v' + PANEL_VERSION; } console.log('%cNova panel v' + PANEL_VERSION, 'color:#22d3ee;font-weight:700'); } catch (e) {}
+try { const _t = document.querySelector('.brand .tag'); if (_t) { _t.textContent = 'Panel v' + PANEL_VERSION; _t.title = 'Marna dashboard v' + PANEL_VERSION; } console.log('%cNova panel v' + PANEL_VERSION, 'color:#22d3ee;font-weight:700'); } catch (e) {}
 
 const T = {
   en: { dir:'ltr',
-    nav_section:'Management', nav_home:'Dashboard', nav_sub:'Subscriptions', nav_ip:'Clean IPs', nav_isp:'Per-ISP pools', nav_net:'Network & DNS', nav_conn:'Network & IPs', tour_next:'Next', tour_prev:'Back', tour_done:'Done', nav_set:'Settings', nav_guide:'Guide', guide_s:'How to use Nova Proxy, step by step.', logout:'Logout', close:'Close',
+    nav_section:'Management', nav_home:'Dashboard', nav_sub:'Subscriptions', nav_ip:'Clean IPs', nav_isp:'Per-ISP pools', nav_net:'Network & DNS', nav_conn:'Network & IPs', tour_next:'Next', tour_prev:'Back', tour_done:'Done', nav_set:'Settings', nav_guide:'Guide', guide_s:'How to use Marna Proxy, step by step.', logout:'Logout', close:'Close',
     net_s:'Routing rules, ad-blocking, and secure DNS. These are baked into every Clash and sing-box config you hand out.',
     net_routing:'Smart routing', net_routing_h:'Decide what goes through the proxy and what stays direct.',
     net_enroute:'Enable routing rules', net_enroute_h:'turn the rule engine on',
@@ -39,27 +39,26 @@ const T = {
     manage_fleet:'Fleet', manage_broadcast:'Broadcast announcement', manage_broadcast_s:'Shows as a banner on every connected panel.',
     manage_title:'Title', manage_text:'Text', manage_url:'Link (optional)', manage_send:'Send broadcast',
     manage_active:'Active instances', manage_total:'Total instances', manage_traffic:'Total traffic',
-    manage_noapi:'Set the Central API (Settings → Advanced) and run your Nova control server to see the fleet here.', manage_err:'Could not reach the central server.',
+    manage_noapi:'Set the Central API (Settings → Advanced) and run your Marna control server to see the fleet here.', manage_err:'Could not reach the central server.',
     notif_s:'Worker usage and Telegram alerts.', notif_usage:'Worker requests', notif_usage_h:"Cloudflare's free plan allows 100,000 worker requests per day. Add credentials below to track it here.", notif_used:'Used today',
     notif_cf_id:'Account ID', notif_cf_tok:'API Token (Account Analytics: Read)', notif_tg:'Telegram alerts', notif_tg_h:'Get a message on each subscription fetch, config change, and login.', notif_tg_en:'Enable Telegram alerts', notif_tg_bot:'Bot token', notif_tg_chat:'Chat IDs', notif_tg_chat_h:'One or more — comma or new-line separated. Numeric user IDs and/or channel IDs (the bot must be admin of any channel).',
     logs_s:'Recent activity and errors on your proxy.', logs_recent:'Recent activity', logs_empty:'No activity yet.', log_time:'Time', log_type:'Event', log_ip:'IP', log_loc:'Location', log_asn:'Network',
     hosts_h:'Domains (HOST)', hosts_help:'One domain per line. Configs are built across these, so the app can switch domains if one is blocked. The first is the main host.',
-    home_h:'Dashboard', home_s:'Status of your proxy.', health_h:'Domain health', health_s:'Live status of your front domains. The hourly cron also auto-announces changes to Telegram.', health_check:'Check now', iran_h:'Iran mode (one tap)', iran_s:'Turns on the best resilience combo for Iran at once: all protocols + port-spread + fragment + ECH (and blocks QUIC, disables IPv6).', iran_btn:'Enable Iran mode', iran_btn_off:'Disable Iran mode', backup_h:'Backup & restore', backup_s:'Export all settings (config + network + users) to a file, or restore from one. The file contains secrets (tokens) — keep it safe.', backup_export:'Export', backup_import:'Import', qs_h:'Quick start', qs1:'Open the panel at /login and sign in with your admin password — or open the Nova app icon on your home screen.', qs2:'On the Dashboard, tap Iran mode once, then copy your subscription link (or scan the QR).', qs3:'Tap your app button (Hiddify / Karing / v2rayNG / sing-box) to import in one tap, connect, done.', qs4:'If a network blocks you, try another protocol/port in the app, or switch the Fragment preset in Settings.', status:'Status', st_host:'Host', st_net:'Network', st_kv:'Storage', st_app:'App', st_worker:'Worker usage', st_traffic:'Traffic today', u_chart_h:'Daily traffic (last 14 days)',
-    usage_h:'Data usage', usage_s:'Total traffic Nova has served (approximate — free-tier safe).', u_today:'Today', u_month:'This month', u_year:'This year', u_all:'All time',
+    home_h:'Dashboard', home_s:'Status of your proxy.', health_h:'Domain health', health_s:'Live status of your front domains. The hourly cron also auto-announces changes to Telegram.', health_check:'Check now', iran_h:'Iran mode (one tap)', iran_s:'Turns on the best resilience combo for Iran at once: all protocols + port-spread + fragment + ECH (and blocks QUIC, disables IPv6).', iran_btn:'Enable Iran mode', iran_btn_off:'Disable Iran mode', backup_h:'Backup & restore', backup_s:'Export all settings (config + network + users) to a file, or restore from one. The file contains secrets (tokens) — keep it safe.', backup_export:'Export', backup_import:'Import', qs_h:'Quick start', qs1:'Open the panel at /login and sign in with your admin password — or open the Marna app icon on your home screen.', qs2:'On the Dashboard, tap Iran mode once, then copy your subscription link (or scan the QR).', qs3:'Tap your app button (Hiddify / Karing / v2rayNG / sing-box) to import in one tap, connect, done.', qs4:'If a network blocks you, try another protocol/port in the app, or switch the Fragment preset in Settings.', status:'Status', st_host:'Host', st_net:'Network', st_kv:'Storage', st_app:'App', st_worker:'Worker usage', st_traffic:'Traffic today', u_chart_h:'Daily traffic (last 14 days)',
+    usage_h:'Data usage', usage_s:'Total traffic Marna has served (approximate — free-tier safe).', u_today:'Today', u_month:'This month', u_year:'This year', u_all:'All time',
     fp_random:'random — recommended for Iran now', fp_hint:'"random" works best in Iran right now; if it stops working, try another or scan a different one.',
     hosts_connect:'⚠️ First connect each domain to your Worker (Cloudflare → your Worker → Settings → Domains & Routes → Add Custom Domain). Add it here only after it points to the Worker, otherwise configs won\'t connect.',
     help_lbl:'What is this?',
     help_home:'Your proxy status and your subscription link with a QR code. Copy the link or scan the QR to set up any app. Everything else in the menu is optional tuning.',
     help_sub:'The same subscription, ready in each app format (Auto, Base64, Clash, sing-box, Surge, Quantumult X, Loon). Copy the one your app uses, or scan its QR. They all point to the same proxy.',
     help_ip:'How the configs pick Cloudflare IPs. Smart (per-ISP) gives each user the best IPs for their operator; Custom list lets you paste your own; Random uses random Cloudflare IPs. You can also scan from your browser to find fast ones.',
-    help_isp:'A live count of clean Cloudflare IPs known to work on each Iranian operator (MCI, Irancell, Shatel...), gathered by the Nova Radar scanner. The worker automatically serves each user the best IPs for their own network. Turn on Smart (per-ISP) on the Clean IPs page to populate this.',
+    help_isp:'A live count of clean Cloudflare IPs known to work on each Iranian operator (MCI, Irancell, Shatel...), gathered by the Marna Radar scanner. The worker automatically serves each user the best IPs for their own network. Turn on Smart (per-ISP) on the Clean IPs page to populate this.',
     help_net:'Controls baked into every Clash and sing-box config: routing, Iran-direct, ad and adult blocking, secure and anti-sanction DNS, WARP, and your own routing rules. Press Save after a change, then reconnect in the app.',
     help_set:'The technical settings: protocol (VLESS/Trojan/SS), transport, TLS, fingerprint, your domains (HOST) and UUID. Defaults are good for most people; change these only if you know what you need.',
     help_notif:'See how many requests your worker is using (Cloudflare gives 100,000 per day free), and get Telegram alerts on subscription fetches, config changes, and logins.',
     help_logs:'Recent activity on your proxy: subscription fetches, setting changes, logins, and any errors, with the time, IP, and network.',
     your_sub:'Your subscription link', copy:'Copy', copied:'Copied!', sub_hint:'Share this link or QR. The app picks the fastest clean IP automatically.', open_in:'Open in app', app_copied:'Link copied. Open your app and import.', app_rec:'recommended', app_get:'Get app', app_import:'Import',
     sub_s2:'One link per app format. Copy or scan a QR.', sub_formats:'Formats', sub_ports:'Per-port single nodes', sub_naming:'Naming & updates',
-    notice_lbl:'Free-service notice (always on)', proto_all:'All (VLESS + Trojan + SS)', mt_lbl:'Multi-transport (WS + gRPC + XHTTP)', mt_h:'emit each config over all three transports for more DPI diversity (needs a custom domain bound to the Worker, which you have)', multi_lbl:'Multi-protocol nodes (VLESS + Trojan + SS)', multi_h:'emit all three protocols for each nova node so clients can fail over between them (ws transport only)', ports_lbl:'Port spread (443 / 2053 / 2083 / 2087 / 2096 / 8443)', ports_h:'fan each config across all Cloudflare TLS ports — if one port is throttled the client tries another', notice_h:"a labelled node is baked into every config so people always know it's the free Nova service — it can't be turned off and the message is fixed", notice_txt:'Notice text (fixed)',
     subcfg:'Routing rule set (Clash/sing-box)', px_custom:'Custom',
     sub_name:'Subscription name', sub_int:'Update interval (hours)', sub_api:'Subscription converter API', save:'Save', save_all:'Save all settings on this page', saved:'Saved!', saveerr:'Save failed', qr:'QR',
     ip_s:'How the subscription chooses Cloudflare IPs.', ip_mode:'Mode', m_smart:'Smart (per-ISP)', m_custom:'Custom list', m_random:'Random',
@@ -69,20 +68,20 @@ const T = {
     scan_src:'Source', scan_src_random:'Random Cloudflare', scan_loading:'Loading source IPs…', scan_port:'Port', scan_keep:'Keep best', scan_total:'IPs to test', scan_start:'Start scan', scan_use:'Use these in the custom list', scan_lat:'Latency', scan_jit:'Jitter', scan_loss:'Loss', st_h:'🚀 Speed test', st_s:'Find the fastest clean IPs for your current network (MCI / Irancell / …) and apply them automatically.', st_btn:'Speed test & apply best',
     sec_h:'🔒 Security', sec_s:'Change your panel password and turn on two-factor authentication.', sec_cur:'Current password', sec_new:'New password', sec_new2:'Repeat new password', sec_chpw:'Change password', sec_current:'Current password (for sharing)', sec_reveal:'Show', sec_hide:'Hide', sec_curcopy:'Copy', sec_rec_both:'Recovery password active — the ADMIN secret in Cloudflare still works alongside your panel password. To retire it, change/remove the ADMIN secret in Cloudflare.', sec_rec_only:'Your password is the ADMIN secret (recovery). You can set a separate panel password below; the ADMIN secret will keep working as a backup.', sec_pw_h:'Your existing client configs keep working — your proxy ID stays the same.', sec_2fa:'Two-factor authentication', sec_2fa_h:'Use Google Authenticator, Authy, Keeper, etc. A 6-digit code is asked at login.', sec_2fa_on:'Enable 2FA', sec_2fa_off:'Disable 2FA', sec_2fa_scan:'Scan the QR in your authenticator app, or type this key manually:', sec_2fa_code:'Enter the 6-digit code to confirm', sec_2fa_confirm:'Confirm & turn on', sec_2fa_dcode:'Authenticator code to turn it off', sec_on:'On', sec_off:'Off', sec_pw_ok:'Password changed ✓', sec_pw_bad:'Wrong current password', sec_short:'At least 6 characters', sec_mismatch:'Passwords do not match', sec_2fa_okmsg:'2FA enabled ✓', sec_2fa_badcode:'Wrong code', sec_2fa_offmsg:'2FA turned off', sec_err:'Something went wrong', sec_envmanaged:'Your password is set by the ADMIN secret in Cloudflare. Change it there (Workers → Settings → Variables), or remove the ADMIN secret to manage the password here.',
     scan_scanning:'Testing {n}/{t}, found {f}…', scan_done:'Done. Kept the {f} fastest.', scan_none:'No reachable IPs found. Try again or check your connection.', scan_added:'Added to the custom list. Press Save.',
-    isp_s:'Live clean-IP counts from the crowd database, by Iranian ISP.', isp_live:'Live pools', isp_hint:'Counts grow as Nova Radar scans on each network.', refresh:'Refresh', isp_noapi:'Set the Smart IP API on the Clean IPs page first.',
+    isp_s:'Live clean-IP counts from the crowd database, by Iranian ISP.', isp_live:'Live pools', isp_hint:'Counts grow as Marna Radar scans on each network.', refresh:'Refresh', isp_noapi:'Set the Smart IP API on the Clean IPs page first.',
     set_s:'Protocol, transport, and security.', set_proto:'Protocol & transport', protocol:'Protocol', transport:'Transport', path_lbl:'Transport path', path_h:'The WebSocket/gRPC path. Keep "/" unless you know you need a custom one.', grpcmode_lbl:'gRPC mode', grpcmode_h:'Only used when Transport is gRPC.', fp:'TLS fingerprint', frag:'TLS fragment (DPI evasion)', frag_hint:'If fragment stops working on your ISP (MCI / Irancell / …), pick Custom and switch the packets between tlshello, 1-1 and 1-3 — different values work on different Iranian ISPs.', proxyip:'PROXYIP (reverse proxy, optional)', chain_lbl:'Chain proxy / fix IP (optional)', chain_h:"Routes every node's exit through your own upstream proxy (socks5/http/https) — reach sites that block Cloudflare IPs, or get a stable exit IP. Empty = normal Cloudflare exit.", chain_test:'Test', uuid_lbl:'UUID (used in your configs)',
-    adv_h:'Advanced (Fragment / ECH)', adv_s:'Optional tuning. Leave blank for defaults. Press Save, then re-import the link.', adv_hint:'ECH needs the ECH toggle on (Security above). Central API enables heartbeat + broadcast announcements when you run a Nova control server.',
+    adv_h:'Advanced (Fragment / ECH)', adv_s:'Optional tuning. Leave blank for defaults. Press Save, then re-import the link.', adv_hint:'ECH needs the ECH toggle on (Security above). Central API enables heartbeat + broadcast announcements when you run a Marna control server.',
     frag_custom:'Custom', frag_len:'Fragment length', frag_int:'Fragment interval', frag_pkt:'Fragment packets', ech_sni:'ECH SNI', ech_dns:'ECH DoH',
     frag_presets_lbl:'Iran fragment presets (tap to fill Custom, then Save):', add_clean_ips:'+ Add sample clean Cloudflare IPs', clean_ips_hint:'starter list — the per-ISP Smart pool finds better ones per network',
     wn_mode:'Noise mode', wn_count:'Noise count', wn_size:'Noise size', wn_delay:'Noise delay', central_api:'Central API (management server, optional)', mirror_h:'GitHub mirror (blocked-domain failover)', mirror_intro:'Publishes your sub to a GitHub repo so users keep a permanent raw.githubusercontent.com link that still works if your domain gets filtered. Use a fine-grained token with Contents: read/write on that repo.', mirror_en:'Enable mirror', mirror_en_h:'also auto-publishes hourly', mirror_repo:'Repo (owner/name)', mirror_branch:'Branch', mirror_path:'Path (optional)', mirror_token:'GitHub token', mirror_publish:'Publish now', hosts_check:'Check health', health_ping:'Ping from my device',
     help_mirror:'Your domain can get filtered, but GitHub usually is not. The mirror publishes your subscription files to a GitHub repo you own, giving users a permanent raw.githubusercontent.com link that keeps working even if your domain is blocked. Set the repo (owner/name) and a fine-grained token with Contents: read/write, turn it on, and it republishes every hour (or press "Publish now").',
     help_health:'Shows whether each of your front domains still answers. "Check now (from Cloudflare)" tests reachability from Cloudflare\'s network — good for catching DNS/Worker breakage, but it cannot see Iran-side filtering. "Ping from my device" runs a quick test from YOUR current connection, so you can tell if a domain is actually reachable where you are.',
-    help_usage:'How much traffic Nova has carried (today / month / year / all-time), plus a daily graph. Numbers are approximate and never cost you anything — just for your own tracking.',
+    help_usage:'How much traffic Marna has carried (today / month / year / all-time), plus a daily graph. Numbers are approximate and never cost you anything — just for your own tracking.',
     help_yoursub:'Your personal subscription link and its QR. Paste the link into a proxy app (or scan the QR) and it imports all your servers at once; the app buttons import it into a specific app in one tap.',
     help_formats:'The same servers in different file formats — pick the one your app understands: Clash/Mihomo (YAML), sing-box (JSON), or Base64 (v2rayNG/NekoBox). Each card has copy + QR.',
     help_ports:'One single-server link per Cloudflare port (443, 2053, …). Handy if a specific port works better on your network — import just that one.',
     help_speedtest:'One tap finds the fastest clean Cloudflare IPs for YOUR current network (it detects your ISP, e.g. MCI/Irancell) and applies them automatically.',
-    help_mode:'How Nova picks the Cloudflare IPs your config uses: Smart (best per-ISP, recommended), Custom (your own list), or Random.',
+    help_mode:'How Marna picks the Cloudflare IPs your config uses: Smart (best per-ISP, recommended), Custom (your own list), or Random.',
     help_scan:'An in-browser scanner that tests many Cloudflare IPs from your device and keeps the fastest. Use it if Smart mode is not giving good speeds.',
     help_proto:'The proxy protocol (VLESS/Trojan/Shadowsocks) and transport (WebSocket/gRPC/XHTTP) used in your configs. Defaults are best for most people; gRPC/XHTTP need a custom domain.',
     help_hosts:'The domains your configs are built on. Add several so the app can switch if one is blocked. First connect each domain to your Worker in Cloudflare, then add it here.',
@@ -103,7 +102,7 @@ const T = {
     help_users:'Give each person their own link with a data quota and expiry. Turn on multi-user, add people, Save. Disabling or expiring someone cuts off their connections.',
     set_sec:'Security', tls_lbl:'TLS', tls_h:'encrypt the tunnel (off = plain WS on HTTP ports)', ech_h:'Encrypted Client Hello', zerortt:'0-RTT', randpath:'Random path', skipcert:'Skip cert verify', skipcert_h:'allow insecure TLS', connected:'connected', notconn:'not connected' },
   fa: { dir:'rtl',
-    nav_section:'مدیریت', nav_home:'داشبورد', nav_sub:'اشتراک‌ها', nav_ip:'آی‌پی‌های تمیز', nav_isp:'مخزن هر اپراتور', nav_net:'شبکه و DNS', nav_conn:'شبکه و آی‌پی‌ها', tour_next:'بعدی', tour_prev:'قبلی', tour_done:'پایان', nav_set:'تنظیمات', nav_guide:'راهنما', guide_s:'راهنمای گام‌به‌گام استفاده از Nova Proxy.', logout:'خروج', close:'بستن',
+    nav_section:'مدیریت', nav_home:'داشبورد', nav_sub:'اشتراک‌ها', nav_ip:'آی‌پی‌های تمیز', nav_isp:'مخزن هر اپراتور', nav_net:'شبکه و DNS', nav_conn:'شبکه و آی‌پی‌ها', tour_next:'بعدی', tour_prev:'قبلی', tour_done:'پایان', nav_set:'تنظیمات', nav_guide:'راهنما', guide_s:'راهنمای گام‌به‌گام استفاده از Marna Proxy.', logout:'خروج', close:'بستن',
     net_s:'قوانین مسیریابی، مسدودسازی تبلیغات و DNS امن. این‌ها در هر کانفیگ Clash و sing-box که می‌دهید اعمال می‌شوند.',
     net_routing:'مسیریابی هوشمند', net_routing_h:'تعیین کنید چه چیزی از پروکسی عبور کند و چه چیزی مستقیم بماند.',
     net_enroute:'فعال‌سازی قوانین مسیریابی', net_enroute_h:'روشن کردن موتور قوانین',
@@ -133,27 +132,26 @@ const T = {
     manage_fleet:'ناوگان', manage_broadcast:'اعلان همگانی', manage_broadcast_s:'به‌صورت بنر روی همه‌ی پنل‌های متصل نمایش داده می‌شود.',
     manage_title:'عنوان', manage_text:'متن', manage_url:'لینک (اختیاری)', manage_send:'ارسال همگانی',
     manage_active:'نمونه‌های فعال', manage_total:'کل نمونه‌ها', manage_traffic:'مجموع ترافیک',
-    manage_noapi:'برای دیدن ناوگان، API مرکزی را (تنظیمات ← پیشرفته) تنظیم و سرور کنترل نوا را اجرا کنید.', manage_err:'دسترسی به سرور مرکزی ممکن نشد.',
+    manage_noapi:'برای دیدن ناوگان، API مرکزی را (تنظیمات ← پیشرفته) تنظیم و سرور کنترل مارنا را اجرا کنید.', manage_err:'دسترسی به سرور مرکزی ممکن نشد.',
     notif_s:'مصرف ورکر و اعلان‌های تلگرام.', notif_usage:'درخواست‌های ورکر', notif_usage_h:'پلن رایگان کلودفلر روزانه ۱۰۰٬۰۰۰ درخواست ورکر می‌دهد. برای نمایش، اطلاعات زیر را وارد کنید.', notif_used:'مصرف امروز',
     notif_cf_id:'Account ID', notif_cf_tok:'API Token (دسترسی Account Analytics)', notif_tg:'اعلان‌های تلگرام', notif_tg_h:'با هر دریافت اشتراک، تغییر تنظیمات و ورود، پیام بگیرید.', notif_tg_en:'فعال‌سازی اعلان تلگرام', notif_tg_bot:'توکن ربات', notif_tg_chat:'شناسه‌های چت', notif_tg_chat_h:'یک یا چند مورد — با کاما یا خط جدید جدا کنید. شناسه‌ی عددیِ کاربر و/یا کانال (ربات باید ادمین کانال باشد).',
     logs_s:'فعالیت‌ها و خطاهای اخیر پروکسی شما.', logs_recent:'فعالیت اخیر', logs_empty:'هنوز فعالیتی نیست.', log_time:'زمان', log_type:'رویداد', log_ip:'IP', log_loc:'موقعیت', log_asn:'شبکه',
     hosts_h:'دامنه‌ها (HOST)', hosts_help:'هر خط یک دامنه. کانفیگ‌ها روی این دامنه‌ها ساخته می‌شوند تا اگر یکی مسدود شد برنامه دامنه را عوض کند. اولی دامنه‌ی اصلی است.',
-    home_h:'داشبورد', home_s:'وضعیت پروکسی شما.', health_h:'سلامت دامنه‌ها', health_s:'وضعیت زندهٔ دامنه‌های جلویی. کران ساعتی هم تغییرات را خودکار به تلگرام اعلام می‌کند.', health_check:'بررسی فوری', iran_h:'حالت ایران (یک‌ضربه)', iran_s:'بهترین ترکیب مقاومت برای ایران را یک‌جا روشن می‌کند: همهٔ پروتکل‌ها + پخش پورت + فرگمنت + ECH (و مسدودکردن QUIC، خاموش‌کردن IPv6).', iran_btn:'فعال‌سازی حالت ایران', iran_btn_off:'غیرفعال‌سازی حالت ایران', backup_h:'پشتیبان‌گیری و بازیابی', backup_s:'همهٔ تنظیمات (کانفیگ + شبکه + کاربران) را در یک فایل ذخیره یا از آن بازیابی کنید. این فایل شامل کلیدهای محرمانه است — جای امن نگه‌دارید.', backup_export:'خروجی', backup_import:'ورودی', qs_h:'شروع سریع', qs1:'پنل را در /login باز کن و با رمز ادمین وارد شو — یا آیکن اپ نوا روی صفحهٔ اصلی را باز کن.', qs2:'در داشبورد یک‌بار «حالت ایران» را بزن، بعد لینک اشتراک را کپی کن (یا QR را اسکن کن).', qs3:'دکمهٔ اپ خودت (هیدیفای/کارینگ/v2rayNG/sing-box) را بزن تا یک‌ضربه ایمپورت شود، وصل شو، تمام.', qs4:'اگر شبکه‌ای بستت، پروتکل/پورت دیگری از لیست اپ را امتحان کن یا فرگمنت را در تنظیمات عوض کن.', status:'وضعیت', st_host:'دامنه', st_net:'شبکه', st_kv:'حافظه', st_app:'برنامه', st_worker:'مصرف ورکر', st_traffic:'مصرف امروز', u_chart_h:'مصرف روزانه (۱۴ روز اخیر)',
-    usage_h:'حجم مصرفی', usage_s:'مجموع ترافیکی که نوا روی این ورکر سرو کرده (تقریبی — سازگار با پلن رایگان).', u_today:'امروز', u_month:'این ماه', u_year:'امسال', u_all:'کل',
+    home_h:'داشبورد', home_s:'وضعیت پروکسی شما.', health_h:'سلامت دامنه‌ها', health_s:'وضعیت زندهٔ دامنه‌های جلویی. کران ساعتی هم تغییرات را خودکار به تلگرام اعلام می‌کند.', health_check:'بررسی فوری', iran_h:'حالت ایران (یک‌ضربه)', iran_s:'بهترین ترکیب مقاومت برای ایران را یک‌جا روشن می‌کند: همهٔ پروتکل‌ها + پخش پورت + فرگمنت + ECH (و مسدودکردن QUIC، خاموش‌کردن IPv6).', iran_btn:'فعال‌سازی حالت ایران', iran_btn_off:'غیرفعال‌سازی حالت ایران', backup_h:'پشتیبان‌گیری و بازیابی', backup_s:'همهٔ تنظیمات (کانفیگ + شبکه + کاربران) را در یک فایل ذخیره یا از آن بازیابی کنید. این فایل شامل کلیدهای محرمانه است — جای امن نگه‌دارید.', backup_export:'خروجی', backup_import:'ورودی', qs_h:'شروع سریع', qs1:'پنل را در /login باز کن و با رمز ادمین وارد شو — یا آیکن اپ مارنا روی صفحهٔ اصلی را باز کن.', qs2:'در داشبورد یک‌بار «حالت ایران» را بزن، بعد لینک اشتراک را کپی کن (یا QR را اسکن کن).', qs3:'دکمهٔ اپ خودت (هیدیفای/کارینگ/v2rayNG/sing-box) را بزن تا یک‌ضربه ایمپورت شود، وصل شو، تمام.', qs4:'اگر شبکه‌ای بستت، پروتکل/پورت دیگری از لیست اپ را امتحان کن یا فرگمنت را در تنظیمات عوض کن.', status:'وضعیت', st_host:'دامنه', st_net:'شبکه', st_kv:'حافظه', st_app:'برنامه', st_worker:'مصرف ورکر', st_traffic:'مصرف امروز', u_chart_h:'مصرف روزانه (۱۴ روز اخیر)',
+    usage_h:'حجم مصرفی', usage_s:'مجموع ترافیکی که مارنا روی این ورکر سرو کرده (تقریبی — سازگار با پلن رایگان).', u_today:'امروز', u_month:'این ماه', u_year:'امسال', u_all:'کل',
     fp_random:'random — پیشنهاد فعلی برای ایران', fp_hint:'الان «random» در ایران بهتر کار می‌کند؛ اگر قطع شد یکی دیگر را امتحان یا اسکن کنید.',
     hosts_connect:'⚠️ ابتدا هر دامنه را به Worker وصل کنید (Cloudflare ← Worker شما ← Settings ← Domains & Routes ← Add Custom Domain). فقط بعد از اتصال آن را اینجا اضافه کنید، وگرنه کانفیگ‌ها وصل نمی‌شوند.',
     help_lbl:'این چیست؟',
     help_home:'وضعیت پروکسی شما و لینک اشتراک همراه با کد QR. لینک را کپی کنید یا QR را اسکن کنید تا هر برنامه‌ای را راه بیندازید. بقیه‌ی موارد منو، تنظیمات اختیاری است.',
     help_sub:'همان اشتراک، آماده در هر قالب برنامه (خودکار، Base64، Clash، sing-box، Surge، Quantumult X، Loon). قالبی که برنامه‌تان استفاده می‌کند را کپی یا QR آن را اسکن کنید. همه به یک پروکسی اشاره می‌کنند.',
     help_ip:'نحوه‌ی انتخاب آی‌پی‌های کلودفلر برای کانفیگ‌ها. حالت هوشمند (هر اپراتور) به هر کاربر بهترین آی‌پی‌ها را برای اپراتورش می‌دهد؛ لیست دلخواه اجازه می‌دهد آی‌پی خودتان را وارد کنید؛ تصادفی از آی‌پی‌های تصادفی کلودفلر استفاده می‌کند. از مرورگر هم می‌توانید اسکن کنید.',
-    help_isp:'تعداد زنده‌ی آی‌پی‌های تمیز کلودفلر که روی هر اپراتور ایرانی (همراه اول، ایرانسل، شاتل...) کار می‌کنند و توسط اسکنر Nova Radar جمع‌آوری شده‌اند. ورکر به‌طور خودکار به هر کاربر بهترین آی‌پی‌ها را برای شبکه‌ی خودش می‌دهد. برای پر شدن این صفحه، در صفحه‌ی آی‌پی‌های تمیز حالت هوشمند را روشن کنید.',
+    help_isp:'تعداد زنده‌ی آی‌پی‌های تمیز کلودفلر که روی هر اپراتور ایرانی (همراه اول، ایرانسل، شاتل...) کار می‌کنند و توسط اسکنر Marna Radar جمع‌آوری شده‌اند. ورکر به‌طور خودکار به هر کاربر بهترین آی‌پی‌ها را برای شبکه‌ی خودش می‌دهد. برای پر شدن این صفحه، در صفحه‌ی آی‌پی‌های تمیز حالت هوشمند را روشن کنید.',
     help_net:'کنترل‌هایی که در هر کانفیگ Clash و sing-box اعمال می‌شوند: مسیریابی، مستقیم‌بودن سایت‌های ایرانی، مسدودسازی تبلیغات و محتوای بزرگسال، DNS امن و ضدتحریم، WARP و قوانین دلخواه شما. بعد از تغییر، ذخیره را بزنید و در برنامه دوباره وصل شوید.',
     help_set:'تنظیمات فنی: پروتکل (VLESS/Trojan/SS)، حمل‌ونقل، TLS، اثرانگشت، دامنه‌ها (HOST) و UUID. پیش‌فرض‌ها برای بیشتر افراد مناسب است؛ فقط اگر می‌دانید چه می‌خواهید تغییر دهید.',
     help_notif:'ببینید ورکر شما چند درخواست مصرف کرده (کلودفلر روزانه ۱۰۰٬۰۰۰ تای رایگان می‌دهد) و با هر دریافت اشتراک، تغییر تنظیمات و ورود، اعلان تلگرام بگیرید.',
     help_logs:'فعالیت‌های اخیر پروکسی شما: دریافت اشتراک، تغییر تنظیمات، ورود و هر خطا، همراه با زمان، IP و شبکه.',
     your_sub:'لینک اشتراک شما', copy:'کپی', copied:'کپی شد!', sub_hint:'این لینک یا QR را بفرستید. برنامه سریع‌ترین آی‌پی تمیز را خودکار انتخاب می‌کند.', open_in:'باز کردن در برنامه', app_copied:'لینک کپی شد. برنامه را باز کنید و وارد کنید.', app_rec:'پیشنهادی', app_get:'دریافت برنامه', app_import:'افزودن',
     sub_s2:'برای هر برنامه یک لینک. کپی کنید یا QR را اسکن کنید.', sub_formats:'قالب‌ها', sub_ports:'نودهای تکی هر پورت', sub_naming:'نام و به‌روزرسانی',
-    notice_lbl:'اعلان سرویس رایگان (همیشه روشن)', proto_all:'همه (VLESS + Trojan + SS)', mt_lbl:'چندحمل‌ونقلی (WS + gRPC + XHTTP)', mt_h:'هر کانفیگ را روی هر سه حمل‌ونقل می‌سازد برای تنوع بیشتر در برابر DPI (نیازمند دامنه اختصاصی متصل به Worker که شما دارید)', multi_lbl:'نودهای چندپروتکلی (VLESS + Trojan + SS)', multi_h:'برای هر نودِ نوا هر سه پروتکل را می‌سازد تا کلاینت بینشان فِیل‌اوور کند (فقط ترنسپورت ws)', ports_lbl:'پخش روی پورت‌ها (۴۴۳ / ۲۰۵۳ / ۲۰۸۳ / ۲۰۸۷ / ۲۰۹۶ / ۸۴۴۳)', ports_h:'هر کانفیگ را روی همه‌ی پورت‌های TLS کلودفلر پخش می‌کند — اگر یک پورت محدود شد کلاینت پورت دیگر را امتحان می‌کند', notice_h:'یک نود برچسب‌دار در هر کانفیگ قرار می‌گیرد تا همه بدانند سرویس رایگان نوا است — قابل خاموش‌کردن نیست و متن آن ثابت است', notice_txt:'متن اعلان (ثابت)',
     subcfg:'مجموعه قوانین مسیریابی (Clash/sing-box)', px_custom:'سفارشی',
     sub_name:'نام اشتراک', sub_int:'فاصله به‌روزرسانی (ساعت)', sub_api:'API تبدیل اشتراک', save:'ذخیره', save_all:'ذخیرهٔ همهٔ تنظیمات این صفحه', saved:'ذخیره شد!', saveerr:'ذخیره ناموفق بود', qr:'کد QR',
     ip_s:'نحوه‌ی انتخاب آی‌پی‌های کلودفلر برای اشتراک.', ip_mode:'حالت', m_smart:'هوشمند (هر اپراتور)', m_custom:'لیست دلخواه', m_random:'تصادفی',
@@ -163,15 +161,15 @@ const T = {
     scan_src:'منبع', scan_src_random:'کلودفلر تصادفی', scan_loading:'در حال دریافت آی‌پی منبع…', scan_port:'پورت', scan_keep:'نگه‌داشتن بهترین', scan_total:'تعداد آی‌پی برای تست', scan_start:'شروع اسکن', scan_use:'استفاده در لیست دلخواه', scan_lat:'تأخیر', scan_jit:'نوسان', scan_loss:'افت', st_h:'🚀 تست سرعت', st_s:'سریع‌ترین آی‌پی‌های تمیز برای شبکهٔ فعلی‌ات (همراه‌اول/ایرانسل/…) را پیدا و خودکار اعمال می‌کند.', st_btn:'تست سرعت و اعمال بهترین',
     sec_h:'🔒 امنیت', sec_s:'رمز پنل را عوض کن و احراز هویت دو مرحله‌ای را روشن کن.', sec_cur:'رمز فعلی', sec_new:'رمز جدید', sec_new2:'تکرار رمز جدید', sec_chpw:'تغییر رمز', sec_current:'رمز فعلی (برای اشتراک‌گذاری)', sec_reveal:'نمایش', sec_hide:'پنهان', sec_curcopy:'کپی', sec_rec_both:'رمز بازیابی فعال است — سکرت ADMIN در کلودفلر هم‌چنان در کنار رمز پنل کار می‌کند. برای حذف آن، سکرت ADMIN را در کلودفلر تغییر/حذف کنید.', sec_rec_only:'رمز شما همان سکرت ADMIN (بازیابی) است. می‌توانید پایین یک رمز جداگانه برای پنل بگذارید؛ سکرت ADMIN به‌عنوان پشتیبان کار می‌کند.', sec_pw_h:'کانفیگ‌های فعلی کاربران کار می‌کنند — شناسه‌ی پروکسی تغییر نمی‌کند.', sec_2fa:'احراز هویت دو مرحله‌ای', sec_2fa_h:'با Google Authenticator، Authy، Keeper و … کار می‌کند. هنگام ورود یک کد ۶ رقمی خواسته می‌شود.', sec_2fa_on:'فعال‌سازی ۲FA', sec_2fa_off:'غیرفعال‌سازی ۲FA', sec_2fa_scan:'QR را در برنامه‌ی احراز هویت اسکن کن، یا این کلید را دستی وارد کن:', sec_2fa_code:'برای تأیید، کد ۶ رقمی را وارد کن', sec_2fa_confirm:'تأیید و روشن‌کردن', sec_2fa_dcode:'کد برنامه برای خاموش‌کردن', sec_on:'روشن', sec_off:'خاموش', sec_pw_ok:'رمز تغییر کرد ✓', sec_pw_bad:'رمز فعلی اشتباه است', sec_short:'حداقل ۶ کاراکتر', sec_mismatch:'رمزها یکسان نیستند', sec_2fa_okmsg:'۲FA فعال شد ✓', sec_2fa_badcode:'کد اشتباه است', sec_2fa_offmsg:'۲FA خاموش شد', sec_err:'خطایی رخ داد', sec_envmanaged:'رمز شما با سکرت ADMIN در کلودفلر تنظیم شده. آن را همان‌جا عوض کنید (Workers → Settings → Variables)، یا سکرت ADMIN را بردارید تا رمز را این‌جا مدیریت کنید.',
     scan_scanning:'در حال تست {n}/{t}، یافته‌شده {f}…', scan_done:'انجام شد. {f} آی‌پی سریع نگه داشته شد.', scan_none:'آی‌پی قابل دسترسی پیدا نشد. دوباره تلاش کنید یا اتصال را بررسی کنید.', scan_added:'به لیست دلخواه اضافه شد. ذخیره را بزنید.',
-    isp_s:'تعداد زنده‌ی آی‌پی‌های تمیز از پایگاه‌داده، به تفکیک اپراتور ایرانی.', isp_live:'مخزن‌های زنده', isp_hint:'تعدادها با اسکن Nova Radar روی هر شبکه بیشتر می‌شود.', refresh:'به‌روزرسانی', isp_noapi:'ابتدا API آی‌پی هوشمند را در صفحه‌ی آی‌پی‌های تمیز تنظیم کنید.',
+    isp_s:'تعداد زنده‌ی آی‌پی‌های تمیز از پایگاه‌داده، به تفکیک اپراتور ایرانی.', isp_live:'مخزن‌های زنده', isp_hint:'تعدادها با اسکن Marna Radar روی هر شبکه بیشتر می‌شود.', refresh:'به‌روزرسانی', isp_noapi:'ابتدا API آی‌پی هوشمند را در صفحه‌ی آی‌پی‌های تمیز تنظیم کنید.',
     set_s:'پروتکل، حمل‌ونقل و امنیت.', set_proto:'پروتکل و حمل‌ونقل', protocol:'پروتکل', transport:'حمل‌ونقل', path_lbl:'مسیر حمل‌ونقل', path_h:'مسیر WebSocket/gRPC. اگر مطمئن نیستید روی «/» بگذارید.', grpcmode_lbl:'حالت gRPC', grpcmode_h:'فقط وقتی حمل‌ونقل gRPC باشد استفاده می‌شود.', fp:'اثرانگشت TLS', frag:'تکه‌تکه‌سازی TLS (دور زدن DPI)', frag_hint:'اگر روی اپراتور تو (همراه‌اول / ایرانسل / …) فرگمنت کار نکرد، گزینهٔ Custom را بزن و مقدار packets را بین tlshello و 1-1 و 1-3 عوض کن — روی هر اپراتور ایران مقدار متفاوتی جواب می‌دهد.', proxyip:'PROXYIP (پروکسی معکوس، اختیاری)', chain_lbl:'پراکسی زنجیره‌ای / تثبیت IP (اختیاری)', chain_h:'خروجی همهٔ نودها را از پراکسی بالادست خودت (socks5/http/https) عبور می‌دهد — برای دسترسی به سایت‌هایی که IP کلودفلر را بلاک می‌کنند یا داشتن IP خروجی ثابت. خالی = خروجی عادی کلودفلر.', chain_test:'تست', uuid_lbl:'UUID (در کانفیگ‌های شما)',
-    adv_h:'پیشرفته (Fragment / ECH)', adv_s:'تنظیم اختیاری. برای پیش‌فرض خالی بگذارید. ذخیره را بزنید و لینک را دوباره وارد کنید.', adv_hint:'ECH نیازمند روشن‌بودن کلید ECH است (بخش امنیت بالا). API مرکزی هنگام اجرای سرور کنترل نوا، هارت‌بیت و اعلان‌های همگانی را فعال می‌کند.',
+    adv_h:'پیشرفته (Fragment / ECH)', adv_s:'تنظیم اختیاری. برای پیش‌فرض خالی بگذارید. ذخیره را بزنید و لینک را دوباره وارد کنید.', adv_hint:'ECH نیازمند روشن‌بودن کلید ECH است (بخش امنیت بالا). API مرکزی هنگام اجرای سرور کنترل مارنا، هارت‌بیت و اعلان‌های همگانی را فعال می‌کند.',
     frag_custom:'سفارشی', frag_len:'طول Fragment', frag_int:'فاصله Fragment', frag_pkt:'بسته‌های Fragment', ech_sni:'ECH SNI', ech_dns:'ECH DoH',
     frag_presets_lbl:'پریست‌های فرگمنت ایران (بزن تا فیلدهای Custom پر شود، سپس ذخیره):', add_clean_ips:'+ افزودن چند آی‌پی تمیز نمونهٔ کلودفلر', clean_ips_hint:'لیست شروع — استخر هوشمند per-ISP آی‌پی بهتری برای هر شبکه پیدا می‌کند',
     wn_mode:'حالت نویز', wn_count:'تعداد نویز', wn_size:'اندازه نویز', wn_delay:'تأخیر نویز', central_api:'API مرکزی (سرور مدیریت، اختیاری)', mirror_h:'آینه گیت‌هاب (پشتیبان دامنه مسدودشده)', mirror_intro:'ساب شما را در یک ریپو گیت‌هاب منتشر می‌کند تا کاربران یک لینک دائمی raw.githubusercontent.com داشته باشند که حتی اگر دامنه‌تان فیلتر شد کار کند. یک توکن fine-grained با دسترسی Contents: read/write روی آن ریپو بسازید.', mirror_en:'فعال‌سازی آینه', mirror_en_h:'هر ساعت هم خودکار منتشر می‌شود', mirror_repo:'ریپو (owner/name)', mirror_branch:'شاخه', mirror_path:'مسیر (اختیاری)', mirror_token:'توکن گیت‌هاب', mirror_publish:'انتشار فوری', hosts_check:'بررسی سلامت', health_ping:'پینگ از دستگاه من',
     help_mirror:'دامنه‌ی شما ممکن است فیلتر شود ولی گیت‌هاب معمولاً نه. آینه، فایل‌های اشتراک شما را در یک ریپو گیت‌هابِ خودتان منتشر می‌کند و به کاربران یک لینک دائمی raw.githubusercontent.com می‌دهد که حتی با فیلترِ دامنه هم کار می‌کند. ریپو (owner/name) و یک توکن fine-grained با دسترسی Contents: read/write را بگذارید، روشن کنید؛ هر ساعت دوباره منتشر می‌شود (یا «انتشار فوری» را بزنید).',
     help_health:'نشان می‌دهد هر دامنه‌ی جلویی شما هنوز پاسخ می‌دهد یا نه. «بررسی از کلودفلر» دسترسی را از شبکه‌ی کلودفلر تست می‌کند — برای تشخیص خرابی DNS/ورکر خوب است ولی فیلترینگ سمت ایران را نمی‌بیند. «پینگ از دستگاه من» یک تست سریع از اتصال فعلی شما اجرا می‌کند تا بفهمید دامنه واقعاً از جایی که هستید در دسترس است یا نه.',
-    help_usage:'مقدار ترافیکی که نوا جابه‌جا کرده (امروز/ماه/سال/کل) به‌علاوه نمودار روزانه. اعداد تقریبی‌اند و هیچ هزینه‌ای ندارند — فقط برای پیگیری خودتان.',
+    help_usage:'مقدار ترافیکی که مارنا جابه‌جا کرده (امروز/ماه/سال/کل) به‌علاوه نمودار روزانه. اعداد تقریبی‌اند و هیچ هزینه‌ای ندارند — فقط برای پیگیری خودتان.',
     help_yoursub:'لینک اشتراک شخصی شما و QR آن. لینک را در یک اپ پروکسی بچسبانید (یا QR را اسکن کنید) تا همه‌ی سرورها یک‌جا وارد شوند؛ دکمه‌های اپ آن را با یک ضربه وارد همان اپ می‌کنند.',
     help_formats:'همان سرورها در قالب‌های مختلف — قالبی را که اپ شما می‌فهمد انتخاب کنید: Clash/Mihomo (YAML)، sing-box (JSON) یا Base64 (v2rayNG/NekoBox). هر کارت کپی + QR دارد.',
     help_ports:'برای هر پورت کلودفلر (۴۴۳، ۲۰۵۳، …) یک لینک تک‌سروره. اگر پورت خاصی روی شبکه‌تان بهتر کار می‌کند، فقط همان را وارد کنید.',
@@ -222,7 +220,7 @@ const ISPS = [
 const GUIDE = {
   en: `
 <div class="card"><h4>👋 What is this?</h4>
-<p style="font-size:13px">This is the control panel for your own Nova Proxy. From here you hand out a <b>subscription link</b> that any VPN app can use, and you tune how it works. You don't need to understand the technical parts. The steps below are all most people ever touch. Use the menu on the left to move between pages.</p>
+<p style="font-size:13px">This is the control panel for your own Marna Proxy. From here you hand out a <b>subscription link</b> that any VPN app can use, and you tune how it works. You don't need to understand the technical parts. The steps below are all most people ever touch. Use the menu on the left to move between pages.</p>
 </div>
 <div class="card"><h4>🚀 Quick start</h4>
 <div class="gstep"><span class="n">1</span><span>Open <b>Dashboard</b> (or <b>Subscriptions</b>) and copy your <b>subscription link</b>, or scan its QR code.</span></div>
@@ -251,20 +249,20 @@ const GUIDE = {
 <div class="gstep"><span class="n">•</span><span><b>Random</b>: random Cloudflare IPs; the app's url-test sorts them.</span></div>
 </div>
 <div class="card"><h4>🛡 Beat SNI filtering (Fragment / ECH / SNI-spoof)</h4>
-<p style="font-size:13px">If your ISP blocks by reading the <b>SNI</b> (the server name in the TLS hello), there are three layers — the first two are built into Nova, the third is a device-side app:</p>
+<p style="font-size:13px">If your ISP blocks by reading the <b>SNI</b> (the server name in the TLS hello), there are three layers — the first two are built into Marna, the third is a device-side app:</p>
 <div class="gstep"><span class="n">1</span><span><b>TLS Fragment</b> (Settings → Advanced) — splits the TLS hello so DPI can't read the SNI. Tap an <b>Iran preset</b> (Gentle / Balanced / Aggressive) and Save; try different ones per ISP (MCI / Irancell).</span></div>
 <div class="gstep"><span class="n">2</span><span><b>ECH</b> (Settings → Advanced) — encrypts the SNI entirely, so there's nothing for DPI to match.</span></div>
-<div class="gstep"><span class="n">3</span><span><b>Packet-level SNI-spoof</b> sends a decoy "clean" SNI to fool the DPI. It needs raw TCP/IP packet control, so it <b>can't run in a Worker or a sub-config</b> — run it as a separate device app alongside Nova: <b>patterniha/SNI-Spoofing</b>, <b>GoodbyeDPI</b> (Windows), or <b>ByeDPI / byedpi-android</b>.</span></div>
+<div class="gstep"><span class="n">3</span><span><b>Packet-level SNI-spoof</b> sends a decoy "clean" SNI to fool the DPI. It needs raw TCP/IP packet control, so it <b>can't run in a Worker or a sub-config</b> — run it as a separate device app alongside Marna: <b>patterniha/SNI-Spoofing</b>, <b>GoodbyeDPI</b> (Windows), or <b>ByeDPI / byedpi-android</b>.</span></div>
 <div class="gtip">⚠️ Setting the config SNI to someone else's clean domain (e.g. creativecommons.org → your worker) is cross-domain fronting — <b>Cloudflare blocks it</b>, so it won't connect. Use Fragment/ECH here, or a device-side spoof tool.</div>
 </div>
 <div class="card"><h4>🚀 Set up your own panel</h4>
-<div class="gstep"><span class="n">•</span><span><b>Auto-provision</b> (recommended): at <b>novaproxy.online &rarr; Deploy</b>, paste a Cloudflare API token. The system builds the worker, database, domain and clean IPs and hands you a subscription link + QR.</span></div>
+<div class="gstep"><span class="n">•</span><span><b>Auto-provision</b> (recommended): at <b>example.com &rarr; Deploy</b>, paste a Cloudflare API token. The system builds the worker, database, domain and clean IPs and hands you a subscription link + QR.</span></div>
 <div class="gstep"><span class="n">•</span><span><b>Deploy to Cloudflare</b> (one-click): installs the worker on your account in one click. You then set a password (ADMIN) and a database (KV), and the install page guides you with Test buttons.</span></div>
 </div>
-<div class="card"><h4>📡 Per-ISP pools &amp; Nova Radar</h4>
-<p style="font-size:13px">This page shows how many clean Cloudflare IPs are known to work on each Iranian operator (MCI, Irancell, Shatel...). The data comes from the <b>Nova Radar</b> scanner. To fill it:</p>
+<div class="card"><h4>📡 Per-ISP pools &amp; Marna Radar</h4>
+<p style="font-size:13px">This page shows how many clean Cloudflare IPs are known to work on each Iranian operator (MCI, Irancell, Shatel...). The data comes from the <b>Marna Radar</b> scanner. To fill it:</p>
 <div class="gstep"><span class="n">1</span><span>On the <b>Clean IPs</b> page choose <b>Smart (per-ISP)</b> and set the API to <code>nova-deploy.pages.dev/api/pool</code>, then Save.</span></div>
-<div class="gstep"><span class="n">2</span><span>Run <b>Nova Radar</b> (desktop or Android) <b>on an Iranian network</b>. It scans Cloudflare IPs and uploads the fastest ones for that operator.</span></div>
+<div class="gstep"><span class="n">2</span><span>Run <b>Marna Radar</b> (desktop or Android) <b>on an Iranian network</b>. It scans Cloudflare IPs and uploads the fastest ones for that operator.</span></div>
 <div class="gstep"><span class="n">3</span><span>The pools fill up, and each user automatically gets the best IPs for their own network.</span></div>
 <div class="gtip">Until Radar runs on Iranian networks the pools stay empty, and the proxy falls back to seed/random Cloudflare IPs (still works, just not ISP-tuned).</div>
 </div>
@@ -288,8 +286,7 @@ const GUIDE = {
 <div class="gstep"><span class="n">•</span><span><b>Custom routing rules</b>: one per line — <code>TYPE,value,OUTBOUND</code> (e.g. <code>DOMAIN-SUFFIX,digikala.com,DIRECT</code> or <code>DOMAIN-KEYWORD,ads,REJECT</code>). OUTBOUND is DIRECT, REJECT or PROXY. These win over the presets.</span></div>
 <div class="gtip">Press <b>Save</b>, then reconnect in the app so the new rules apply.</div>
 </div>
-<div class="card"><h4>🎁 Free-service notice</h4>
-<p style="font-size:13px">On <b>Subscriptions</b>, the <b>Free-service notice</b> is <b>always on</b> and its <b>message is fixed</b> — a labelled node is baked into every config so people always see it's the free Nova service. It can't be turned off or changed by anyone (so resellers can't strip or rebrand it).</p>
+
 </div>
 <div class="card"><h4>📊 Dashboard at a glance</h4>
 <p style="font-size:13px">The top bar shows the <b>country and datacenter</b> of your current network, and the home tiles show your <b>Network</b>, storage, <b>Worker usage</b>, and <b>Traffic today</b>. The <b>Notifications</b> page shows worker usage and total traffic (today / month / year), and lets you set up Telegram alerts.</p>
@@ -313,7 +310,7 @@ const GUIDE = {
 </div>`,
   fa: `
 <div class="card"><h4>👋 این چیست؟</h4>
-<p style="font-size:13px">این پنل کنترل پروکسی Nova شماست. از اینجا یک <b>لینک اشتراک</b> می‌دهید که هر برنامه‌ی VPN می‌تواند از آن استفاده کند، و نحوه‌ی کارکرد آن را تنظیم می‌کنید. لازم نیست بخش‌های فنی را بفهمید؛ مراحل زیر همه‌ی چیزی است که بیشتر افراد به آن نیاز دارند. برای جابه‌جایی بین صفحه‌ها از منوی سمت راست استفاده کنید.</p>
+<p style="font-size:13px">این پنل کنترل پروکسی Marna شماست. از اینجا یک <b>لینک اشتراک</b> می‌دهید که هر برنامه‌ی VPN می‌تواند از آن استفاده کند، و نحوه‌ی کارکرد آن را تنظیم می‌کنید. لازم نیست بخش‌های فنی را بفهمید؛ مراحل زیر همه‌ی چیزی است که بیشتر افراد به آن نیاز دارند. برای جابه‌جایی بین صفحه‌ها از منوی سمت راست استفاده کنید.</p>
 </div>
 <div class="card"><h4>🚀 شروع سریع</h4>
 <div class="gstep"><span class="n">۱</span><span>وارد <b>داشبورد</b> (یا <b>اشتراک‌ها</b>) شوید و <b>لینک اشتراک</b> را کپی کنید، یا QR آن را اسکن کنید.</span></div>
@@ -342,20 +339,20 @@ const GUIDE = {
 <div class="gstep"><span class="n">•</span><span><b>تصادفی</b>: آی‌پی‌های تصادفی کلودفلر؛ url-test برنامه آن‌ها را مرتب می‌کند.</span></div>
 </div>
 <div class="card"><h4>🛡 شکست فیلترینگ SNI (Fragment / ECH / SNI-spoof)</h4>
-<p style="font-size:13px">اگر اپراتورت با خواندن <b>SNI</b> (نام سرور در TLS hello) بلاک می‌کند، سه لایه داری — دو تای اول داخل نوا هست، سومی یک اپ روی دستگاه است:</p>
+<p style="font-size:13px">اگر اپراتورت با خواندن <b>SNI</b> (نام سرور در TLS hello) بلاک می‌کند، سه لایه داری — دو تای اول داخل مارنا هست، سومی یک اپ روی دستگاه است:</p>
 <div class="gstep"><span class="n">۱</span><span><b>TLS Fragment</b> (تنظیمات ← پیشرفته) — TLS hello را تکه‌تکه می‌کند تا DPI نتواند SNI را بخواند. یک <b>پریست ایران</b> (Gentle / Balanced / Aggressive) بزن و ذخیره کن؛ روی هر اپراتور (همراه‌اول/ایرانسل) یکی جواب می‌دهد.</span></div>
 <div class="gstep"><span class="n">۲</span><span><b>ECH</b> (تنظیمات ← پیشرفته) — کل SNI را رمز می‌کند، پس چیزی برای تطبیق DPI نمی‌ماند.</span></div>
-<div class="gstep"><span class="n">۳</span><span><b>SNI-spoof سطح‌پکت</b> یک SNI «تمیز» تقلبی می‌فرستد تا DPI را گول بزند. به کنترل خام بسته‌های TCP/IP نیاز دارد، پس <b>روی ورکر یا ساب اجرا نمی‌شود</b> — به‌صورت اپ جدا روی دستگاه کنار نوا اجرا کن: <b>patterniha/SNI-Spoofing</b>، <b>GoodbyeDPI</b> (ویندوز)، یا <b>ByeDPI / byedpi-android</b>.</span></div>
+<div class="gstep"><span class="n">۳</span><span><b>SNI-spoof سطح‌پکت</b> یک SNI «تمیز» تقلبی می‌فرستد تا DPI را گول بزند. به کنترل خام بسته‌های TCP/IP نیاز دارد، پس <b>روی ورکر یا ساب اجرا نمی‌شود</b> — به‌صورت اپ جدا روی دستگاه کنار مارنا اجرا کن: <b>patterniha/SNI-Spoofing</b>، <b>GoodbyeDPI</b> (ویندوز)، یا <b>ByeDPI / byedpi-android</b>.</span></div>
 <div class="gtip">⚠️ گذاشتن SNI کانفیگ روی دامنهٔ تمیزِ شخص دیگر (مثل creativecommons.org → ورکر شما) فرانتینگ بین‌دامنه‌ای است — <b>کلودفلر مسدودش می‌کند</b> و وصل نمی‌شود. از Fragment/ECH این‌جا یا ابزار روی دستگاه استفاده کن.</div>
 </div>
 <div class="card"><h4>🚀 راه‌اندازی پنل خودتان</h4>
-<div class="gstep"><span class="n">•</span><span><b>راه‌اندازی خودکار</b> (پیشنهادی): در <b>novaproxy.online &larr; استقرار</b> یک توکن Cloudflare بچسبانید. سیستم ورکر، دیتابیس، دامنه و آی‌پی تمیز را می‌سازد و لینک اشتراک + QR به شما می‌دهد.</span></div>
+<div class="gstep"><span class="n">•</span><span><b>راه‌اندازی خودکار</b> (پیشنهادی): در <b>example.com &larr; استقرار</b> یک توکن Cloudflare بچسبانید. سیستم ورکر، دیتابیس، دامنه و آی‌پی تمیز را می‌سازد و لینک اشتراک + QR به شما می‌دهد.</span></div>
 <div class="gstep"><span class="n">•</span><span><b>Deploy to Cloudflare</b> (یک کلیک): با یک کلیک ورکر را روی حساب شما نصب می‌کند. سپس یک رمز (ADMIN) و یک دیتابیس (KV) تنظیم می‌کنید و صفحه‌ی نصب با دکمه‌ی «تست» راهنمایی می‌کند.</span></div>
 </div>
-<div class="card"><h4>📡 مخزن هر اپراتور و Nova Radar</h4>
-<p style="font-size:13px">این صفحه نشان می‌دهد برای هر اپراتور ایرانی (همراه اول، ایرانسل، شاتل...) چند آی‌پی تمیز کلودفلر شناخته‌شده است. داده‌ها از اسکنر <b>Nova Radar</b> می‌آید. برای پر کردن آن:</p>
+<div class="card"><h4>📡 مخزن هر اپراتور و Marna Radar</h4>
+<p style="font-size:13px">این صفحه نشان می‌دهد برای هر اپراتور ایرانی (همراه اول، ایرانسل، شاتل...) چند آی‌پی تمیز کلودفلر شناخته‌شده است. داده‌ها از اسکنر <b>Marna Radar</b> می‌آید. برای پر کردن آن:</p>
 <div class="gstep"><span class="n">۱</span><span>در صفحه‌ی <b>آی‌پی‌های تمیز</b> حالت <b>هوشمند (هر اپراتور)</b> را انتخاب و API را روی <code>nova-deploy.pages.dev/api/pool</code> بگذارید و ذخیره کنید.</span></div>
-<div class="gstep"><span class="n">۲</span><span><b>Nova Radar</b> (دسکتاپ یا اندروید) را <b>روی یک شبکه‌ی ایرانی</b> اجرا کنید. آی‌پی‌های کلودفلر را اسکن و سریع‌ترین‌ها را برای آن اپراتور آپلود می‌کند.</span></div>
+<div class="gstep"><span class="n">۲</span><span><b>Marna Radar</b> (دسکتاپ یا اندروید) را <b>روی یک شبکه‌ی ایرانی</b> اجرا کنید. آی‌پی‌های کلودفلر را اسکن و سریع‌ترین‌ها را برای آن اپراتور آپلود می‌کند.</span></div>
 <div class="gstep"><span class="n">۳</span><span>مخزن‌ها پر می‌شوند و هر کاربر به‌طور خودکار بهترین آی‌پی‌ها را برای شبکه‌ی خودش می‌گیرد.</span></div>
 <div class="gtip">تا وقتی Radar روی شبکه‌های ایرانی اجرا نشود، مخزن‌ها خالی می‌مانند و پروکسی از آی‌پی‌های اولیه/تصادفی استفاده می‌کند (باز هم کار می‌کند، فقط مخصوص اپراتور نیست).</div>
 </div>
@@ -379,8 +376,7 @@ const GUIDE = {
 <div class="gstep"><span class="n">•</span><span><b>قوانین مسیریابی دلخواه</b>: هر خط یک قانون — <code>TYPE,value,OUTBOUND</code> (مثلاً <code>DOMAIN-SUFFIX,digikala.com,DIRECT</code> یا <code>DOMAIN-KEYWORD,ads,REJECT</code>). خروجی: DIRECT یا REJECT یا PROXY. این‌ها بر قوانین آماده اولویت دارند.</span></div>
 <div class="gtip"><b>ذخیره</b> را بزنید و در برنامه دوباره وصل شوید تا قوانین تازه اعمال شود.</div>
 </div>
-<div class="card"><h4>🎁 اعلان سرویس رایگان</h4>
-<p style="font-size:13px">در صفحه‌ی <b>اشتراک‌ها</b>، <b>اعلان سرویس رایگان</b> <b>همیشه روشن</b> و <b>متن آن ثابت</b> است — یک نود برچسب‌دار در هر کانفیگ قرار می‌گیرد تا همه بدانند سرویس رایگان نوا است. هیچ‌کس نمی‌تواند آن را خاموش یا متنش را تغییر دهد (پس فروشنده‌ها نمی‌توانند حذف یا تغییرش دهند).</p>
+
 </div>
 <div class="card"><h4>📊 یک نگاه به داشبورد</h4>
 <p style="font-size:13px">کاشی‌های صفحه‌ی اصلی <b>دامنه</b>، <b>شبکه</b>، حافظه، <b>برنامه‌ای</b> که با آن وارد شده‌اید و <b>مصرف امروز</b> را نشان می‌دهند. صفحه‌ی <b>اعلان‌ها</b> مصرف ورکر و حجم کل (امروز/ماه/سال) را نشان می‌دهد و امکان اعلان تلگرام دارد.</p>
@@ -547,7 +543,7 @@ async function loadAll(){
   // they fail with "unable to determine config format". v2rayNG -> Base64, FlClash -> Clash,
   // sing-box app -> sing-box. (Base64 carries no routing rules; Hiddify applies its own.)
   const sep=sl.includes('?')?'&':'?', slSb=sl+sep+'sb', slClash=sl+sep+'clash', slB64=sl+sep+'b64';
-  [['a-h','hiddify://import/'+slB64,slB64],['a-v','v2rayng://install-config?url='+encodeURIComponent(slB64),slB64],['a-c','clash://install-config?url='+encodeURIComponent(slClash),slClash],['a-k','karing://install-config?url='+encodeURIComponent(slClash)+'&name=Nova',slClash],['a-s','sing-box://import-remote-profile?url='+encodeURIComponent(slSb),slSb]]
+  [['a-h','hiddify://import/'+slB64,slB64],['a-v','v2rayng://install-config?url='+encodeURIComponent(slB64),slB64],['a-c','clash://install-config?url='+encodeURIComponent(slClash),slClash],['a-k','karing://install-config?url='+encodeURIComponent(slClash)+'&name=Marna',slClash],['a-s','sing-box://import-remote-profile?url='+encodeURIComponent(slSb),slSb]]
     .forEach(([id,link,copyUrl])=>{ const el=$(id); if(!el) return; el.href=link;
       el.onclick=()=>{ navigator.clipboard&&navigator.clipboard.writeText(copyUrl); toast(t('app_copied')); }; });
   // Per-app QR (each app's exact-format link) + store links (recommended: Hiddify, Karing).
@@ -569,7 +565,7 @@ async function loadAll(){
   setTg('t-portspread',cfg.portSpread===true); setTg('t-multitrans',cfg.multiTransportSub===true);
   $('f-subapi').value=(cfg.subConverterConfig&&cfg.subConverterConfig.SUBAPI)||'';
   if($('t-notice')){ $('t-notice').classList.add('on'); $('t-notice').style.opacity='.6'; $('t-notice').style.pointerEvents='none'; } // forced always-on
-  if($('f-noticetext')) $('f-noticetext').value='🎁 Free service — novaproxy.online | سرویس رایگان نوا'; // fixed
+
   // Default the Smart IP API to Nova's shared per-ISP database so users get it out of the box.
   $('f-poolapi').value=cfg.POOL_API||'https://nova-deploy.pages.dev/api/pool';
   const pool=osg.localIPPool||{}; $('f-rcount').value=pool.randomCount||16; $('f-rport').value=pool.specifiedPorts!=null?pool.specifiedPorts:-1;
@@ -621,7 +617,7 @@ async function loadStatus(){
     const netTxt=(j.country||j.colo||'?'); const flag=flagOf(j.country); $('st-net').textContent=(flag?flag+' ':'')+netTxt; $('st-net').title=(j.asOrganization?j.asOrganization+' · ':'')+(j.asn?'AS'+j.asn+' · ':'')+netTxt+(j.colo?' · '+j.colo:'');
     $('st-kv').textContent=j.kvConnected? t('connected') : t('notconn');
     const appEl=$('st-app'); if(appEl){ const u=(cfg&&cfg.CF&&cfg.CF.Usage)||{}; if(u&&u.success&&u.total!=null){ appEl.textContent=nf(u.total)+' / '+nf(u.max||100000); appEl.title='Worker requests today / daily free limit (Cloudflare)'; } else { appEl.innerHTML='<a href="#" id="st-app-setup" style="color:var(--ac);font-weight:600;font-size:13px;text-decoration:none">'+(lang==='fa'?'افزودن توکن ⟵':'Add CF token →')+'</a>'; appEl.title=(lang==='fa'?'برای نمایش مصرف ورکر، در «اعلان‌ها» Account ID و توکن Cloudflare را وارد کنید':'Add your Cloudflare Account ID + token in Notifications to show worker usage'); const su=$('st-app-setup'); if(su) su.onclick=(e)=>{ e.preventDefault(); const n=document.querySelector('#nav [data-p="notif"]'); if(n) n.click(); }; } }
-    const tag=document.querySelector('.brand .tag'); if(tag){ tag.textContent='Panel v'+PANEL_VERSION+(j.version?' · w'+j.version:''); tag.title='Nova dashboard v'+PANEL_VERSION+(j.version?' · worker '+j.version:'')+(j.instanceId?' · instance '+j.instanceId:''); }
+    const tag=document.querySelector('.brand .tag'); if(tag){ tag.textContent='Panel v'+PANEL_VERSION+(j.version?' · w'+j.version:''); tag.title='Marna dashboard v'+PANEL_VERSION+(j.version?' · worker '+j.version:'')+(j.instanceId?' · instance '+j.instanceId:''); }
     // Traffic today only (free plan resets every 24h) — comes from system.json (1 KV read), so
     // no extra request and none of the heavy month/year aggregation.
     const tEl=$('st-traffic'); if(tEl){ const tu=j.todayUsage||{}; tEl.innerHTML='<span class="udl">↓ '+uFmtBytes(tu.down||0)+'</span><span class="uul">↑ '+uFmtBytes(tu.up||0)+'</span>'; }
@@ -642,7 +638,6 @@ $('save-sub').onclick=async()=>{ cfg.optimizedSubGeneration=cfg.optimizedSubGene
   delete cfg.paidPlan; // removed: not read by the worker
   cfg.subConverterConfig=cfg.subConverterConfig||{}; cfg.subConverterConfig.SUBAPI=$('f-subapi').value.trim();
   if($('f-subcfg')) cfg.subConverterConfig.SUBCONFIG=$('f-subcfg').value.trim();
-  cfg.freeNotice=true; /* free-service notice + its text are fixed (not editable) */ await saveConfig(); };
 // preset dropdowns fill their input
 if($('f-proxyip-sel')) $('f-proxyip-sel').onchange=function(){ if(this.value) $('f-proxyip').value=this.value; };
 if($('f-subcfg-sel')) $('f-subcfg-sel').onchange=function(){ if(this.value) $('f-subcfg').value=this.value; };
@@ -730,7 +725,7 @@ async function startScan(onProg){
 if($('sc-start')) $('sc-start').onclick=startScan;
 if($('sc-use')) $('sc-use').onclick=async()=>{
   if(!scanResults.length) return;
-  const lines=scanResults.map(r=>r.ip+':'+r.port+'#Nova-'+nova5());
+  const lines=scanResults.map(r=>r.ip+':'+r.port+'#Marna-'+nova5());
   const cur=$('f-add').value.trim(); $('f-add').value=(cur?cur+'\n':'')+lines.join('\n');
   ipMode='custom'; document.querySelectorAll('#ipseg button').forEach(b=>b.classList.toggle('on',b.dataset.m==='custom'));
   $('m-smart-box').style.display='none'; $('m-custom-box').style.display='block'; $('m-random-box').style.display='none';
@@ -948,8 +943,8 @@ applyTheme(); applyLang(); loadAll();
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom, 0px));z-index:9999;background:#101319;border:1px solid #262b34;border-radius:14px;padding:14px 16px;box-shadow:0 12px 30px rgba(0,0,0,.5);color:#e9edf4;font-size:13px;display:flex;gap:12px;align-items:center';
       const f=fa();
       const txt = isIOS
-        ? (f?'نصب نوا روی صفحه اصلی: دکمهٔ اشتراک‌گذاری سافاری (⬆️) ← «Add to Home Screen»':'Install Nova: Safari Share (⬆️) → “Add to Home Screen”')
-        : (f?'نصب «نوا پروکسی» روی گوشی':'Install Nova Proxy on your phone');
+        ? (f?'نصب مارنا روی صفحه اصلی: دکمهٔ اشتراک‌گذاری سافاری (⬆️) ← «Add to Home Screen»':'Install Marna: Safari Share (⬆️) → “Add to Home Screen”')
+        : (f?'نصب «مارنا پروکسی» روی گوشی':'Install Marna Proxy on your phone');
       b.innerHTML='<img src="/logo.png" style="width:34px;height:34px;border-radius:8px;flex:0 0 auto" onerror="this.style.display=\'none\'"><div style="flex:1;line-height:1.5">'+txt+'</div>';
       if (isAndroid && deferredPrompt){
         const inst=document.createElement('button'); inst.textContent=f?'نصب':'Install';
@@ -1196,7 +1191,7 @@ if($('sc-speedtest')) $('sc-speedtest').onclick=async()=>{
   try{
     await startScan(onProg);
     if(scanResults && scanResults.length){
-      const lines=scanResults.map(r=>r.ip+':'+r.port+'#Nova-'+nova5());
+      const lines=scanResults.map(r=>r.ip+':'+r.port+'#Marna-'+nova5());
       const cur=$('f-add').value.trim(); $('f-add').value=(cur?cur+'\n':'')+lines.join('\n');
       ipMode='custom'; document.querySelectorAll('#ipseg button').forEach(b=>b.classList.toggle('on',b.dataset.m==='custom'));
       $('m-smart-box').style.display='none'; $('m-custom-box').style.display='block'; $('m-random-box').style.display='none';
