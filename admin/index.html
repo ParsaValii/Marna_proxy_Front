@@ -3067,7 +3067,7 @@ async function saveNetwork(){
   n.enableAntiSanctionDNS=isOn('t2-antisanc'); n.antiSanctionDNSProvider=g('d2-antiprov'); n.antiSanctionCustomDNS=(g('d2-anticustom')||'').trim();
   n.enableLocalDNS=isOn('t2-localdns'); n.localDNSIP=(g('d2-localip')||'').trim()||'8.8.8.8'; n.localDNSPort=(g('d2-localport')||'').trim()||'53';
   n.enableFakeDNS=isOn('t2-fakedns'); n.fakeDNSIP=(g('d2-fakeip')||'').trim()||'198.51.100.1'; n.logLevel=g('d2-loglevel');
-  n.backendMode=isOn('t2-backend'); n.backendUrl=(g('be-url')||'').trim();
+  n.backendMode=isOn('t2-backend'); { var _bu=(g('be-url')||'').trim(); if(_bu && !/^https?:\/\//i.test(_bu)) _bu='https://'+_bu; n.backendUrl=_bu; }
   // custom + preset rules
   n.customRules=g('n2-customrules')||''; n.monthlyCapGB=Math.max(0,Math.floor(Number(g('n2-monthlycap'))||0)); n.speedLimitKBps=Math.max(0,Math.floor(Number(g('n2-speedlimit'))||0));
   n.bypassCountries=[['cn','t2-bp-cn'],['ru','t2-bp-ru']].filter(([,id])=>isOn(id)).map(([c])=>c);
@@ -3427,7 +3427,7 @@ document.addEventListener('click', (e)=>{
     bu.addEventListener('input',function(){ window.__backendVerified=null; try{ renderBackendClient(); }catch(_e){} try{ checkBackendPort(); }catch(_e){} });
     // Persist the URL when the user finishes editing (blur/change) so it's saved without hunting for
     // the Save button, only auto-save when the port is valid, to avoid saving a known-dead URL.
-    bu.addEventListener('change',function(){ try{ if(LIVE && checkBackendPort()) saveNetwork(); }catch(_e){} });
+    bu.addEventListener('change',function(){ var _v=bu.value.trim(); if(_v && !/^https?:\/\//i.test(_v)){ _v='https://'+_v; bu.value=_v; } try{ if(LIVE && checkBackendPort()) saveNetwork(); }catch(_e){} });
   } }
 $('#menu-btn').addEventListener('click', openDrawer)
 /* Collapsible "Network Settings" submenu (closed by default, state remembered) */
