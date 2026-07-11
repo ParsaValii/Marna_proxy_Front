@@ -968,8 +968,9 @@ html[data-theme=dark] .qr-ph{border-color:#fff}
                 <div class="notice-box" style="margin-top:12px"><span class="notice-tag" style="background:var(--wn);color:#1a1206" data-i18n="dg_warn_tag">Important</span><span data-i18n="dg_warn">Write down your secret admin path before you save, after saving, the panel is ONLY reachable at /your-admin-path. (Locked out? Add a Worker variable PANEL_RECOVERY=1 to switch this off and reach /admin again.) Allowed characters: a-z, 0-9, hyphen, underscore. Leave a field blank to keep its default name.</span></div>
               </div>
             </div>
-            <div class="card" id="backend-card" style="margin-top:16px;border-color:var(--ac-line)">
+            <div class="card" id="backend-card" style="margin-top:16px;border-color:var(--ac-line);opacity:.5;pointer-events:none;position:relative">
               <div class="card-h"><h3 data-i18n="be_h">🛰 Backend mode (advanced)</h3></div>
+              <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--card);border:1px solid var(--dg);border-radius:10px;padding:8px 18px;z-index:2;white-space:nowrap"><span style="color:var(--dg);font-weight:700;font-size:13px">در حال حاضر غیر فعال است</span></div>
               <div class="card-pad">
                 <p style="font-size:12.5px;color:var(--mu);margin-bottom:12px" data-i18n="be_s">Forward traffic to your own Xray/sing-box server instead of handling it in the Worker. This is the ONLY way to get VMess and working voice/video calls (UDP), but it requires you to run a backend server (a VPS). Leave OFF to use the normal free in-Worker mode (VLESS/Trojan).</p>
                 <div class="field-row"><div class="l" data-i18n="be_en">Enable backend mode<small data-i18n="be_en_h">when on, Nova bridges to the backend below</small></div><div class="sw" id="t2-backend"><span class="k"></span></div></div>
@@ -1215,7 +1216,8 @@ html[data-theme=dark] .qr-ph{border-color:#fff}
         </div>
 
         <div class="section-label" data-i18n="mirror_h">GitHub mirror (blocked-domain failover)</div>
-        <div class="card card-pad">
+        <div class="card card-pad" style="opacity:.5;pointer-events:none;position:relative">
+          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--card);border:1px solid var(--dg);border-radius:10px;padding:8px 18px;z-index:2;white-space:nowrap"><span style="color:var(--dg);font-weight:700;font-size:13px">در حال حاضر غیر فعال است</span></div>
           <p style="font-size:12.5px;color:var(--mu);margin-bottom:12px" data-i18n="mirror_intro">Publishes your sub to a GitHub repo so users keep a permanent raw.githubusercontent.com link even if your domain gets filtered.</p>
           <div class="field-row"><div class="l" data-i18n="mirror_en">Enable mirror<small data-i18n="mirror_en_h">also auto-publishes hourly</small></div><div class="sw" id="t2-mirror"><span class="k"></span></div></div>
           <div class="set-grid" style="margin-top:13px">
@@ -1259,6 +1261,7 @@ html[data-theme=dark] .qr-ph{border-color:#fff}
             <div class="card-h"><h3 data-i18n="notif_tg">Telegram alerts</h3><div class="right"><span class="chip ok"><span class="dot"></span><span data-i18n="status_on">On</span></span></div></div>
             <div class="card-pad">
               <div class="field-row"><div class="l" data-i18n="notif_tg_en">Enable Telegram alerts<small data-i18n="notif_tg_h">message on each fetch, change, and login</small></div><div class="sw on" id="t2-tg"><span class="k"></span></div></div>
+              <div style="margin:10px 0;padding:9px 13px;border:1px solid var(--wn);border-radius:9px;background:color-mix(in srgb,var(--wn) 8%,transparent);font-size:12px;color:var(--wn);font-weight:600">⚠ در حال حاضر کل امکانات تلگرام دردسرس نیست.</div>
               <div class="fg" style="margin-top:13px"><label data-i18n="notif_bot">Bot token</label><input class="inp" type="password" id="f2-bot" placeholder="123456:ABC-..."></div>
               <div class="fg"><label data-i18n="notif_chat">Chat / User IDs</label><textarea class="inp" id="f2-chat" spellcheck="false" style="min-height:62px;font-family:ui-monospace,monospace;font-size:12px" placeholder="123456789&#10;-1001234567890"></textarea><div style="font-size:11.5px;color:var(--mu);margin-top:6px" data-i18n="notif_chat_h">One or more (comma or new-line separated): your numeric user ID and/or a channel ID (the bot must be an admin there). Needed so you can manage the bot.</div></div>
               <div style="display:flex;justify-content:flex-end"><button class="btn primary sm" id="save-notif2" data-i18n="btn_save">Save</button></div>
@@ -1425,6 +1428,18 @@ html[data-theme=dark] .qr-ph{border-color:#fff}
     </div>
     <div id="help-body" class="help-body"></div>
     <div style="display:flex;justify-content:flex-end;margin-top:16px"><button class="btn primary sm" id="help-close" data-i18n="close">Close</button></div>
+  </div>
+</div>
+
+<div class="modal" id="transport-modal">
+  <div class="modal-c" style="max-width:380px">
+    <div style="text-align:center;margin-bottom:14px;font-size:32px">⚠️</div>
+    <h4 id="transport-modal-title" style="text-align:center;margin-bottom:10px;font-size:15px"></h4>
+    <p id="transport-modal-desc" style="text-align:center;font-size:13px;color:var(--tx2);line-height:1.7;margin-bottom:18px"></p>
+    <div style="display:flex;gap:8px">
+      <button class="btn ghost sm" id="transport-modal-cancel" style="flex:1">لغو</button>
+      <button class="btn primary sm" id="transport-modal-ok" style="flex:1">دارم، ادامه بده</button>
+    </div>
   </div>
 </div>
 
@@ -3430,6 +3445,30 @@ document.addEventListener('click', (e)=>{
     bu.addEventListener('change',function(){ var _v=bu.value.trim(); if(_v && !/^https?:\/\//i.test(_v)){ _v='https://'+_v; bu.value=_v; } try{ if(LIVE && checkBackendPort()) saveNetwork(); }catch(_e){} });
   } }
 $('#menu-btn').addEventListener('click', openDrawer)
+/* Warn when grpc/xhttp is selected: custom domain required */
+;(function(){
+  var sel=document.getElementById('f2-trans'); if(!sel) return;
+  var modal=document.getElementById('transport-modal');
+  var titleEl=document.getElementById('transport-modal-title');
+  var descEl=document.getElementById('transport-modal-desc');
+  var okBtn=document.getElementById('transport-modal-ok');
+  var cancelBtn=document.getElementById('transport-modal-cancel');
+  var prevVal='ws';
+  sel.addEventListener('focus', function(){ prevVal=sel.value; });
+  sel.addEventListener('change', function(){
+    var v=sel.value;
+    if(v==='grpc'||v==='xhttp'){
+      var name=v==='grpc'?'gRPC':'XHTTP';
+      titleEl.textContent=(lang==='fa'?'⚠ حمل‌ونقل '+name+' به دامنه شخصی نیاز دارد':'⚠ '+name+' requires a custom domain');
+      descEl.innerHTML=lang==='fa'
+        ? 'برای استفاده از <b>'+name+'</b> حتماً باید یک <b>دامنه شخصی</b> داشته باشید و آن را به Worker متصل کنید.<br>بدون دامنه شخصی این حمل‌ونقل کار نمی‌کند.'
+        : 'To use <b>'+name+'</b> you must have a <b>custom domain</b> connected to this Worker.<br>It will not work without one.';
+      modal.classList.add('on');
+      okBtn.onclick=function(){ modal.classList.remove('on'); };
+      cancelBtn.onclick=function(){ sel.value=prevVal; modal.classList.remove('on'); };
+    }
+  });
+})();
 /* Collapsible "Network Settings" submenu (closed by default, state remembered) */
 ;(function(){ try{ if(localStorage.getItem('nova-wn')===WN_VER){ var c=document.getElementById('whatsnew-card'); if(c) c.style.display='none'; } }catch(e){} })();
 ;(function(){
