@@ -330,7 +330,7 @@
       msg.textContent=t.radar_prep; if(!RTMPL) await radarTemplate();
       var ports=Array.prototype.map.call(document.querySelectorAll('#radar-ports .rpchip.on'),function(b){return Number(b.getAttribute('data-port'));}).filter(Boolean);
       if(!ports.length){ ports=[443]; var p443=document.querySelector('#radar-ports [data-port="443"]'); if(p443) p443.classList.add('on'); radarSyncChips(); }
-      var keep=6,timeout=2000,probes=3,conc=12;
+      var keep=20,timeout=2000,probes=3,conc=12;
       var maxIps=Math.min(120,Math.max(20,Math.floor(500/ports.length)));
       var ips=[],seen={}; while(ips.length<maxIps){ var ip=randCfIp(); if(!seen[ip]){ seen[ip]=1; ips.push(ip); } }
       var pairs=[]; for(var a=0;a<ips.length;a++){ for(var pi=0;pi<ports.length;pi++){ pairs.push({ip:ips[a],port:ports[pi]}); } }
